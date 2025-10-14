@@ -63,15 +63,19 @@ fun CoffeeDetailScreen(
     var haveIce by remember { mutableStateOf(false) }
     var coffeeSize by remember { mutableStateOf(CoffeeSize.MEDIUM) }
     var iceLevel by remember { mutableStateOf(IceLevel.NORMAL) }
-    var totalPrice =
-        coffeeItem.price * quantity * when (coffeeSize) {
-            CoffeeSize.SMALL -> 0.9
-            CoffeeSize.MEDIUM -> 1.0
-            CoffeeSize.LARGE -> 1.1
-        } * when (shotLevel) {
-            ShotLevel.SINGLE -> 1.0
-            ShotLevel.DOUBLE -> 1.5
-        }
+    
+    // Unit price per item (after size/shot adjustments, before quantity)
+    val unitPrice = coffeeItem.price * when (coffeeSize) {
+        CoffeeSize.SMALL -> 0.9
+        CoffeeSize.MEDIUM -> 1.0
+        CoffeeSize.LARGE -> 1.1
+    } * when (shotLevel) {
+        ShotLevel.SINGLE -> 1.0
+        ShotLevel.DOUBLE -> 1.5
+    }
+    
+    // Total price for display (unit price * quantity)
+    val totalPrice = unitPrice * quantity
     Scaffold(
         containerColor = Color.White,
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
@@ -241,12 +245,26 @@ fun CoffeeDetailScreen(
                         onClick = {
                             onAddToCart(
                                 CartItemEntity(
-                                    coffee = coffeeItem,
-                                    shot = shotLevel,
-                                    size = coffeeSize,
-                                    ice = iceLevel,
-                                    haveIced = haveIce,
-                                    quantity = quantity
+                                    name = coffeeItem.name,
+                                    price = unitPrice,  // Store unit price, not total
+                                    imageResId = coffeeItem.imageResId,
+                                    imageUrl = null,
+                                    shot = when(shotLevel) {
+                                        ShotLevel.SINGLE -> "Single"
+                                        ShotLevel.DOUBLE -> "Double"
+                                    },
+                                    size = when(coffeeSize) {
+                                        CoffeeSize.SMALL -> "Small"
+                                        CoffeeSize.MEDIUM -> "Medium"
+                                        CoffeeSize.LARGE -> "Large"
+                                    },
+                                    ice = when(iceLevel) {
+                                        IceLevel.LESS -> "Less"
+                                        IceLevel.NORMAL -> "Normal"
+                                        IceLevel.EXTRA -> "Extra"
+                                    },
+                                    quantity = quantity,
+                                    point = (unitPrice / 1000).toInt()
                                 )
                             )
                         },
@@ -301,15 +319,17 @@ fun CoffeeDetailScreen(
                                         modifier = Modifier.padding(8.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Image(
-                                            painter = painterResource(item.coffee.imageResId),
-                                            contentDescription = item.coffee.name,
-                                            modifier = Modifier
-                                                .size(50.dp)
-                                                .padding(end = 8.dp)
-                                        )
+                                        if (item.imageResId != 0) {
+                                            Image(
+                                                painter = painterResource(item.imageResId),
+                                                contentDescription = item.name,
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .padding(end = 8.dp)
+                                            )
+                                        }
                                         Text(
-                                            text = item.coffee.name,
+                                            text = item.name,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp,
                                             fontFamily = poppinsFontFamily

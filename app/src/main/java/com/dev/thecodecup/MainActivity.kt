@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.dev.thecodecup.model.network.NetworkTest
 import com.dev.thecodecup.ui.NavGraph
-import com.dev.thecodecup.ui.screens.ApiTestScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,11 +19,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             // 🎨 TEMPORARY: Using ApiTestScreen to see products in UI
             // Comment this and uncomment NavGraph below to restore normal app
-            ApiTestScreen()
+//            ApiTestScreen()
             
             // Normal app navigation (temporarily commented)
-            // val navController = rememberNavController()
-            // NavGraph(navController)
+             val navController = rememberNavController()
+             NavGraph(navController)
         }
     }
 }

@@ -11,7 +11,9 @@ class OrderRepository private constructor(context: Context) {
         context.applicationContext,
         AppDatabase::class.java,
         "order-db"
-    ).build()
+    )
+        .fallbackToDestructiveMigration() // Auto-delete and recreate DB on schema change
+        .build()
     private val orderDao = db.orderDao()
 
     suspend fun getOngoingOrders(): List<OrderEntity> = withContext(Dispatchers.IO) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -19,31 +20,39 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dev.thecodecup.model.item.CoffeeItem
+import com.dev.thecodecup.model.network.dto.ProductDto
+import com.dev.thecodecup.model.network.viewmodel.ProductViewModel
 import com.dev.thecodecup.ui.components.CoffeeCard
 import com.dev.thecodecup.ui.components.HomeHeader
 import com.dev.thecodecup.ui.components.LoyaltyCard
 import com.dev.thecodecup.ui.components.BottomNavBar
+import com.dev.thecodecup.ui.components.ProductCard
 import com.dev.thecodecup.ui.theme.poppinsFontFamily
 import com.dev.thecodecup.model.db.user.UserViewModel
 
 @Composable
 fun HomeScreen(
     userViewModel: UserViewModel,
+    productViewModel: ProductViewModel,
     coffeeList: List<CoffeeItem>,
     onCoffeeClick: (CoffeeItem) -> Unit,
+    onProductClick: (ProductDto) -> Unit,
     onNavClick: (String) -> Unit,
     showEmptyCartDialog: Boolean = false,
     onDismissEmptyCartDialog: () -> Unit = {}
@@ -51,6 +60,20 @@ fun HomeScreen(
     val user by userViewModel.user.collectAsState()
     val userName = user?.name?.split(" ")?.firstOrNull() ?: "User"
     val userStamps = user?.stamp ?: 0
+    
+    // Product state from API
+    val products by productViewModel.products.collectAsState()
+    val isLoading by productViewModel.isLoading.collectAsState()
+    val error by productViewModel.error.collectAsState()
+    
+    // Load products on first composition
+    LaunchedEffect(Unit) {
+        productViewModel.loadProducts(
+            limit = null,
+            searchText = "",
+            categoryId = "all"
+        )
+    }
 
     Scaffold(
         containerColor = Color.White,
@@ -129,7 +152,7 @@ fun HomeScreen(
                                 end = 16.dp)
                     ) {
                         Text(
-                            text = "Choose your coffee",
+                            text = "Choose your product",
                             style = MaterialTheme.typography.titleLarge.copy(
                                 color = Color(0xFFD8D8D8),
                                 fontFamily = poppinsFontFamily
@@ -137,14 +160,84 @@ fun HomeScreen(
                             modifier = Modifier.padding(start = 2.dp, bottom = 8.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        LazyVerticalGrid (
-                            columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(bottom = 24.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(7.dp)
-                        ) {
-                            items(coffeeList) { coffee ->
-                                CoffeeCard(coffee = coffee, onClick = { onCoffeeClick(coffee) })
+                        
+                        // Show loading indicator
+                        if (isLoading && products.isEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = Color(0xFFD8D8D8),
+                                    modifier = Modifier.size(48.dp)
+                                )
+                            }
+                        }
+                        // Show error message
+                        else if (error != null && products.isEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = "⚠️",
+                                        style = MaterialTheme.typography.displayMedium
+                                    )
+                                    Text(
+                                        text = error ?: "Failed to load products",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = Color(0xFFD8D8D8)
+                                        ),
+                                        fontFamily = poppinsFontFamily,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Button(
+                                        onClick = { productViewModel.refresh() },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFFD8D8D8),
+                                            contentColor = Color(0xFF324A59)
+                                        )
+                                    ) {
+                                        Text("Retry", fontFamily = poppinsFontFamily)
+                                    }
+                                }
+                            }
+                        }
+                        // Show products from API
+                        else if (products.isNotEmpty()) {
+                            LazyVerticalGrid (
+                                columns = GridCells.Fixed(2),
+                                contentPadding = PaddingValues(bottom = 80.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(7.dp)
+                            ) {
+                                items(products) { product ->
+                                    ProductCard(
+                                        product = product,
+                                        onClick = { onProductClick(product) }
+                                    )
+                                }
+                            }
+                        }
+                        // Fallback to static coffee list if no API data
+                        else {
+                            LazyVerticalGrid (
+                                columns = GridCells.Fixed(2),
+                                contentPadding = PaddingValues(bottom = 80.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(7.dp)
+                            ) {
+                                items(coffeeList) { coffee ->
+                                    CoffeeCard(coffee = coffee, onClick = { onCoffeeClick(coffee) })
+                                }
                             }
                         }
                     }

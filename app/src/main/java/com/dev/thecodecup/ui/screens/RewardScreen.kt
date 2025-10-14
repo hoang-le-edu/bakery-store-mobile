@@ -168,7 +168,7 @@ fun RewardScreen(
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
                             ){
                                 Text(
-                                    text = rewards.cartItem.coffee.name,
+                                    text = rewards.cartItem.name,
                                     color = Color(0xFF324A59),
                                     fontFamily = poppinsFontFamily,
                                     fontSize = 16.sp

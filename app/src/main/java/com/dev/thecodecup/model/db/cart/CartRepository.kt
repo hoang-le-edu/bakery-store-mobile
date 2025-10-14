@@ -11,7 +11,9 @@ class CartRepository private constructor(context: Context) {
         context.applicationContext,
         AppDatabase::class.java,
         "cart-db"
-    ).build()
+    )
+        .fallbackToDestructiveMigration() // Auto-delete and recreate DB on schema change
+        .build()
     private val cartDao = db.cartItemDao()
 
     suspend fun getAllCartItems(): List<CartItemEntity> = withContext(Dispatchers.IO) {

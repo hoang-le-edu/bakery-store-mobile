@@ -25,16 +25,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getCartPrice(): Double {
-        return _cartItems.value.sumOf {
-                it.quantity * when (it.size) {
-                CoffeeSize.SMALL -> 0.9
-                CoffeeSize.MEDIUM -> 1.0
-                CoffeeSize.LARGE -> 1.1
-            } * when (it.shot) {
-                ShotLevel.SINGLE -> 1.0
-                ShotLevel.DOUBLE -> 1.5
-            } * it.coffee.price
-        }
+        return _cartItems.value.sumOf { it.price * it.quantity }
     }
     fun addCartItem(item: CartItemEntity) {
         viewModelScope.launch {

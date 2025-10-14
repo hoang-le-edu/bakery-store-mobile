@@ -16,11 +16,13 @@ import com.dev.thecodecup.model.db.cart.CartViewModel
 import com.dev.thecodecup.model.db.order.OrderEntity
 import com.dev.thecodecup.model.db.order.OrderViewModel
 import com.dev.thecodecup.model.db.user.UserViewModel
+import com.dev.thecodecup.model.network.viewmodel.ProductViewModel
 import com.dev.thecodecup.ui.screens.CartScreen
 import com.dev.thecodecup.ui.screens.CoffeeDetailScreen
 import com.dev.thecodecup.ui.screens.HomeScreen
 import com.dev.thecodecup.ui.screens.OrderScreen
 import com.dev.thecodecup.ui.screens.OrderSuccessScreen
+import com.dev.thecodecup.ui.screens.ProductDetailScreen
 import com.dev.thecodecup.ui.screens.ProfileScreen
 import com.dev.thecodecup.ui.screens.RedeemScreen
 import com.dev.thecodecup.ui.screens.RewardScreen
@@ -34,6 +36,8 @@ import kotlin.math.min
 fun NavGraph(navController: NavHostController) {
     val userViewModel: UserViewModel = viewModel()
     val orderViewModel: OrderViewModel = viewModel()
+    val productViewModel: ProductViewModel = viewModel()
+    
     LaunchedEffect(Unit) {
         userViewModel.ensureDefaultUserExists()
     }
@@ -91,9 +95,13 @@ fun NavGraph(navController: NavHostController) {
             var showEmptyCartDialog by remember { mutableStateOf(false) }
             HomeScreen(
                 userViewModel = userViewModel,
+                productViewModel = productViewModel,
                 coffeeList = coffeeList,
                 onCoffeeClick = {
                     navController.navigate("coffee-detail/${it.id}")
+                },
+                onProductClick = { product ->
+                    navController.navigate("product-detail/${product.productId}")
                 },
                 onNavClick = {
                     when (it) {
@@ -131,6 +139,33 @@ fun NavGraph(navController: NavHostController) {
                 },
                 cartViewModel = cartViewModel
             )
+        }
+
+        composable("product-detail/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
+            val products by productViewModel.products.collectAsState()
+            val product = products.firstOrNull { it.productId == productId }
+            
+            if (product != null) {
+                ProductDetailScreen(
+                    product = product,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onAddToCart = {
+                        cartViewModel.addCartItem(it)
+                        navController.navigate("cart") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
+                    cartViewModel = cartViewModel
+                )
+            } else {
+                // Product not found, go back
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                }
+            }
         }
 
         composable("order-success") {
