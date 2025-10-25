@@ -17,9 +17,11 @@ import com.dev.thecodecup.model.db.order.OrderEntity
 import com.dev.thecodecup.model.db.order.OrderViewModel
 import com.dev.thecodecup.model.db.user.UserViewModel
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel
+import com.dev.thecodecup.auth.AuthViewModel
 import com.dev.thecodecup.ui.screens.CartScreen
 import com.dev.thecodecup.ui.screens.CoffeeDetailScreen
 import com.dev.thecodecup.ui.screens.HomeScreen
+import com.dev.thecodecup.ui.screens.LoginScreen
 import com.dev.thecodecup.ui.screens.OrderScreen
 import com.dev.thecodecup.ui.screens.OrderSuccessScreen
 import com.dev.thecodecup.ui.screens.ProductDetailScreen
@@ -37,6 +39,7 @@ fun NavGraph(navController: NavHostController) {
     val userViewModel: UserViewModel = viewModel()
     val orderViewModel: OrderViewModel = viewModel()
     val productViewModel: ProductViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
     
     LaunchedEffect(Unit) {
         userViewModel.ensureDefaultUserExists()
@@ -45,14 +48,34 @@ fun NavGraph(navController: NavHostController) {
     val cartItems = cartViewModel.cartItems.collectAsState().value
 
     val user = userViewModel.user.collectAsState().value
+    val authState by authViewModel.authState.collectAsState()
+    
     NavHost(navController, startDestination = "splash") {
         composable("splash") {
             userViewModel.ensureDefaultUserExists()
             SplashScreen(onSplashFinished = {
-                navController.navigate("home") {
-                    popUpTo("splash") {inclusive = true}
+                // Check if user is signed in
+                if (authState.isSignedIn) {
+                    navController.navigate("home") {
+                        popUpTo("splash") {inclusive = true}
+                    }
+                } else {
+                    navController.navigate("login") {
+                        popUpTo("splash") {inclusive = true}
+                    }
                 }
             })
+        }
+
+        composable("login") {
+            LoginScreen(
+                authViewModel = authViewModel,
+                onLoginSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable("rewards") {
@@ -218,9 +241,15 @@ fun NavGraph(navController: NavHostController) {
         composable("profile") {
             ProfileScreen(
                 userViewModel = userViewModel,
+                authViewModel = authViewModel,
                 onBack = {
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = true }
+                    }
+                },
+                onSignOut = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )

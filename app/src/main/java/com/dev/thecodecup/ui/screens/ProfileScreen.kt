@@ -1,19 +1,30 @@
 package com.dev.thecodecup.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import com.dev.thecodecup.ui.components.ProfileCard
 import com.dev.thecodecup.R
+import com.dev.thecodecup.auth.AuthViewModel
 import com.dev.thecodecup.model.db.user.UserViewModel
 import com.dev.thecodecup.ui.components.Header
+import com.dev.thecodecup.ui.theme.poppinsFontFamily
 
 @Composable
 fun ProfileScreen(
     userViewModel: UserViewModel,
-    onBack: () -> Unit = {}
+    authViewModel: AuthViewModel? = null,
+    onBack: () -> Unit = {},
+    onSignOut: () -> Unit = {}
 ) {
     val user = userViewModel.user.collectAsState().value
     var editingField by remember { mutableStateOf("") }
@@ -117,5 +128,33 @@ fun ProfileScreen(
             },
             onValueChange = { address = it }
         )
+        
+        // Sign Out Button (if AuthViewModel is provided)
+        if (authViewModel != null) {
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+                onClick = {
+                    authViewModel.signOut()
+                    onSignOut()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE74C3C),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = "Sign Out",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = poppinsFontFamily
+                )
+            }
+        }
     }
 }
