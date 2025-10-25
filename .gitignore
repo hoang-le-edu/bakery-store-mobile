@@ -28,3 +28,6 @@ service-account.json
 # Crash logs
 hs_err_pid*.log
 replay_pid*.log
+
+# markdown files
+*.md
