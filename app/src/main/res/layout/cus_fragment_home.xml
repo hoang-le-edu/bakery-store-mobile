@@ -49,7 +49,9 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="8dp"
-                android:background="@color/white"> <ImageView
+                android:background="@color/white">
+
+                <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_search"
@@ -82,7 +84,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/banner_background"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
@@ -145,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tuần này"
-                android:textColor="@color/grey"
+                android:textColor="@color/c_434343"
                 android:textSize="14sp"/>
         </LinearLayout>
 

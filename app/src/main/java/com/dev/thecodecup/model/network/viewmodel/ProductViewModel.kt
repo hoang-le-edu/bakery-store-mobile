@@ -2,6 +2,9 @@ package com.dev.thecodecup.model.network.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.thecodecup.model.network.dto.CategoryDto
 import com.dev.thecodecup.model.network.dto.ProductDto
@@ -13,7 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ProductViewModel(application: Application) : AndroidViewModel(application) {
-    
+
+    private val _productsLiveData = MutableLiveData<List<ProductDto>>()
+    val productsLiveData: LiveData<List<ProductDto>> = _productsLiveData
+
+    private val _categoriesLiveData = MutableLiveData<List<CategoryDto>>()
+    val categoriesLiveData: LiveData<List<CategoryDto>> = _categoriesLiveData
+
+
     private val productRepository = ProductRemoteRepository.getInstance()
     private val categoryRepository = CategoryRemoteRepository.getInstance()
     
@@ -110,7 +120,8 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
             _isLoading.value = false
         }
     }
-    
+
+
     /**
      * Load all categories
      */
@@ -122,9 +133,11 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
             categoryRepository.getAllCategories()
                 .onSuccess { categoryList ->
                     _categories.value = categoryList
+                    _categoriesLiveData.postValue(categoryList)
                 }
                 .onFailure { exception ->
                     _error.value = exception.message ?: "Failed to load categories"
+                    _categoriesLiveData.postValue(emptyList())
                 }
             
             _isLoading.value = false
@@ -156,5 +169,9 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
         )
         loadCategories()
     }
+
+    fun observeProductsLiveData(): LiveData<List<ProductDto>> = productsLiveData
+    fun observeCategoriesLiveData(): LiveData<List<CategoryDto>> = categoriesLiveData
+
 }
 
