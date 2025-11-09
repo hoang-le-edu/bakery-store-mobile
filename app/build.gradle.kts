@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,15 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
 }
+
+
+// Load local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
 
 android {
     namespace = "com.dev.thecodecup"
@@ -20,9 +31,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
-        buildConfigField("String", "API_BASE_URL", "\"https://api-bakery-store-mobile-btfrg4gqevhveyfy.eastasia-01.azurewebsites.net/\"")
+//        buildConfigField("String", "API_BASE_URL", "\"https://api-bakery-store-mobile-btfrg4gqevhveyfy.eastasia-01.azurewebsites.net/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://bepmetayapi-9adx6.ondigitalocean.app/\"")
 
-        buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"AIzaSyD-Ro7xqbcAy8azy4ROfppORgvOG_1wm8A\"")
+        val firebaseKey = localProperties.getProperty("FIREBASE_WEB_API_KEY", "")
+        buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"$firebaseKey\"")
+
+        val googleWebClientId = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "")
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
+
     }
 
     buildTypes {
