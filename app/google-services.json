@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1015545807904",
+    "project_id": "bakery-store-a7e4f",
+    "storage_bucket": "bakery-store-a7e4f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015545807904:android:2f9d9886f46a33a8406845",
+        "android_client_info": {
+          "package_name": "com.dev.thecodecup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1015545807904-2l0gouhaoco9vgv68uer7da1v0io435q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dev.thecodecup",
+            "certificate_hash": "545d55994ac47d96a594a35a4e546eb8cdc6f94d"
+          }
+        },
+        {
+          "client_id": "1015545807904-lbtffj56koj0h9hqk0nrkqnfs8ftaiia.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBppNYBmNgbGGqA3qqHcg-kWgsnoHXUcQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1015545807904-lbtffj56koj0h9hqk0nrkqnfs8ftaiia.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

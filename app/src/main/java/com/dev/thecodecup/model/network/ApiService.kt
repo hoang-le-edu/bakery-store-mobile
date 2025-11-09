@@ -23,8 +23,8 @@ interface ApiService {
      * Get all categories
      * Example: /api/customer/categories
      */
-    @GET("api/customer/categories")
-    suspend fun getAllCategories(): Response<CategoriesResponse>
+    @GET("api/customer/products/all")
+    suspend fun getAllCategories(): Response<ProductsResponse>
     
     /**
      * Get product by ID

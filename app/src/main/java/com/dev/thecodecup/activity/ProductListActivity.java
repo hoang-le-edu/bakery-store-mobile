@@ -10,22 +10,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.ProductAdapter;
-import com.dev.thecodecup.model.network.dto.CategoryDto;
-import com.dev.thecodecup.model.network.dto.ProductDto;
+//import com.dev.thecodecup.model.network.dto.CategoryDto;
+import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
+//import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
-
-
 
 public class ProductListActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
-    private List<ProductDto> productList = new ArrayList<>();
     private ProductViewModel viewModel;
 
     @Override
@@ -33,60 +32,69 @@ public class ProductListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
 
-        tabLayout = findViewById(R.id.tabLayout);
+        // 1) View binding
+        tabLayout  = findViewById(R.id.tabLayout);
         rvProducts = findViewById(R.id.rvProducts);
 
+        // 2) RecyclerView + Adapter (2 cột)
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        adapter = new ProductAdapter(this, productList);
+        adapter = new ProductAdapter(this);
         rvProducts.setAdapter(adapter);
 
+        // 3) ViewModel
         viewModel = new ViewModelProvider(this).get(ProductViewModel.class);
 
-        // Quan sát LiveData (phù hợp với Java)
+        // 4) Quan sát Products -> cập nhật adapter để lên hình
         viewModel.getProductsLiveData().observe(this, products -> {
-            if (products != null) {
-                productList.clear();
-                productList.addAll(products);
-                adapter.notifyDataSetChanged();
-            }
+            // products là List<ProductDto> lấy từ API
+            adapter.setItems(products);
         });
 
-        // --- Thu thập dữ liệu Flow categories (từ Kotlin) ---
+        // 5) Quan sát Categories -> đổ TabLayout và load category đầu tiên
         viewModel.getCategoriesLiveData().observe(this, categories -> {
-            if (categories != null) {
-                setupTabs(categories);
+            buildTabs(categories);
+            // Chọn tab đầu tiên (nếu có) để load sản phẩm ban đầu
+            if (tabLayout.getTabCount() > 0) {
+                TabLayout.Tab first = tabLayout.getTabAt(0);
+                if (first != null) {
+                    first.select();
+                    String categoryId = (String) first.getTag();
+                    // searchText = null, limit = 20 (tuỳ chỉnh), categoryId = id tab
+                    viewModel.loadProducts(null, null, categoryId);
+                }
             }
         });
 
-        // --- Gọi API load categories ---
-        viewModel.loadCategories();
-
-        // --- Gọi API load products mặc định ---
-        viewModel.loadProducts(null, null, "all");
-    }
-
-    private void setupTabs(List<CategoryDto> categories) {
-        tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setText("Tất cả").setTag("all"));
-
-        if (categories != null) {
-            for (CategoryDto category : categories) {
-                TabLayout.Tab tab = tabLayout.newTab();
-                tab.setText(category.getCategoryName());
-                tab.setTag(category.getCategoryId());
-                tabLayout.addTab(tab);
-            }
-        }
-
+        // 6) Sự kiện đổi tab -> load sản phẩm theo category đã chọn
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(@NonNull TabLayout.Tab tab) {
                 String categoryId = (String) tab.getTag();
                 viewModel.loadProducts(null, null, categoryId);
             }
-
             @Override public void onTabUnselected(@NonNull TabLayout.Tab tab) {}
-            @Override public void onTabReselected(@NonNull TabLayout.Tab tab) {}
+            @Override public void onTabReselected(@NonNull TabLayout.Tab tab) {
+                // Có thể refresh lại nếu muốn
+                String categoryId = (String) tab.getTag();
+                viewModel.loadProducts(null, null, categoryId);
+            }
         });
+
+        // 7) Gọi load categories ban đầu
+        viewModel.loadCategories();
+    }
+
+    /** Đổ danh sách Tab từ categories */
+    private void buildTabs(List<CategoryWithProductsDto> categories) {
+        tabLayout.removeAllTabs();
+        if (categories == null || categories.isEmpty()) return;
+
+        for (CategoryWithProductsDto c : categories) {
+            String title = c.getCategoryName() != null ? c.getCategoryName() : "Danh mục";
+            TabLayout.Tab tab = tabLayout.newTab().setText(title);
+            // tag = category_id để khi click tab sẽ dùng id call API
+            tab.setTag(c.getCategoryId());
+            tabLayout.addTab(tab);
+        }
     }
 }

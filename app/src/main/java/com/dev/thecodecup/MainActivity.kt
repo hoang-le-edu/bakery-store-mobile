@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Chuyển sang màn hình Login
-        val intent = Intent(this, ProductListActivity::class.java)
+        val intent = Intent(this, Login::class.java)
         startActivity(intent)
 
         // Kết thúc MainActivity nếu không cần giữ nó

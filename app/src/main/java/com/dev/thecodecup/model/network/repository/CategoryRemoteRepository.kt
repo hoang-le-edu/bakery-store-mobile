@@ -1,7 +1,7 @@
 package com.dev.thecodecup.model.network.repository
 
 import com.dev.thecodecup.model.network.NetworkModule
-import com.dev.thecodecup.model.network.dto.CategoryDto
+import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,16 +13,15 @@ class CategoryRemoteRepository {
      * Get all categories
      * @return Result containing list of categories or error
      */
-    suspend fun getAllCategories(): Result<List<CategoryDto>> = withContext(Dispatchers.IO) {
+    suspend fun getAllCategories(): Result<List<CategoryWithProductsDto>> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.getAllCategories()
-            
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body?.success == true) {
-                    Result.success(body.data.orEmpty())
+                if (body != null) {
+                    Result.success(body.data ?: emptyList())
                 } else {
-                    Result.failure(Exception(body?.message ?: "Failed to load categories"))
+                    Result.failure(Exception("Empty response body"))
                 }
             } else {
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
@@ -31,7 +30,8 @@ class CategoryRemoteRepository {
             Result.failure(e)
         }
     }
-    
+
+
     companion object {
         @Volatile
         private var instance: CategoryRemoteRepository? = null

@@ -6,8 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.thecodecup.model.network.dto.CategoryDto
+//import com.dev.thecodecup.model.network.dto.CategoryDto
 import com.dev.thecodecup.model.network.dto.ProductDto
+import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto
 import com.dev.thecodecup.model.network.repository.CategoryRemoteRepository
 import com.dev.thecodecup.model.network.repository.ProductRemoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +21,8 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     private val _productsLiveData = MutableLiveData<List<ProductDto>>()
     val productsLiveData: LiveData<List<ProductDto>> = _productsLiveData
 
-    private val _categoriesLiveData = MutableLiveData<List<CategoryDto>>()
-    val categoriesLiveData: LiveData<List<CategoryDto>> = _categoriesLiveData
+    private val _categoriesLiveData = MutableLiveData<List<CategoryWithProductsDto>>()
+    val categoriesLiveData: LiveData<List<CategoryWithProductsDto>> = _categoriesLiveData
 
 
     private val productRepository = ProductRemoteRepository.getInstance()
@@ -32,8 +33,8 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     val products: StateFlow<List<ProductDto>> = _products.asStateFlow()
     
     // Categories state
-    private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
-    val categories: StateFlow<List<CategoryDto>> = _categories.asStateFlow()
+    private val _categories = MutableStateFlow<List<CategoryWithProductsDto>>(emptyList())
+    val categories: StateFlow<List<CategoryWithProductsDto>> = _categories.asStateFlow()
     
     // Loading state
     private val _isLoading = MutableStateFlow(false)
@@ -171,7 +172,7 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun observeProductsLiveData(): LiveData<List<ProductDto>> = productsLiveData
-    fun observeCategoriesLiveData(): LiveData<List<CategoryDto>> = categoriesLiveData
+    fun observeCategoriesLiveData(): LiveData<List<CategoryWithProductsDto>> = categoriesLiveData
 
 }
 

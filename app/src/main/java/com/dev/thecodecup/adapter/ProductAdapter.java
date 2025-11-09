@@ -1,66 +1,93 @@
+// ProductAdapter.java
 package com.dev.thecodecup.adapter;
-
-import com.bumptech.glide.Glide;
-import com.dev.thecodecup.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.network.dto.ProductDto;
 
-
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-    private Context context;
-    private List<ProductDto> productList;
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
-    public ProductAdapter(Context context, List<ProductDto> productList) {
-        this.context = context;
-        this.productList = productList;
+    private final Context ctx;
+    private final List<ProductDto> items = new ArrayList<>();
+
+    public ProductAdapter(Context ctx) { this.ctx = ctx; }
+
+    public void setItems(List<ProductDto> data) {
+        items.clear();
+        if (data != null) items.addAll(data);
+        notifyDataSetChanged();
     }
 
     @NonNull @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_product, parent, false);
-        return new ViewHolder(view);
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_product, parent, false); // uses ivImage, tvName, tvPrice, btnAdd
+        return new VH(v);
     }
 
-    @Override public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ProductDto p = productList.get(position);
-        holder.tvName.setText(p.getProductName());
-        holder.tvPrice.setText((int) p.getPrice());
-        if (p.getProductImage() != null && !p.getProductImage().isEmpty()) {
-            Glide.with(context)
-                    .load(p.getProductImage())
-                    .placeholder(R.drawable.placeholder_image) // ảnh mặc định khi đang tải
-                    .error(R.drawable.error_image)             // ảnh khi lỗi tải
-                    .into(holder.ivImage);
+    @Override
+    public void onBindViewHolder(@NonNull VH h, int position) {
+        ProductDto p = items.get(position);
+
+        h.tvName.setText(p.getProductName() != null ? p.getProductName() : "");
+
+        // price "6000.00" -> "6.000đ"
+        String price = p.getProductPrice();
+        if (price != null) {
+            try {
+                double d = Double.parseDouble(price);
+                h.tvPrice.setText(new DecimalFormat("#,###").format(d) + "đ");
+            } catch (NumberFormatException e) {
+                h.tvPrice.setText(price + "đ");
+            }
         } else {
-            holder.ivImage.setImageResource(R.drawable.placeholder_image);
+            h.tvPrice.setText("");
         }
+
+        String url = p.getProductImage(); // JSON field product_image (URL đầy đủ)
+        RequestOptions opts = new RequestOptions()
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.error_image)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .centerCrop();
+
+        Glide.with(h.ivImage.getContext())
+                .setDefaultRequestOptions(opts)
+                .load(url)
+                .into(h.ivImage);
+
+        h.btnAdd.setOnClickListener(v -> {
+            // TODO: xử lý thêm vào giỏ (nếu cần)
+        });
     }
 
-    @Override public int getItemCount() {
-        return productList.size();
-    }
+    @Override public int getItemCount() { return items.size(); }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivImage;
-        TextView tvName, tvPrice;
-
-        public ViewHolder(@NonNull View itemView) {
+    static class VH extends RecyclerView.ViewHolder {
+        ImageView ivImage; TextView tvName, tvPrice; ImageButton btnAdd;
+        VH(@NonNull View itemView) {
             super(itemView);
             ivImage = itemView.findViewById(R.id.ivImage);
             tvName  = itemView.findViewById(R.id.tvName);
             tvPrice = itemView.findViewById(R.id.tvPrice);
+            btnAdd  = itemView.findViewById(R.id.btnAdd);
         }
     }
 }
