@@ -34,6 +34,8 @@ data class ProductDto(
     
     val imageUrl: String?
         get() = productImage
+
+
 }
 
 /**

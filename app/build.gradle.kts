@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.0.21-1.0.28"
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -20,6 +21,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         buildConfigField("String", "API_BASE_URL", "\"https://api-bakery-store-mobile-btfrg4gqevhveyfy.eastasia-01.azurewebsites.net/\"")
+
+        buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"AIzaSyD-Ro7xqbcAy8azy4ROfppORgvOG_1wm8A\"")
     }
 
     buildTypes {
@@ -44,6 +47,7 @@ android {
         viewBinding = true
     }
 }
+
 
 dependencies {
     testImplementation("org.robolectric:robolectric:4.11.1")
@@ -91,5 +95,19 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation ("com.google.firebase:firebase-auth")
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
 
+// Firebase Auth (Java dùng bản thường; nếu code Kotlin có thể dùng -ktx)
+    implementation("com.google.firebase:firebase-auth")
+
+
+
+    // Credential Manager + bridge
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+
+    // Google Identity Services (GIS)
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }
