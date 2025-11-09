@@ -1,15 +1,33 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+
+.idea/*
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+
+# Firebase & Google Services
+app/google-services.json
+google-services.json
+
+# Sensitive files (NEVER commit these!)
+*.jks
+*.keystore
+*.p12
+*.key
+*.pem
+credentials.json
+service-account.json
+
+# Crash logs
+hs_err_pid*.log
+replay_pid*.log
+
+# markdown files
+*.md
