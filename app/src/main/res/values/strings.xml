@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">The Code Cup</string>
     <string name="splash_screen_name">Ordinary Coffee House</string>
+    <string name="get_your_cakes_with_bepmetay" />
+    <string name="dang_nhap">Đăng nhập</string>
+    <string name="hoac">Hoặc</string>
+    <string name="tiep_tuc_voi_google">Tiếp tục với Google</string>
+    <string name="tao_tai_khoan">Tạo tài khoản</string>
+    <string name="gmail">Gmail</string>
+    <string name="mat_khau">Mật khẩu</string>
 </resources>

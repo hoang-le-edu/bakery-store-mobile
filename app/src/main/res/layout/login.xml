@@ -49,9 +49,8 @@
             android:id="@+id/emailInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Gmail"
+            android:hint="@string/gmail"
             android:inputType="textEmailAddress"
-            android:background="@drawable/edittext_background"
             android:paddingVertical="12dp"
             android:layout_marginBottom="12dp" />
 
@@ -60,10 +59,9 @@
             android:id="@+id/passwordInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mật khẩu"
+            android:hint="@string/mat_khau"
             android:paddingVertical="12dp"
             android:inputType="textPassword"
-            android:background="@drawable/edittext_background"
             android:layout_marginBottom="16dp" />
 
         <!-- Nút Đăng nhập -->
@@ -83,7 +81,7 @@
             android:id="@+id/orText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hoặc"
+            android:text="@string/hoac"
             android:textAlignment="center"
             android:textColor="@color/c_262626"
             android:layout_marginBottom="10dp" />
@@ -93,7 +91,7 @@
             android:id="@+id/googleButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tiếp tục với Google"
+            android:text="@string/tiep_tuc_voi_google"
             android:backgroundTint="@color/c_5383ec"
             android:textColor="@color/c_fcfcfc"
             android:drawableStart="@drawable/ic_google"
@@ -104,7 +102,7 @@
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tạo tài khoản"
+            android:text="@string/tao_tai_khoan"
             android:backgroundTint="@color/c_4a66ac"
             android:textColor="@color/c_fcfcfc" />
     </LinearLayout>
