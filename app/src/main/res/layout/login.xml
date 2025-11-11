@@ -62,7 +62,17 @@
             android:hint="@string/mat_khau"
             android:paddingVertical="12dp"
             android:inputType="textPassword"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp" /><TextView
+            android:id="@+id/forgotPasswordText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/quen_mat_khau"
+            android:textColor="@color/c_4a66ac"
+            android:textStyle="bold"
+            android:paddingBottom="16dp"
+            android:layout_gravity="end"
+            android:clickable="true"
+            android:focusable="true" />
 
         <!-- Nút Đăng nhập -->
         <Button

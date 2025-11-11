@@ -1,4 +1,3 @@
-// app/src/main/java/com/dev/thecodecup/activity/Login.java
 package com.dev.thecodecup.activity;
 
 import android.app.ProgressDialog;
@@ -8,15 +7,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwnerKt;
 
 import com.dev.thecodecup.BuildConfig;
 import com.dev.thecodecup.R;
-import com.dev.thecodecup.model.auth.AuthManager; // Kotlin object ở bước trước
-import com.dev.thecodecup.model.network.NetworkModule; // chỉ để đảm bảo đã init trước khi call API
-import com.dev.thecodecup.BuildConfig;   // ← CHÍNH XÁC, trùng với namespace
+import com.dev.thecodecup.auth.GoogleAuthManager;
+import com.dev.thecodecup.model.auth.AuthManager;
+import com.dev.thecodecup.model.network.NetworkModule;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import android.widget.TextView;
 
 
 import org.json.JSONException;
@@ -32,6 +34,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+
 /**
  * Đăng nhập Firebase (Identity Toolkit - VerifyPassword)
  * -> Lưu idToken/refreshToken/expiresIn vào AuthManager
@@ -40,10 +43,15 @@ import okhttp3.Response;
 public class Login extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
-    private Button loginButton;
+    private Button loginButton, googleSignInButton, registerButton;
+    private TextView forgotPasswordText;
 
     private final OkHttpClient http = new OkHttpClient();
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    private static final int RC_GOOGLE_SIGN_IN = 1234; // request code
+
+    private GoogleAuthManager googleAuthManager;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +60,23 @@ public class Login extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.loginButton);
+        googleSignInButton = findViewById(R.id.googleSignInButton);
+        registerButton = findViewById(R.id.registerButton);
+        forgotPasswordText = findViewById(R.id.forgotPasswordText);
+
+
+//        googleAuthManager = GoogleAuthManager.getInstance(this);
+
+
 
         loginButton.setOnClickListener(v -> doLogin());
+        googleSignInButton.setOnClickListener(v -> doLoginGoogle());
+        registerButton.setOnClickListener(v -> {
+            // Chuyển sang RegisterActivity
+            startActivity(new Intent(Login.this, RegisterActivity.class));
+        });
+        forgotPasswordText.setOnClickListener(v -> doForgotPassword());
+
     }
 
 //    private void doLogin() {
@@ -123,6 +146,59 @@ public class Login extends AppCompatActivity {
 //        }).start();
 //    }
 
+    private void doLoginGoogle() {
+        // Mở UI Google Sign-In
+        Intent signInIntent = googleAuthManager.getSignInIntent();
+        startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            ProgressDialog dlg = ProgressDialog.show(
+                    this, null, "Đang đăng nhập với Google...", true, false
+            );
+
+            googleAuthManager.handleSignInResultFromJava(data, LifecycleOwnerKt.getLifecycleScope(this), result -> {
+                dlg.dismiss();
+                if (result.isSuccess()) {
+                    FirebaseUser user = ((GoogleAuthManager.AuthResult.Success<FirebaseUser>) result).getData();
+                    if (user != null) {
+                        // Lấy idToken từ Firebase user
+                        user.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                            if (tokenTask.isSuccessful()) {
+                                String idToken = tokenTask.getResult().getToken();
+                                AuthManager.INSTANCE.setTokens(idToken, "", 3600L);
+                                NetworkModule.INSTANCE.setTokenProvider(() ->
+                                        AuthManager.INSTANCE.getValidIdTokenBlocking()
+                                );
+
+                                Toast.makeText(Login.this,
+                                        "Đăng nhập Google thành công",
+                                        Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(Login.this, ProductListActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(Login.this,
+                                        "Không lấy được idToken: " + tokenTask.getException().getMessage(),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(Login.this, "User Google rỗng", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Exception e = ((GoogleAuthManager.AuthResult.Failure) result).getException();
+                    Toast.makeText(Login.this,
+                            "Google Sign-In thất bại: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
     private void doLogin() {
         String email = emailEditText.getText().toString().trim();
         String pass = passwordEditText.getText().toString().trim();
@@ -170,6 +246,40 @@ public class Login extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Gửi email khôi phục mật khẩu.
+     * Firebase sẽ tự gửi một link/email để người dùng tự reset pass qua web/email.
+     */
+    private void doForgotPassword() {
+        String email = emailEditText.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập Email để nhận link khôi phục mật khẩu", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        ProgressDialog dlg = ProgressDialog.show(
+                this, null, "Đang gửi email khôi phục...", true, false);
+
+        // Sử dụng FirebaseAuth instance
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    dlg.dismiss();
+
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this,
+                                "Đã gửi email khôi phục mật khẩu đến " + email + ". Vui lòng kiểm tra hộp thư!",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        // Xử lý lỗi (ví dụ: email không tồn tại)
+                        Toast.makeText(this,
+                                "Lỗi gửi email: " + task.getException().getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
     private void uiFail(ProgressDialog dlg, String msg) {
         runOnUiThread(() -> {
             dlg.dismiss();
@@ -189,7 +299,6 @@ public class Login extends AppCompatActivity {
                 String message = e.optString("message", "");
                 if (!message.isEmpty()) return message;
             }
-        } catch (Exception ignored) {}
-        return "Đăng nhập thất bại.";
+        } catch (Exception ignored) {}        return "Đăng nhập thất bại.";
     }
 }
