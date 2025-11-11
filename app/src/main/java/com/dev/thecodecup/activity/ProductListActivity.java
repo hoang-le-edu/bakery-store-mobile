@@ -1,6 +1,10 @@
 package com.dev.thecodecup.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +19,7 @@ import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 //import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
 import com.google.android.material.tabs.TabLayout;
+import android.widget.PopupMenu;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +31,7 @@ public class ProductListActivity extends AppCompatActivity {
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
+    private ImageButton btnProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,7 @@ public class ProductListActivity extends AppCompatActivity {
         // 1) View binding
         tabLayout  = findViewById(R.id.tabLayout);
         rvProducts = findViewById(R.id.rvProducts);
+        btnProfile = findViewById(R.id.btnProfile);
 
         // 2) RecyclerView + Adapter (2 cột)
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
@@ -82,7 +89,44 @@ public class ProductListActivity extends AppCompatActivity {
 
         // 7) Gọi load categories ban đầu
         viewModel.loadCategories();
+        btnProfile.setOnClickListener(v -> showProfileMenu(v));
     }
+
+    private void showProfileMenu(View anchorView) {
+        PopupMenu popup = new PopupMenu(this, anchorView);
+        popup.getMenu().add(0, 1, 0, "Đăng xuất");
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == 1) { // ID của "Đăng xuất"
+                    handleLogout();
+                    return true;
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+    private void handleLogout() {
+        // 1. Xóa token/thông tin người dùng cục bộ (RẤT QUAN TRỌNG)
+        // Giả định bạn có lớp tĩnh TokenManager với hàm clearToken()
+//        TokenManager.clearToken();
+
+        finish();
+
+        // 2. Chuyển hướng về LoginActivity
+        // Sử dụng cờ FLAG_ACTIVITY_CLEAR_TASK và FLAG_ACTIVITY_NEW_TASK
+        // để dọn dẹp toàn bộ stack Activity cũ (màn hình sản phẩm, v.v.)
+        Intent intent = new Intent(this, Login.class); // Thay bằng LoginActivity của bạn
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        // Kết thúc Activity hiện tại để người dùng không thể bấm Back quay lại
+        finish();
+    }
+
 
     /** Đổ danh sách Tab từ categories */
     private void buildTabs(List<CategoryWithProductsDto> categories) {
