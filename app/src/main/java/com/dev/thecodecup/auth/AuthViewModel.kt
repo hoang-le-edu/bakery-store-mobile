@@ -39,13 +39,13 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             user = currentUser,
             isSignedIn = currentUser != null
         )
-        
+
         // Setup token provider if user is already signed in
         if (currentUser != null) {
             setupTokenProvider()
         }
     }
-    
+
     /**
      * Get Google Sign-In Intent
      * Launch this intent to start the sign-in flow
@@ -54,38 +54,41 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         _authState.value = _authState.value.copy(error = null)
         return authManager.getSignInIntent()
     }
-    
+
     /**
      * Handle sign-in result from the sign-in activity
      */
     fun handleSignInResult(data: Intent?) {
         viewModelScope.launch {
             _authState.value = _authState.value.copy(isLoading = true, error = null)
-            
-            val result = authManager.handleSignInResult(data)
-            
-            result.onSuccess { user ->
-                _authState.value = _authState.value.copy(
-                    isLoading = false,
-                    user = user,
-                    isSignedIn = true,
-                    error = null
-                )
-                
-                // Update NetworkModule token provider
-                setupTokenProvider()
-                
-                Log.d("AuthViewModel", "Sign in successful: ${user.email}")
-            }.onFailure { exception ->
-                _authState.value = _authState.value.copy(
-                    isLoading = false,
-                    error = exception.message ?: "Sign in failed"
-                )
-                Log.e("AuthViewModel", "Sign in failed", exception)
+
+            when (val result = authManager.handleSignInResult(data)) {
+                is GoogleAuthManager.AuthResult.Success -> {
+                    val user = result.data
+                    _authState.value = _authState.value.copy(
+                        isLoading = false,
+                        user = user,
+                        isSignedIn = true,
+                        error = null
+                    )
+
+                    // Update NetworkModule token provider
+                    setupTokenProvider()
+
+                    Log.d("AuthViewModel", "Sign in successful: ${user.email}")
+                }
+                is GoogleAuthManager.AuthResult.Failure -> {
+                    val exception = result.exception
+                    _authState.value = _authState.value.copy(
+                        isLoading = false,
+                        error = exception.message ?: "Sign in failed"
+                    )
+                    Log.e("AuthViewModel", "Sign in failed", exception)
+                }
             }
         }
     }
-    
+
     /**
      * Setup token provider for API calls
      */
@@ -102,7 +105,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-    
+
     /**
      * Get Firebase ID token for API calls
      */
@@ -122,7 +125,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             _authState.value = AuthState(isSignedIn = false)
         }
     }
-    
+
     /**
      * Clear error
      */
@@ -130,4 +133,3 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         _authState.value = _authState.value.copy(error = null)
     }
 }
-
