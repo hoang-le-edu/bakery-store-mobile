@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LifecycleOwnerKt;
 
-import com.dev.thecodecup.BuildConfig;
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.auth.GoogleAuthManager;
 import com.dev.thecodecup.model.auth.AuthManager;
@@ -30,9 +29,8 @@ import java.nio.charset.StandardCharsets;
 import kotlin.jvm.functions.Function0;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 
 /**
@@ -43,8 +41,8 @@ import okhttp3.Response;
 public class Login extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
-    private Button loginButton, googleSignInButton, registerButton;
-    private TextView forgotPasswordText;
+    private Button loginButton, googleSignInButton;
+    private TextView forgotPasswordText, registerButton;
 
     private final OkHttpClient http = new OkHttpClient();
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -55,6 +53,14 @@ public class Login extends AppCompatActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (AuthManager.INSTANCE.isLoggedIn()) {
+            NetworkModule.INSTANCE.setTokenProvider(() -> AuthManager.INSTANCE.getValidIdTokenBlocking());
+            startActivity(new Intent(Login.this, ProductListActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.login); // layout bạn đã gửi
         // view binding (khớp id trong login.xml)
         emailEditText = findViewById(R.id.emailEditText);
@@ -65,7 +71,7 @@ public class Login extends AppCompatActivity {
         forgotPasswordText = findViewById(R.id.forgotPasswordText);
 
 
-//        googleAuthManager = GoogleAuthManager.getInstance(this);
+        googleAuthManager = GoogleAuthManager.getInstance(this);
 
 
 
@@ -204,12 +210,12 @@ public class Login extends AppCompatActivity {
         String pass = passwordEditText.getText().toString().trim();
 
         if (email.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, "Nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Enter password and email", Toast.LENGTH_SHORT).show();
             return;
         }
 
         ProgressDialog dlg = ProgressDialog.show(
-                this, null, "Đang đăng nhập...", true, false);
+                this, null, "Signing in...", true, false);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signInWithEmailAndPassword(email, pass)
@@ -233,7 +239,7 @@ public class Login extends AppCompatActivity {
                                         AuthManager.INSTANCE.getValidIdTokenBlocking()
                                 );
 
-                                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Sign in successfully", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(this, ProductListActivity.class));
                                 finish();
                             } else {
@@ -279,6 +285,36 @@ public class Login extends AppCompatActivity {
                     }
                 });
     }
+//    private void doForgotPassword() {
+//        String email = emailEditText.getText().toString().trim();
+//
+//        if (email.isEmpty()) {
+//            Toast.makeText(this, "Vui lòng nhập Email để nhận link khôi phục mật khẩu", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        ProgressDialog dlg = ProgressDialog.show(
+//                this, null, "Đang gửi email khôi phục...", true, false);
+//
+//        // Sử dụng FirebaseAuth instance
+//        FirebaseAuth auth = FirebaseAuth.getInstance();
+//        auth.sendPasswordResetEmail(email)
+//                .addOnCompleteListener(task -> {
+//                    dlg.dismiss();
+//
+//                    if (task.isSuccessful()) {
+//                        // Thông báo cho người dùng kiểm tra email.
+//                        // Link trong email sẽ tự mở ResetPasswordActivity
+//                        Toast.makeText(this,
+//                                "Đã gửi email khôi phục mật khẩu. Vui lòng kiểm tra email và nhấn vào link để đặt lại mật khẩu trong ứng dụng!",
+//                                Toast.LENGTH_LONG).show();
+//                    } else {
+//                        Toast.makeText(this,
+//                                "Lỗi gửi email: " + task.getException().getMessage(),
+//                                Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//    }
 
     private void uiFail(ProgressDialog dlg, String msg) {
         runOnUiThread(() -> {

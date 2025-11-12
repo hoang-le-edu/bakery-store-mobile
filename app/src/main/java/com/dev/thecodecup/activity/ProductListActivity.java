@@ -1,4 +1,5 @@
 package com.dev.thecodecup.activity;
+import com.dev.thecodecup.model.auth.AuthManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -53,8 +54,13 @@ public class ProductListActivity extends AppCompatActivity {
 
         // 4) Quan sát Products -> cập nhật adapter để lên hình
         viewModel.getProductsLiveData().observe(this, products -> {
-            // products là List<ProductDto> lấy từ API
-            adapter.setItems(products);
+            android.util.Log.d("ProductActivity", "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
+            if (products != null && !products.isEmpty()) {
+                adapter.setItems(products);
+                rvProducts.post(() -> adapter.notifyDataSetChanged());
+            } else if (products != null && products.isEmpty()) {
+                adapter.setItems(products); // Cần đảm bảo adapter có thể xử lý list rỗng (nên đã làm)
+            }
         });
 
         // 5) Quan sát Categories -> đổ TabLayout và load category đầu tiên
@@ -94,7 +100,7 @@ public class ProductListActivity extends AppCompatActivity {
 
     private void showProfileMenu(View anchorView) {
         PopupMenu popup = new PopupMenu(this, anchorView);
-        popup.getMenu().add(0, 1, 0, "Đăng xuất");
+        popup.getMenu().add(0, 1, 0, "Logout");
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -110,20 +116,11 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
-        // 1. Xóa token/thông tin người dùng cục bộ (RẤT QUAN TRỌNG)
-        // Giả định bạn có lớp tĩnh TokenManager với hàm clearToken()
-//        TokenManager.clearToken();
+        AuthManager.INSTANCE.clearTokens();
 
-        finish();
-
-        // 2. Chuyển hướng về LoginActivity
-        // Sử dụng cờ FLAG_ACTIVITY_CLEAR_TASK và FLAG_ACTIVITY_NEW_TASK
-        // để dọn dẹp toàn bộ stack Activity cũ (màn hình sản phẩm, v.v.)
-        Intent intent = new Intent(this, Login.class); // Thay bằng LoginActivity của bạn
+        Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-
-        // Kết thúc Activity hiện tại để người dùng không thể bấm Back quay lại
         finish();
     }
 

@@ -30,6 +30,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -46,13 +48,16 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register); // Sử dụng layout bạn vừa tạo
 
+        TextView termsTextView = findViewById(R.id.termsTextView);
+        termsTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
         // Khởi tạo Firebase Auth
         firebaseAuth = FirebaseAuth.getInstance();
 
         // View Binding
         nameEditText = findViewById(R.id.nameEditText);
         emailEditText = findViewById(R.id.regEmailEditText);
-        phoneEditText = findViewById(R.id.phoneEditText);
+        phoneEditText = findViewById(R.id.regPhoneEditText);
         passwordEditText = findViewById(R.id.regPasswordEditText);
         confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
         registerButton = findViewById(R.id.registerButton);
@@ -74,16 +79,16 @@ public class RegisterActivity extends AppCompatActivity {
         String confirmPass = confirmPasswordEditText.getText().toString().trim();
 
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
-            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!pass.equals(confirmPass)) {
-            Toast.makeText(this, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Confirm password does not match", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        ProgressDialog dlg = ProgressDialog.show(this, null, "Đang đăng ký...", true, false);
+        ProgressDialog dlg = ProgressDialog.show(this, null, "Registering...", true, false);
 
         // 1. Đăng ký tài khoản Firebase
         firebaseAuth.createUserWithEmailAndPassword(email, pass)
@@ -165,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity {
                             );
 
                             dlg.dismiss();
-                            Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(this, ProductListActivity.class));
                             finish();
                         });

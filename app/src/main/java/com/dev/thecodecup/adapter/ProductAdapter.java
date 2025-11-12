@@ -46,6 +46,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int position) {
         ProductDto p = items.get(position);
 
+        android.util.Log.d("Adapter", "Binding Product: " + p.getProductName());
+
         h.tvName.setText(p.getProductName() != null ? p.getProductName() : "");
 
         // price "6000.00" -> "6.000đ"
