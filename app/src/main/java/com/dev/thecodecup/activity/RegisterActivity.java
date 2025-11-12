@@ -30,6 +30,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -46,13 +48,16 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register); // Sử dụng layout bạn vừa tạo
 
+        TextView termsTextView = findViewById(R.id.termsTextView);
+        termsTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
         // Khởi tạo Firebase Auth
         firebaseAuth = FirebaseAuth.getInstance();
 
         // View Binding
         nameEditText = findViewById(R.id.nameEditText);
         emailEditText = findViewById(R.id.regEmailEditText);
-        phoneEditText = findViewById(R.id.phoneEditText);
+        phoneEditText = findViewById(R.id.regPhoneEditText);
         passwordEditText = findViewById(R.id.regPasswordEditText);
         confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText);
         registerButton = findViewById(R.id.registerButton);

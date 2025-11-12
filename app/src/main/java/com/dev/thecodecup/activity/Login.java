@@ -29,9 +29,8 @@ import java.nio.charset.StandardCharsets;
 import kotlin.jvm.functions.Function0;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 
 /**
@@ -42,8 +41,8 @@ import okhttp3.Response;
 public class Login extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
-    private Button loginButton, googleSignInButton, registerButton;
-    private TextView forgotPasswordText;
+    private Button loginButton, googleSignInButton;
+    private TextView forgotPasswordText, registerButton;
 
     private final OkHttpClient http = new OkHttpClient();
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");

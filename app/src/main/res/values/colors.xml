@@ -15,4 +15,9 @@
     <color name="c_434343">#434343</color>
     <color name="pink">#FFC0CB</color>
     <color name="DB5560">#DB5560</color>
+    <color name="colorPinkBackground">#FFF5F5</color>
+    <color name="colorRedButton">#E95966</color>
+    <color name="colorGreenCheck">#5EC075</color>
+    <color name="colorGrayText">#888888</color>
+    <color name="colorGrayLine">#DDDDDD</color>
 </resources>

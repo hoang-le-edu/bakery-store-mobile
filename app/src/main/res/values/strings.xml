@@ -11,4 +11,9 @@
     <string name="mat_khau">Password</string>
     <string name="tim_kiem_san_pham">Search products...</string>
     <string name="quen_mat_khau">Forgot password?</string>
+    <!-- ... các string khác của bạn ... -->
+    <string name="terms_and_privacy">By continuing you agree to our <a href="#">Terms of Service</a> and <a
+        href="#">Privacy Policy</a>.
+    </string>
+
 </resources>
