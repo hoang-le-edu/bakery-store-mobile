@@ -1,4 +1,5 @@
 package com.dev.thecodecup.activity;
+import com.dev.thecodecup.model.auth.AuthManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -115,20 +116,11 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
-        // 1. Xóa token/thông tin người dùng cục bộ (RẤT QUAN TRỌNG)
-        // Giả định bạn có lớp tĩnh TokenManager với hàm clearToken()
-//        TokenManager.clearToken();
+        AuthManager.INSTANCE.clearTokens();
 
-        finish();
-
-        // 2. Chuyển hướng về LoginActivity
-        // Sử dụng cờ FLAG_ACTIVITY_CLEAR_TASK và FLAG_ACTIVITY_NEW_TASK
-        // để dọn dẹp toàn bộ stack Activity cũ (màn hình sản phẩm, v.v.)
-        Intent intent = new Intent(this, Login.class); // Thay bằng LoginActivity của bạn
+        Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-
-        // Kết thúc Activity hiện tại để người dùng không thể bấm Back quay lại
         finish();
     }
 

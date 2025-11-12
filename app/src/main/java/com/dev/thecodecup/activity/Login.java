@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LifecycleOwnerKt;
 
-import com.dev.thecodecup.BuildConfig;
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.auth.GoogleAuthManager;
 import com.dev.thecodecup.model.auth.AuthManager;
@@ -55,6 +54,14 @@ public class Login extends AppCompatActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (AuthManager.INSTANCE.isLoggedIn()) {
+            NetworkModule.INSTANCE.setTokenProvider(() -> AuthManager.INSTANCE.getValidIdTokenBlocking());
+            startActivity(new Intent(Login.this, ProductListActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.login); // layout bạn đã gửi
         // view binding (khớp id trong login.xml)
         emailEditText = findViewById(R.id.emailEditText);

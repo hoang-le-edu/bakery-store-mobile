@@ -35,7 +35,7 @@ object AuthManager {
             .apply()
     }
 
-    fun clear() {
+    fun clearTokens() {
         sp.edit().clear().apply()
     }
 
@@ -45,6 +45,13 @@ object AuthManager {
 
     fun isExpired(): Boolean = System.currentTimeMillis() >= getExpiresAt()
 
+    fun isLoggedIn(): Boolean {
+        val token = getIdTokenOrNull()
+        if (token.isNullOrEmpty()) {
+            return false
+        }
+        return !isExpired()
+    }
     /** Lấy idToken hợp lệ; nếu hết hạn sẽ refresh (chặn tạm thời bằng runBlocking). */
     fun getValidIdTokenBlocking(): String? {
         val token = getIdTokenOrNull()
