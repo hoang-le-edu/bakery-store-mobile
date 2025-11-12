@@ -90,7 +90,7 @@
         android:id="@+id/tvExploreCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Khám phá danh mục"
+        android:text="Categories"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"

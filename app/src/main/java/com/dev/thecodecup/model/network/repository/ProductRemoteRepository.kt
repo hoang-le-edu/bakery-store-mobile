@@ -28,14 +28,21 @@ class ProductRemoteRepository {
                 val body = response.body()
                 if (body != null) {
                     // Use getAllProducts() helper to flatten category structure
-                    Result.success(body.getAllProducts())
+                    val products = body.getAllProducts()
+
+                    // <<< THÊM LOG ĐỂ KIỂM TRA SỐ LƯỢNG SẢN PHẨM TRONG REPOSITORY >>>
+                    android.util.Log.d("Repo", "getAllProducts: Kích thước danh sách sản phẩm được làm phẳng: ${products.size}")
+
+                    Result.success(products)
                 } else {
+                    android.util.Log.e("Repo", "getAllProducts: Empty response body")
                     Result.failure(Exception("Empty response body"))
                 }
             } else {
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("Repo", "getAllProducts: Exception", e)
             Result.failure(e)
         }
     }

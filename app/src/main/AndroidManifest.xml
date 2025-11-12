@@ -28,6 +28,19 @@
         <activity android:name=".activity.Login" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.ProductListActivity" />
+<!--        <activity android:name=".activity.ResetPasswordActivity"-->
+<!--            android:exported="true">-->
+
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data android:scheme="https"-->
+<!--                    android:host="bakery-store-a7e4f.web.app"-->
+<!--                    android:pathPrefix="/resetPassword" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
     </application>
 
 </manifest>
