@@ -124,10 +124,18 @@ object NetworkModule {
     }
     
     /**
-     * API service instance
+     * API service instance (original products API)
      */
     val apiService: ApiService by lazy {
         retrofit.create(ApiService::class.java)
+    }
+    
+    /**
+     * Bakery API service instance (cart, checkout, orders)
+     * Used for: ProductDetail (with sizes/toppings), Cart, Checkout, Orders
+     */
+    val bakeryApiService: com.dev.thecodecup.model.network.api.BakeryApiService by lazy {
+        retrofit.create(com.dev.thecodecup.model.network.api.BakeryApiService::class.java)
     }
 }
 

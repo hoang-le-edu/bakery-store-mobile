@@ -1,6 +1,7 @@
 package com.dev.thecodecup.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,12 +25,16 @@ import com.dev.thecodecup.ui.theme.poppinsFontFamily
 @Composable
 fun OrderItemCard(
     orderItem: OrderEntity,
-    isHistoryCard: Boolean = false
+    isHistoryCard: Boolean = false,
+    onClick: (() -> Unit)? = null
 ) {
     val alphaValue = if (isHistoryCard) 0.4f else 1.0f
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .then(
+                if (onClick != null) Modifier.clickable { onClick() } else Modifier
+            )
     ){
         Column(
             modifier = Modifier

@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 
 class ProductRemoteRepository {
     
-    private val apiService = NetworkModule.apiService
+    private val apiService = NetworkModule.bakeryApiService
     
     /**
      * Get all products with optional filters
@@ -54,7 +54,8 @@ class ProductRemoteRepository {
      */
     suspend fun getProductById(productId: String): Result<ProductDto?> = withContext(Dispatchers.IO) {
         try {
-            val response = apiService.getProductById(productId)
+            // Use getAllProducts to get all products, then filter by ID
+            val response = apiService.getAllProducts(limit = null, searchText = null, categoryId = "all")
             
             if (response.isSuccessful) {
                 val body = response.body()
@@ -84,7 +85,8 @@ class ProductRemoteRepository {
         limit: Int? = null
     ): Result<List<ProductDto>> = withContext(Dispatchers.IO) {
         try {
-            val response = apiService.searchProducts(query, limit)
+            // Use getAllProducts with searchText parameter
+            val response = apiService.getAllProducts(limit = limit, searchText = query, categoryId = "all")
             
             if (response.isSuccessful) {
                 val body = response.body()
