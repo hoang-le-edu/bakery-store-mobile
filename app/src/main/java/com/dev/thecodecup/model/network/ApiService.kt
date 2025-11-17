@@ -1,6 +1,8 @@
 package com.dev.thecodecup.model.network
 
+import com.dev.thecodecup.model.network.dto.ApiResponse
 import com.dev.thecodecup.model.network.dto.CategoriesResponse
+import com.dev.thecodecup.model.network.dto.ProductByIdDto
 import com.dev.thecodecup.model.network.dto.ProductsResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -28,12 +30,12 @@ interface ApiService {
     
     /**
      * Get product by ID
-     * Example: /api/customer/products/{id}
+     * Example: /api/customer/product/{id}
      */
-    @GET("api/customer/products/{id}")
+    @GET("api/customer/product/{id}")
     suspend fun getProductById(
         @retrofit2.http.Path("id") productId: String
-    ): Response<ProductsResponse>
+    ): Response<ApiResponse<ProductByIdDto>>
     
     /**
      * Search products

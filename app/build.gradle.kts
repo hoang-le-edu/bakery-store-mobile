@@ -125,12 +125,10 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("com.google.firebase:firebase-auth")
-//    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.android.material:material:1.12.0")
 
-// Firebase Auth (Java dùng bản thường; nếu code Kotlin có thể dùng -ktx)
     implementation("com.google.firebase:firebase-auth")
-
-
+    implementation("com.google.code.gson:gson:2.10.1")
 
     // Credential Manager + bridge
     implementation("androidx.credentials:credentials:1.3.0")

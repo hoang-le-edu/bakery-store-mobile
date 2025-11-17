@@ -2,6 +2,7 @@
 package com.dev.thecodecup.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.dev.thecodecup.R;
+import com.dev.thecodecup.activity.ProductDetailActivity;
 import com.dev.thecodecup.model.network.dto.ProductDto;
 
 import java.text.DecimalFormat;
@@ -75,9 +77,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
                 .load(url)
                 .into(h.ivImage);
 
+
         h.btnAdd.setOnClickListener(v -> {
-            // TODO: xử lý thêm vào giỏ (nếu cần)
+            Intent intent = new Intent(ctx, ProductDetailActivity.class);
+            intent.putExtra("productId", p.getProductId());
+            ctx.startActivity(intent);
         });
+
+        h.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(ctx, ProductDetailActivity.class);
+            intent.putExtra("productId", p.getProductId());
+            ctx.startActivity(intent);
+        });
+
+
     }
 
     @Override public int getItemCount() { return items.size(); }

@@ -28,6 +28,8 @@
         <activity android:name=".activity.Login" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.ProductListActivity" />
+        <activity android:name=".activity.ProductDetailActivity" />
+
 <!--        <activity android:name=".activity.ResetPasswordActivity"-->
 <!--            android:exported="true">-->
 

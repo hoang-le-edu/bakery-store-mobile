@@ -1,6 +1,8 @@
 package com.dev.thecodecup.model.network.repository
 
 import com.dev.thecodecup.model.network.NetworkModule
+import com.dev.thecodecup.model.network.NetworkModule.apiService
+import com.dev.thecodecup.model.network.dto.ProductByIdDto
 import com.dev.thecodecup.model.network.dto.ProductDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -52,27 +54,29 @@ class ProductRemoteRepository {
      * @param productId Product ID to retrieve
      * @return Result containing product details or error
      */
-    suspend fun getProductById(productId: String): Result<ProductDto?> = withContext(Dispatchers.IO) {
-        try {
-            val response = apiService.getProductById(productId)
-            
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    // Find product in any category
-                    val product = body.getAllProducts().firstOrNull { it.productId == productId }
-                    Result.success(product)
+    suspend fun getProductById(productId: String): Result<ProductByIdDto?> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getProductById(productId)
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null && body.success) {
+                        Result.success(body.data)
+                    } else {
+                        Result.failure(Exception("Product not found"))
+                    }
                 } else {
-                    Result.failure(Exception("Product not found"))
+                    Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
                 }
-            } else {
-                Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
+
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
-    }
-    
+
+
+
     /**
      * Search products by query
      * @param query Search query
@@ -110,5 +114,6 @@ class ProductRemoteRepository {
                 instance ?: ProductRemoteRepository().also { instance = it }
             }
     }
+
 }
 

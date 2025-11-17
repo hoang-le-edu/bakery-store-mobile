@@ -15,5 +15,8 @@
     <string name="terms_and_privacy">By continuing you agree to our <a href="#">Terms of Service</a> and <a
         href="#">Privacy Policy</a>.
     </string>
+    <string name="cd_back">Back</string>
+    <string name="cd_cart">Cart</string>
+    <string name="cd_Wishlist">Wishlist</string>
 
 </resources>
