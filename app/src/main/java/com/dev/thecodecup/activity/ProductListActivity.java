@@ -1,6 +1,7 @@
 package com.dev.thecodecup.activity;
 
 import com.dev.thecodecup.model.auth.AuthManager;
+import com.dev.thecodecup.auth.GoogleAuthManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -172,6 +173,8 @@ public class ProductListActivity extends BaseBottomNavActivity {
 
     private void handleLogout() {
         AuthManager.INSTANCE.clearTokens();
+
+        GoogleAuthManager.getInstance(this).signOutGoogle();
 
         Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
