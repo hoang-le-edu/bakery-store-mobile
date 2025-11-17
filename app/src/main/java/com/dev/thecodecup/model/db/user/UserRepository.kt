@@ -11,7 +11,9 @@ class UserRepository private constructor(context: Context) {
         context.applicationContext,
         AppDatabase::class.java,
         "user-db"
-    ).build()
+    )
+        .fallbackToDestructiveMigration() // Auto-delete and recreate DB on schema change
+        .build()
     private val userDao = db.userDao()
 
     private val defaultUser = UserEntity(

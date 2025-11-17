@@ -1,19 +1,55 @@
 package com.dev.thecodecup
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.navigation.compose.rememberNavController
-import com.dev.thecodecup.ui.NavGraph
+import androidx.appcompat.app.AppCompatActivity
+import com.dev.thecodecup.activity.AdminOrdersActivity
+import com.dev.thecodecup.activity.Login
+import com.dev.thecodecup.activity.ProductListActivity
 
-class MainActivity : ComponentActivity() {
+
+//class MainActivity : ComponentActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        enableEdgeToEdge()
+//
+//        // 🧪 Test API Connection - Check Logcat with filter: "NetworkTest"
+//        NetworkTest.testApiConnection()
+//
+//        setContent {
+//            // 🎨 TEMPORARY: Using ApiTestScreen to see products in UI
+//            // Comment this and uncomment NavGraph below to restore normal app
+////            ApiTestScreen()
+//
+//            // Normal app navigation (temporarily commented)
+//             val navController = rememberNavController()
+//             NavGraph(navController)
+//        }
+//    }
+//}
+
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            val navController = rememberNavController()
-            NavGraph(navController)
-        }
+
+        // Chuyển sang màn hình Login
+        val intent = Intent(this, Login::class.java)
+        startActivity(intent)
+
+        // Kết thúc MainActivity nếu không cần giữ nó
+        finish()
     }
 }
+
+//class MainActivity : AppCompatActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//
+//        // Chuyển sang màn hình Login
+//        val intent = Intent(this, AdminOrdersActivity::class.java)
+//        startActivity(intent)
+//
+//        // Kết thúc MainActivity nếu không cần giữ nó
+//        finish()
+//    }
+//}

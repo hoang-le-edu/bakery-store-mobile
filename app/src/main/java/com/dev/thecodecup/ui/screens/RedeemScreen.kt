@@ -125,13 +125,14 @@ fun RedeemScreen(
                                         orderViewModel.insertOrder(
                                             OrderEntity(
                                                 cartItem = CartItemEntity(
-                                                    coffee = CoffeeItem(
-                                                        id = coffee.id,
-                                                        name = coffee.name,
-                                                        imageResId = coffee.imageResId,
-                                                        price = 0.0
-                                                    ),
-                                                    haveIced = true,
+                                                    name = coffee.name,
+                                                    price = 0.0,
+                                                    imageResId = coffee.imageResId,
+                                                    imageUrl = null,
+                                                    shot = "Single",
+                                                    size = "Medium",
+                                                    ice = "Medium",
+                                                    quantity = 1,
                                                     point = 0
                                                 ),
                                                 orderTime = formatted,

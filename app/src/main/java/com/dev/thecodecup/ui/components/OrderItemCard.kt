@@ -18,9 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.thecodecup.R
-import com.dev.thecodecup.model.db.cart.CoffeeSize
 import com.dev.thecodecup.model.db.order.OrderEntity
-import com.dev.thecodecup.model.db.cart.ShotLevel
 import com.dev.thecodecup.ui.theme.poppinsFontFamily
 
 @Composable
@@ -38,7 +36,7 @@ fun OrderItemCard(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            val coffeeItem = orderItem.cartItem
+            val cartItem = orderItem.cartItem
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -50,20 +48,9 @@ fun OrderItemCard(
                     fontSize = 16.sp,
                     color = Color(0xFF324A59).copy(alpha = 0.4f * alphaValue),
                 )
-                var coffeePrice = coffeeItem.coffee.price
-                coffeePrice = coffeePrice *
-                        when(coffeeItem.size) {
-                            CoffeeSize.SMALL -> 0.9
-                            CoffeeSize.MEDIUM -> 1.0
-                            CoffeeSize.LARGE -> 1.1
-                        } *
-                        when(coffeeItem.shot) {
-                            ShotLevel.SINGLE -> 1.0
-                            ShotLevel.DOUBLE -> 1.5
-                        } * coffeeItem.quantity
 
                 Text(
-                    text = "$${"%.2f".format(coffeePrice)}",
+                    text = "${cartItem.price.toInt().toString().replace(Regex("\\B(?=(\\d{3})+(?!\\d))"), ",")}đ",
                     fontFamily = poppinsFontFamily,
                     fontSize = 24.sp,
                     color = Color(0xFF324A59).copy(alpha = alphaValue)
@@ -77,14 +64,14 @@ fun OrderItemCard(
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_small),
-                    contentDescription = "Coffee Name",
+                    contentDescription = "Product Name",
                     modifier = Modifier
                         .size(25.dp),
                     colorFilter = ColorFilter.tint(Color(0xFF324A59).copy(alpha = 0.8f * alphaValue))
                 )
 
                 Text(
-                    text = coffeeItem.coffee.name,
+                    text = cartItem.name,
                     fontSize = 16.sp,
                     fontFamily = poppinsFontFamily,
                     color = Color(0xFF324A59).copy(alpha = alphaValue),

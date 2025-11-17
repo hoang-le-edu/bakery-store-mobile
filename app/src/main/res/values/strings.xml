@@ -1,4 +1,31 @@
 <resources>
     <string name="app_name">The Code Cup</string>
     <string name="splash_screen_name">Ordinary Coffee House</string>
+    <string name="get_your_cakes_with_bepmetay" />
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID.apps.googleusercontent.com</string>
+    <string name="dang_nhap">Sign in</string>
+    <string name="hoac">Or</string>
+    <string name="tiep_tuc_voi_google">Sign in with Google</string>
+    <string name="tao_tai_khoan">Sign up an account</string>
+    <string name="gmail">Gmail</string>
+    <string name="mat_khau">Password</string>
+    <string name="tim_kiem_san_pham">Search products...</string>
+    <string name="quen_mat_khau">Forgot password?</string>
+    <!-- ... các string khác của bạn ... -->
+    <string name="terms_and_privacy">By continuing you agree to our <a href="#">Terms of Service</a> and <a
+        href="#">Privacy Policy</a>.
+    </string>
+    <string name="cd_back">Back</string>
+    <string name="cd_cart">Cart</string>
+    <string name="cd_Wishlist">Wishlist</string>
+    <string name="admin">Admin</string>
+    <string name="orders">Orders</string>
+    <string name="all">All</string>
+    <string name="pending">Pending</string>
+    <string name="on_going">On Going</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="home">Home</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="user">User</string>
+
 </resources>

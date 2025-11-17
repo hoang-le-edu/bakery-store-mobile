@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Nền hồng khi tab được chọn -->
+    <solid android:color="#DB5560" />
+
+    <!-- Bo tròn kiểu pill -->
+    <corners android:radius="50dp" />
+
+    <!-- (Không bắt buộc) thêm chút padding bên trong nếu muốn -->
+    <padding
+        android:left="8dp"
+        android:top="4dp"
+        android:right="8dp"
+        android:bottom="4dp" />
+
+</shape>

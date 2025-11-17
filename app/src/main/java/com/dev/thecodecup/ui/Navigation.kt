@@ -16,11 +16,15 @@ import com.dev.thecodecup.model.db.cart.CartViewModel
 import com.dev.thecodecup.model.db.order.OrderEntity
 import com.dev.thecodecup.model.db.order.OrderViewModel
 import com.dev.thecodecup.model.db.user.UserViewModel
+import com.dev.thecodecup.model.network.viewmodel.ProductViewModel
+import com.dev.thecodecup.auth.AuthViewModel
 import com.dev.thecodecup.ui.screens.CartScreen
 import com.dev.thecodecup.ui.screens.CoffeeDetailScreen
 import com.dev.thecodecup.ui.screens.HomeScreen
+import com.dev.thecodecup.ui.screens.LoginScreen
 import com.dev.thecodecup.ui.screens.OrderScreen
 import com.dev.thecodecup.ui.screens.OrderSuccessScreen
+import com.dev.thecodecup.ui.screens.ProductDetailScreen
 import com.dev.thecodecup.ui.screens.ProfileScreen
 import com.dev.thecodecup.ui.screens.RedeemScreen
 import com.dev.thecodecup.ui.screens.RewardScreen
@@ -34,6 +38,9 @@ import kotlin.math.min
 fun NavGraph(navController: NavHostController) {
     val userViewModel: UserViewModel = viewModel()
     val orderViewModel: OrderViewModel = viewModel()
+    val productViewModel: ProductViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
+    
     LaunchedEffect(Unit) {
         userViewModel.ensureDefaultUserExists()
     }
@@ -41,14 +48,34 @@ fun NavGraph(navController: NavHostController) {
     val cartItems = cartViewModel.cartItems.collectAsState().value
 
     val user = userViewModel.user.collectAsState().value
+    val authState by authViewModel.authState.collectAsState()
+    
     NavHost(navController, startDestination = "splash") {
         composable("splash") {
             userViewModel.ensureDefaultUserExists()
             SplashScreen(onSplashFinished = {
-                navController.navigate("home") {
-                    popUpTo("splash") {inclusive = true}
+                // Check if user is signed in
+                if (authState.isSignedIn) {
+                    navController.navigate("home") {
+                        popUpTo("splash") {inclusive = true}
+                    }
+                } else {
+                    navController.navigate("login") {
+                        popUpTo("splash") {inclusive = true}
+                    }
                 }
             })
+        }
+
+        composable("login") {
+            LoginScreen(
+                authViewModel = authViewModel,
+                onLoginSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable("rewards") {
@@ -91,9 +118,13 @@ fun NavGraph(navController: NavHostController) {
             var showEmptyCartDialog by remember { mutableStateOf(false) }
             HomeScreen(
                 userViewModel = userViewModel,
+                productViewModel = productViewModel,
                 coffeeList = coffeeList,
                 onCoffeeClick = {
                     navController.navigate("coffee-detail/${it.id}")
+                },
+                onProductClick = { product ->
+                    navController.navigate("product-detail/${product.productId}")
                 },
                 onNavClick = {
                     when (it) {
@@ -131,6 +162,33 @@ fun NavGraph(navController: NavHostController) {
                 },
                 cartViewModel = cartViewModel
             )
+        }
+
+        composable("product-detail/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: return@composable
+            val products by productViewModel.products.collectAsState()
+            val product = products.firstOrNull { it.productId == productId }
+            
+            if (product != null) {
+                ProductDetailScreen(
+                    product = product,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onAddToCart = {
+                        cartViewModel.addCartItem(it)
+                        navController.navigate("cart") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    },
+                    cartViewModel = cartViewModel
+                )
+            } else {
+                // Product not found, go back
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                }
+            }
         }
 
         composable("order-success") {
@@ -183,9 +241,15 @@ fun NavGraph(navController: NavHostController) {
         composable("profile") {
             ProfileScreen(
                 userViewModel = userViewModel,
+                authViewModel = authViewModel,
                 onBack = {
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = true }
+                    }
+                },
+                onSignOut = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )

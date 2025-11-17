@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,6 +25,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.Login" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.ProductListActivity" />
+        <activity android:name=".activity.ProductDetailActivity" />
+        <activity android:name=".activity.AdminOrdersActivity" />
+
+
+<!--        <activity android:name=".activity.ResetPasswordActivity"-->
+<!--            android:exported="true">-->
+
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data android:scheme="https"-->
+<!--                    android:host="bakery-store-a7e4f.web.app"-->
+<!--                    android:pathPrefix="/resetPassword" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
     </application>
 
 </manifest>
