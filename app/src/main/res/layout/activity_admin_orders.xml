@@ -101,6 +101,20 @@
                 android:foreground="?attr/selectableItemBackgroundBorderless" />
 
             <TextView
+                android:id="@+id/tabSuccess"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/success"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
                 android:id="@+id/tabCancelled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
