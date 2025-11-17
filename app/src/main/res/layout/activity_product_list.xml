@@ -91,10 +91,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Categories"
-        android:textSize="18sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp" />
 

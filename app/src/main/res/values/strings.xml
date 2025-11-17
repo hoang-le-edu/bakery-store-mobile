@@ -18,5 +18,14 @@
     <string name="cd_back">Back</string>
     <string name="cd_cart">Cart</string>
     <string name="cd_Wishlist">Wishlist</string>
+    <string name="admin">Admin</string>
+    <string name="orders">Orders</string>
+    <string name="all">All</string>
+    <string name="pending">Pending</string>
+    <string name="on_going">On Going</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="home">Home</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="user">User</string>
 
 </resources>

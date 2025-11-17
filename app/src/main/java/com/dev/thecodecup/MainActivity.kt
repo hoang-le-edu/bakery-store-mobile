@@ -3,6 +3,7 @@ package com.dev.thecodecup
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.dev.thecodecup.activity.AdminOrdersActivity
 import com.dev.thecodecup.activity.Login
 import com.dev.thecodecup.activity.ProductListActivity
 
@@ -39,3 +40,16 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
+
+//class MainActivity : AppCompatActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//
+//        // Chuyển sang màn hình Login
+//        val intent = Intent(this, AdminOrdersActivity::class.java)
+//        startActivity(intent)
+//
+//        // Kết thúc MainActivity nếu không cần giữ nó
+//        finish()
+//    }
+//}
