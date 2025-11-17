@@ -56,7 +56,7 @@ public class Login extends AppCompatActivity {
 
         if (AuthManager.INSTANCE.isLoggedIn()) {
             NetworkModule.INSTANCE.setTokenProvider(() -> AuthManager.INSTANCE.getValidIdTokenBlocking());
-            startActivity(new Intent(Login.this, ProductListActivity.class));
+            startActivity(new Intent(Login.this, HomeActivity.class));
             finish();
             return;
         }
@@ -184,7 +184,7 @@ public class Login extends AppCompatActivity {
                                 Toast.makeText(Login.this,
                                         "Đăng nhập Google thành công",
                                         Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(Login.this, ProductListActivity.class));
+                                startActivity(new Intent(Login.this, HomeActivity.class));
                                 finish();
                             } else {
                                 Toast.makeText(Login.this,
@@ -240,7 +240,7 @@ public class Login extends AppCompatActivity {
                                 );
 
                                 Toast.makeText(this, "Sign in successfully", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(this, ProductListActivity.class));
+                                startActivity(new Intent(this, HomeActivity.class));
                                 finish();
                             } else {
                                 uiFail(dlg, "Không lấy được idToken: " + tokenTask.getException().getMessage());

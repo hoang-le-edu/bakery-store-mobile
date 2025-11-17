@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ProductListActivity extends AppCompatActivity {
+public class ProductListActivity extends BaseBottomNavActivity {
 
     private TabLayout tabLayout;
     private RecyclerView rvProducts;
@@ -43,6 +43,7 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
+        setupBottomNav();
 
         // 1) View binding
         tabLayout = findViewById(R.id.tabLayout);
@@ -145,6 +146,11 @@ public class ProductListActivity extends AppCompatActivity {
 
             return false;
         });
+    }
+
+    @Override
+    protected int getBottomNavMenuItemId() {
+        return R.id.navigation_home;
     }
 
     private void showProfileMenu(View anchorView) {
