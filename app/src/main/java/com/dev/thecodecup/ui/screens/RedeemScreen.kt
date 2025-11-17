@@ -123,7 +123,7 @@ fun RedeemScreen(
                                         val formatter = DateTimeFormatter.ofPattern("d MMMM | hh:mm a", Locale.ENGLISH)
                                         val formatted = now.format(formatter)
                                         orderViewModel.insertOrder(
-                                            OrderEntity(
+                                            OrderEntity.fromCartItem(
                                                 cartItem = CartItemEntity(
                                                     name = coffee.name,
                                                     price = 0.0,

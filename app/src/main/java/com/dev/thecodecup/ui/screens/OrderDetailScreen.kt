@@ -89,7 +89,7 @@ fun OrderDetailScreen(
 
 @Composable
 private fun OrderDetailContent(order: OrderEntity, onCancel: () -> Unit) {
-    val cartItem = order.cartItem
+    val cartItem = order.toCartItem()
     Spacer(modifier = Modifier.height(24.dp))
     Card(
         modifier = Modifier.fillMaxWidth(),

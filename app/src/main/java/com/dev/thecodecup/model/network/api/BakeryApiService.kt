@@ -175,9 +175,9 @@ data class AddToCartRequest(
 data class CartProductRequest(
     val product_id: String,
     val total_price: Int,
-    val size: String,
-    val toppings_id: List<String>,  // List of topping UUIDs
-    val note: String,
+    val size: String = "",  // Default to empty if not provided
+    val toppings_id: List<String> = emptyList(),  // Default to empty list
+    val note: String = "",  // Default to empty
     val quantity: Int
 )
 

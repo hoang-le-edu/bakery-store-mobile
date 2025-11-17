@@ -22,10 +22,12 @@ class ProductRemoteRepository {
         categoryId: String? = "all"
     ): Result<List<ProductDto>> = withContext(Dispatchers.IO) {
         try {
+            android.util.Log.d("Repo", "getAllProducts: Calling API with categoryId=$categoryId, limit=$limit, searchText=$searchText")
             val response = apiService.getAllProducts(limit, searchText, categoryId)
             
             if (response.isSuccessful) {
                 val body = response.body()
+                android.util.Log.d("Repo", "getAllProducts: Response successful, body=${body}")
                 if (body != null) {
                     // Use getAllProducts() helper to flatten category structure
                     val products = body.getAllProducts()
@@ -39,6 +41,7 @@ class ProductRemoteRepository {
                     Result.failure(Exception("Empty response body"))
                 }
             } else {
+                android.util.Log.e("Repo", "getAllProducts: HTTP error ${response.code()}: ${response.message()}, body=${response.errorBody()?.string()}")
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }
         } catch (e: Exception) {

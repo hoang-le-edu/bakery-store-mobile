@@ -82,7 +82,7 @@ fun CheckoutScreen(
         val formatter = DateTimeFormatter.ofPattern("d MMMM | hh:mm a", Locale.ENGLISH)
         var newPoint = user?.point ?: 0
         cartItems.forEach { item ->
-            val orderEntity = OrderEntity(
+            val orderEntity = OrderEntity.fromCartItem(
                 cartItem = item,
                 location = selectedAddress.ifEmpty { user?.address ?: "Store" },
                 orderTime = LocalDateTime.now().format(formatter)

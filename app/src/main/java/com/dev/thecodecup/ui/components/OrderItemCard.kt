@@ -41,7 +41,7 @@ fun OrderItemCard(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            val cartItem = orderItem.cartItem
+            val cartItem = orderItem.toCartItem()
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),

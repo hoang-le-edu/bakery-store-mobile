@@ -45,6 +45,7 @@ class ProductDetailActivity : AppCompatActivity() {
     private var selectedSizePrice: Int = 0
     private val selectedToppings = mutableListOf<Topping>()
     private var quantity = 1
+    private var hasSize: Boolean = false
     
     private val carouselHandler = Handler(Looper.getMainLooper())
     private var currentImageIndex = 0
@@ -149,7 +150,9 @@ class ProductDetailActivity : AppCompatActivity() {
         
         // Setup sizes
         chipGroupSizes.removeAllViews()
-        product.size_list?.forEach { size ->
+        hasSize = !product.size_list.isNullOrEmpty()
+        
+        product.size_list?.forEachIndexed { index, size ->
             val chip = Chip(this).apply {
                 text = "${size.name} (+${formatPrice(size.price.toString())}₫)"
                 isCheckable = true
@@ -180,6 +183,11 @@ class ProductDetailActivity : AppCompatActivity() {
                 }
             }
             chipGroupSizes.addView(chip)
+            
+            // Auto-select first size
+            if (index == 0) {
+                chip.isChecked = true
+            }
         }
         
         // Setup toppings
@@ -242,10 +250,18 @@ class ProductDetailActivity : AppCompatActivity() {
         val totalPrice = (basePrice + selectedSizePrice + toppingsPrice) * quantity
         val note = etNote.text.toString().trim()
         
+        // Use selected size if available, otherwise check if product has sizes
+        // If product has no sizes, send empty string, otherwise send first size as default
+        val sizeToSend = if (product.size_list.isNullOrEmpty()) {
+            "" // No sizes available
+        } else {
+            selectedSize ?: product.size_list.firstOrNull()?.name ?: ""
+        }
+        
         val productRequest = CartProductRequest(
             product_id = productId,
             total_price = totalPrice,
-            size = selectedSize ?: "",
+            size = sizeToSend,
             toppings_id = selectedToppings.map { it.id },
             note = note,
             quantity = quantity
@@ -257,6 +273,7 @@ class ProductDetailActivity : AppCompatActivity() {
         
         lifecycleScope.launch {
             try {
+                android.util.Log.d("ProductDetail", "Adding to cart: $request")
                 val response = withContext(Dispatchers.IO) {
                     apiService.addProductToCart(request)
                 }
@@ -267,10 +284,23 @@ class ProductDetailActivity : AppCompatActivity() {
                     Toast.makeText(this@ProductDetailActivity, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@ProductDetailActivity, "Lỗi: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    val errorBody = response.errorBody()?.string()
+                    android.util.Log.e("ProductDetail", "Add to cart failed: ${response.code()} - $errorBody")
+                    val errorMsg = if (errorBody != null) {
+                        try {
+                            val json = org.json.JSONObject(errorBody)
+                            json.optString("message", "Lỗi: ${response.code()}")
+                        } catch (e: Exception) {
+                            "Lỗi: ${response.code()}"
+                        }
+                    } else {
+                        "Lỗi: ${response.code()}"
+                    }
+                    Toast.makeText(this@ProductDetailActivity, errorMsg, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 dialog.dismiss()
+                android.util.Log.e("ProductDetail", "Exception adding to cart", e)
                 Toast.makeText(this@ProductDetailActivity, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
