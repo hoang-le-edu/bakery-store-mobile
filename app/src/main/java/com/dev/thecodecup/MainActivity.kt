@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dev.thecodecup.activity.AdminOrdersActivity
 import com.dev.thecodecup.activity.Login
 import com.dev.thecodecup.activity.ProductListActivity
+import com.dev.thecodecup.activity.SplashActivity
 
 
 //class MainActivity : ComponentActivity() {
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Chuyển sang màn hình Login
-        val intent = Intent(this, Login::class.java)
+        val intent = Intent(this, SplashActivity::class.java)
         startActivity(intent)
 
         // Kết thúc MainActivity nếu không cần giữ nó
@@ -45,7 +46,6 @@ class MainActivity : AppCompatActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
 //
-//        // Chuyển sang màn hình Login
 //        val intent = Intent(this, AdminOrdersActivity::class.java)
 //        startActivity(intent)
 //
