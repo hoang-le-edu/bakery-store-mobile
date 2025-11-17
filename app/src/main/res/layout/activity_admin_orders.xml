@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvAdminTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/admin"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/ivAdminProfile"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_profile" />
+    </LinearLayout>
+
+    <!-- Title Orders -->
+    <TextView
+        android:id="@+id/tvOrdersTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/orders"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:textSize="22sp" />
+
+    <!-- Tabs status -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutStatusTabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp">
+
+            <!-- Các tab nằm ở đây -->
+            <TextView
+                android:id="@+id/tabAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="@string/all"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabPending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/pending"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabOnGoing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/on_going"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabCancelled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/cancelled"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+
+
+    <!-- Header nhỏ: All + Order (sort) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="All" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order" />
+    </LinearLayout>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvOrders"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
+
+    <!-- Bottom nav -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:menu="@menu/bottom_nav_menu_admin"
+        app:itemIconTint="@drawable/bnv_selector"
+        app:itemTextColor="@drawable/bnv_selector"
+        app:labelVisibilityMode="labeled"/>
+
+</LinearLayout>

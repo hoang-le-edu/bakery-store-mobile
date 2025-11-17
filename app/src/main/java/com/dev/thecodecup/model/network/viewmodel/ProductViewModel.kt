@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 //import com.dev.thecodecup.model.network.dto.CategoryDto
 import com.dev.thecodecup.model.network.dto.ProductDto
 import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto
+import com.dev.thecodecup.model.network.dto.ProductByIdDto
 import com.dev.thecodecup.model.network.repository.CategoryRemoteRepository
 import com.dev.thecodecup.model.network.repository.ProductRemoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,7 +83,7 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     /**
      * Load product by ID
      */
-    fun loadProductById(productId: String, onResult: (ProductDto?) -> Unit) {
+    fun loadProductById(productId: String, onResult: (ProductByIdDto?) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null

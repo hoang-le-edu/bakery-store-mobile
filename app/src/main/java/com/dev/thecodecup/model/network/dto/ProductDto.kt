@@ -15,13 +15,13 @@ data class ProductDto(
     @Json(name = "product_name")
     val productName: String,
     
-    @Json(name = "product_price")  // Changed from "price" to "product_price"
-    val productPrice: String,  // Changed from Double to String (API returns String)
+    @Json(name = "product_price")
+    val productPrice: String,
     
-    @Json(name = "product_description")  // Changed from "description"
+    @Json(name = "product_description")
     val productDescription: String? = null,
     
-    @Json(name = "product_image")  // Changed from "image_url"
+    @Json(name = "product_image")
     val productImage: String? = null
 ) {
     // Helper property to get price as Double
@@ -92,4 +92,3 @@ data class PaginationDto(
     @Json(name = "has_more")
     val hasMore: Boolean = false
 )
-

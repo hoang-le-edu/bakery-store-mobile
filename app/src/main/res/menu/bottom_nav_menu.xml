@@ -9,11 +9,11 @@
         android:icon="@drawable/ic_wishlist"
         android:title="Wishlist"/>
     <item
-        android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_profile"
-        android:title="Hồ sơ"/>
-    <item
         android:id="@+id/navigation_cart"
         android:icon="@drawable/ic_cart"
-        android:title="Giỏ hàng"/>
+        android:title="Cart"/>
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="User"/>
 </menu>

@@ -20,4 +20,9 @@
     <color name="colorGreenCheck">#5EC075</color>
     <color name="colorGrayText">#888888</color>
     <color name="colorGrayLine">#DDDDDD</color>
+    <color name="status_pending">#DB5560</color>
+    <color name="status_ongoing">#FFC107</color>
+    <color name="status_cancelled">#BDBDBD</color>
+    <color name="status_completed">#4CAF50</color>
+
 </resources>
