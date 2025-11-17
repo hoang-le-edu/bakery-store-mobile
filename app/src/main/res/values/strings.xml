@@ -27,5 +27,6 @@
     <string name="home">Home</string>
     <string name="dashboard">Dashboard</string>
     <string name="user">User</string>
+    <string name="success">Success</string>
 
 </resources>

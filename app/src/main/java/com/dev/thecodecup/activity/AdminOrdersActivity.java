@@ -19,7 +19,7 @@ import java.util.List;
 
 public class AdminOrdersActivity extends AppCompatActivity {
 
-    private TextView tabAll, tabPending, tabOnGoing, tabCancelled;
+    private TextView tabAll, tabPending, tabOnGoing, tabSuccess, tabCancelled;
     private RecyclerView rvOrders;
 
     private AdminOrderAdapter adapter;
@@ -30,6 +30,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
     private static final String FILTER_ALL = "ALL";
     private static final String FILTER_PENDING = "PENDING";
     private static final String FILTER_ON_GOING = "ON_GOING";
+    private static final String FILTER_SUCCESS = "SUCCESS";
     private static final String FILTER_CANCELLED = "CANCELLED";
 
     private String currentFilter = FILTER_ALL;
@@ -51,6 +52,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
         tabAll = findViewById(R.id.tabAll);
         tabPending = findViewById(R.id.tabPending);
         tabOnGoing = findViewById(R.id.tabOnGoing);
+        tabSuccess = findViewById(R.id.tabSuccess);
         tabCancelled = findViewById(R.id.tabCancelled);
         rvOrders = findViewById(R.id.rvOrders);
     }
@@ -68,6 +70,8 @@ public class AdminOrdersActivity extends AppCompatActivity {
                 currentFilter = FILTER_PENDING;
             } else if (id == R.id.tabOnGoing) {
                 currentFilter = FILTER_ON_GOING;
+            } else if (id == R.id.tabSuccess) {
+                currentFilter = FILTER_SUCCESS;
             } else if (id == R.id.tabCancelled) {
                 currentFilter = FILTER_CANCELLED;
             } else {
@@ -81,6 +85,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
         tabAll.setOnClickListener(listener);
         tabPending.setOnClickListener(listener);
         tabOnGoing.setOnClickListener(listener);
+        tabSuccess.setOnClickListener(listener);
         tabCancelled.setOnClickListener(listener);
 
         updateTabUI(); // default = ALL
@@ -90,6 +95,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
         resetTab(tabAll);
         resetTab(tabPending);
         resetTab(tabOnGoing);
+        resetTab(tabSuccess);
         resetTab(tabCancelled);
 
         switch (currentFilter) {
@@ -98,6 +104,9 @@ public class AdminOrdersActivity extends AppCompatActivity {
                 break;
             case FILTER_ON_GOING:
                 setTabSelected(tabOnGoing);
+                break;
+            case FILTER_SUCCESS:
+                setTabSelected(tabSuccess);
                 break;
             case FILTER_CANCELLED:
                 setTabSelected(tabCancelled);
@@ -174,6 +183,14 @@ public class AdminOrdersActivity extends AppCompatActivity {
                 "1 - A5",
                 "Le Hoa",
                 "ON_GOING",
+                "April 11, 2024 18:30",
+                "45000"
+        ));
+
+        allOrders.add(new OrderDto(
+                "1 - A6",
+                "Ha Tram",
+                "SUCCESS",
                 "April 11, 2024 18:30",
                 "45000"
         ));
