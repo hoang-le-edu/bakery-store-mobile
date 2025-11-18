@@ -1,15 +1,13 @@
 package com.dev.thecodecup.model.network.repository
 
 import com.dev.thecodecup.model.network.NetworkModule
-import com.dev.thecodecup.model.network.NetworkModule.apiService
-import com.dev.thecodecup.model.network.dto.ProductByIdDto
 import com.dev.thecodecup.model.network.dto.ProductDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ProductRemoteRepository {
     
-    private val apiService = NetworkModule.apiService
+    private val apiService = NetworkModule.bakeryApiService
     
     /**
      * Get all products with optional filters
@@ -24,10 +22,12 @@ class ProductRemoteRepository {
         categoryId: String? = "all"
     ): Result<List<ProductDto>> = withContext(Dispatchers.IO) {
         try {
+            android.util.Log.d("Repo", "getAllProducts: Calling API with categoryId=$categoryId, limit=$limit, searchText=$searchText")
             val response = apiService.getAllProducts(limit, searchText, categoryId)
             
             if (response.isSuccessful) {
                 val body = response.body()
+                android.util.Log.d("Repo", "getAllProducts: Response successful, body=${body}")
                 if (body != null) {
                     // Use getAllProducts() helper to flatten category structure
                     val products = body.getAllProducts()
@@ -41,6 +41,7 @@ class ProductRemoteRepository {
                     Result.failure(Exception("Empty response body"))
                 }
             } else {
+                android.util.Log.e("Repo", "getAllProducts: HTTP error ${response.code()}: ${response.message()}, body=${response.errorBody()?.string()}")
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }
         } catch (e: Exception) {
@@ -54,26 +55,27 @@ class ProductRemoteRepository {
      * @param productId Product ID to retrieve
      * @return Result containing product details or error
      */
-    suspend fun getProductById(productId: String): Result<ProductByIdDto?> =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = apiService.getProductById(productId)
-
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null && body.success) {
-                        Result.success(body.data)
-                    } else {
-                        Result.failure(Exception("Product not found"))
-                    }
+    suspend fun getProductById(productId: String): Result<ProductDto?> = withContext(Dispatchers.IO) {
+        try {
+            // Use getAllProducts to get all products, then filter by ID
+            val response = apiService.getAllProducts(limit = null, searchText = null, categoryId = "all")
+            
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    // Find product in any category
+                    val product = body.getAllProducts().firstOrNull { it.productId == productId }
+                    Result.success(product)
                 } else {
                     Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
                 }
-
-            } catch (e: Exception) {
-                Result.failure(e)
+            } else {
+                Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
+    }
 
 
 
@@ -88,7 +90,8 @@ class ProductRemoteRepository {
         limit: Int? = null
     ): Result<List<ProductDto>> = withContext(Dispatchers.IO) {
         try {
-            val response = apiService.searchProducts(query, limit)
+            // Use getAllProducts with searchText parameter
+            val response = apiService.getAllProducts(limit = limit, searchText = query, categoryId = "all")
             
             if (response.isSuccessful) {
                 val body = response.body()

@@ -32,6 +32,15 @@
         <activity android:name=".activity.AdminOrdersActivity" />
 
 
+
+        <activity android:name=".activity.CartActivity" />
+<!--        <activity android:name=".activity.CheckoutActivity" />-->
+<!--        <activity android:name=".activity.OrdersActivity" />-->
+        <activity android:name=".ProductDetailActivity" />
+        <activity android:name=".CartActivity" />
+        <activity android:name=".CheckoutActivity" />
+        <activity android:name=".OrdersActivity" />
+        <activity android:name=".OrderDetailActivity" />
 <!--        <activity android:name=".activity.ResetPasswordActivity"-->
 <!--            android:exported="true">-->
 

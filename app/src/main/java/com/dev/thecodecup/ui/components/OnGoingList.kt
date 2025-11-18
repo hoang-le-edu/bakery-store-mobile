@@ -26,12 +26,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
+import com.dev.thecodecup.model.db.order.OrderEntity
 import com.dev.thecodecup.model.db.order.OrderViewModel
 import kotlin.math.roundToInt
 
 @Composable
 fun OnGoingList(
-    orderViewModel: OrderViewModel
+    orderViewModel: OrderViewModel,
+    onOrderSelected: (OrderEntity) -> Unit = {}
 ) {
     val onGoingOrderList = orderViewModel.ongoingOrders.collectAsState().value
     val buttonWidth = 100.dp
@@ -112,7 +114,10 @@ fun OnGoingList(
                             )
                         }
                 ) {
-                    OrderItemCard(orderItem = order)
+                    OrderItemCard(
+                        orderItem = order,
+                        onClick = { onOrderSelected(order) }
+                    )
                 }
             }
         }

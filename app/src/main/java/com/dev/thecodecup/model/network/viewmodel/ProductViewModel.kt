@@ -83,7 +83,7 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     /**
      * Load product by ID
      */
-    fun loadProductById(productId: String, onResult: (ProductByIdDto?) -> Unit) {
+    fun loadProductById(productId: String, onResult: (ProductDto?) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null

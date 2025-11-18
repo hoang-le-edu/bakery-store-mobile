@@ -28,16 +28,29 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
     private final Context ctx;
     private final List<ProductDto> items = new ArrayList<>();
+    private OnItemClickListener clickListener;
 
-    public ProductAdapter(Context ctx) { this.ctx = ctx; }
+    public interface OnItemClickListener {
+        void onItemClick(ProductDto product);
+    }
+
+    public ProductAdapter(Context ctx) {
+        this.ctx = ctx;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.clickListener = listener;
+    }
 
     public void setItems(List<ProductDto> data) {
         items.clear();
-        if (data != null) items.addAll(data);
+        if (data != null)
+            items.addAll(data);
         notifyDataSetChanged();
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_product, parent, false); // uses ivImage, tvName, tvPrice, btnAdd
@@ -84,25 +97,30 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
             ctx.startActivity(intent);
         });
 
+        // Click on item to view detail
         h.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(ctx, ProductDetailActivity.class);
-            intent.putExtra("productId", p.getProductId());
-            ctx.startActivity(intent);
+            if (clickListener != null) {
+                clickListener.onItemClick(p);
+            }
         });
-
-
     }
 
-    @Override public int getItemCount() { return items.size(); }
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
 
     static class VH extends RecyclerView.ViewHolder {
-        ImageView ivImage; TextView tvName, tvPrice; ImageButton btnAdd;
+        ImageView ivImage;
+        TextView tvName, tvPrice;
+        ImageButton btnAdd;
+
         VH(@NonNull View itemView) {
             super(itemView);
             ivImage = itemView.findViewById(R.id.ivImage);
-            tvName  = itemView.findViewById(R.id.tvName);
+            tvName = itemView.findViewById(R.id.tvName);
             tvPrice = itemView.findViewById(R.id.tvPrice);
-            btnAdd  = itemView.findViewById(R.id.btnAdd);
+            btnAdd = itemView.findViewById(R.id.btnAdd);
         }
     }
 }

@@ -25,4 +25,5 @@
     <color name="status_cancelled">#BDBDBD</color>
     <color name="status_completed">#4CAF50</color>
 
+    <color name="pink_primary">#f26d78</color>
 </resources>

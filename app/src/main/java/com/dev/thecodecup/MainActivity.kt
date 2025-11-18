@@ -6,37 +6,25 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dev.thecodecup.activity.AdminOrdersActivity
 import com.dev.thecodecup.activity.Login
 import com.dev.thecodecup.activity.ProductListActivity
-
-
-//class MainActivity : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//
-//        // 🧪 Test API Connection - Check Logcat with filter: "NetworkTest"
-//        NetworkTest.testApiConnection()
-//
-//        setContent {
-//            // 🎨 TEMPORARY: Using ApiTestScreen to see products in UI
-//            // Comment this and uncomment NavGraph below to restore normal app
-////            ApiTestScreen()
-//
-//            // Normal app navigation (temporarily commented)
-//             val navController = rememberNavController()
-//             NavGraph(navController)
-//        }
-//    }
-//}
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Chuyển sang màn hình Login
-        val intent = Intent(this, Login::class.java)
-        startActivity(intent)
-
-        // Kết thúc MainActivity nếu không cần giữ nó
+        
+        // Check if user is logged in
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        
+        if (currentUser != null) {
+            // User is logged in, go to ProductList
+            val intent = Intent(this, ProductListActivity::class.java)
+            startActivity(intent)
+        } else {
+            // User not logged in, go to Login
+            val intent = Intent(this, com.dev.thecodecup.activity.Login::class.java)
+            startActivity(intent)
+        }
+        
         finish()
     }
 }
@@ -45,11 +33,11 @@ class MainActivity : AppCompatActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
 //
-//        // Chuyển sang màn hình Login
+//        // Chuy?n sang m�n h?nh Login
 //        val intent = Intent(this, AdminOrdersActivity::class.java)
 //        startActivity(intent)
 //
-//        // Kết thúc MainActivity nếu không cần giữ nó
+//        // K?t th�c MainActivity n?u kh�ng c?n gi? n�
 //        finish()
 //    }
 //}

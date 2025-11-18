@@ -17,6 +17,9 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
     private val _historyOrders = MutableStateFlow<List<OrderEntity>>(emptyList())
     val historyOrders: StateFlow<List<OrderEntity>> = _historyOrders.asStateFlow()
 
+    private val _selectedOrder = MutableStateFlow<OrderEntity?>(null)
+    val selectedOrder: StateFlow<OrderEntity?> = _selectedOrder.asStateFlow()
+
     init {
         loadOngoingOrders()
         loadHistoryOrders()
@@ -55,6 +58,16 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
             loadOngoingOrders()
             loadHistoryOrders()
         }
+    }
+
+    fun loadOrderById(orderId: Int) {
+        viewModelScope.launch {
+            _selectedOrder.value = repository.getOrderById(orderId)
+        }
+    }
+
+    fun clearSelectedOrder() {
+        _selectedOrder.value = null
     }
 
 }

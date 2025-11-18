@@ -7,21 +7,31 @@ import kotlinx.coroutines.withContext
 
 class CategoryRemoteRepository {
     
-    private val apiService = NetworkModule.apiService
+    private val apiService = NetworkModule.bakeryApiService
     
     /**
      * Get all categories
-     * @return Result containing list of categories or error
+     * @return Result containing list of CategoryDto or error
      */
     suspend fun getAllCategories(): Result<List<CategoryWithProductsDto>> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.getAllCategories()
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null) {
-                    Result.success(body.data ?: emptyList())
+                if (body != null && body.success) {
+                    // Convert CategoryDto list to CategoryWithProductsDto list
+                    val categories = body.data?.map { category ->
+                        CategoryWithProductsDto(
+                            categoryId = category.categoryId,
+                            categoryName = category.categoryName,
+                            categoryPriority = null,
+                            categoryDescription = category.description,
+                            productList = emptyList() // Will be populated by products API
+                        )
+                    } ?: emptyList()
+                    Result.success(categories)
                 } else {
-                    Result.failure(Exception("Empty response body"))
+                    Result.failure(Exception("Empty response body or success=false"))
                 }
             } else {
                 Result.failure(Exception("HTTP ${response.code()}: ${response.message()}"))

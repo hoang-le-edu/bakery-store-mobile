@@ -1,0 +1,268 @@
+package com.dev.thecodecup.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.dev.thecodecup.adapter.OrderProductsAdapter;
+import com.dev.thecodecup.model.network.NetworkModule;
+import com.dev.thecodecup.model.network.api.BakeryApiService;
+import com.dev.thecodecup.model.network.api.Order;
+import com.dev.thecodecup.R;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class OrderDetailActivity extends AppCompatActivity {
+
+    private BakeryApiService apiService;
+    private Long orderId;
+    private Order currentOrder;
+
+    private TextView txtOrderId, txtOrderDate, txtOrderStatus;
+    private TextView txtReceiverName, txtReceiverPhone, txtAddress, txtPaymentMethod;
+    private TextView txtSubtotal, txtShippingFee, txtTotal;
+    private RecyclerView recyclerViewProducts;
+    private OrderProductsAdapter productsAdapter;
+    private MaterialButton btnCancelOrder;
+
+    // Timeline views
+    private View timelinePending, timelineProgress, timelineCompleted;
+    private TextView txtTimePending, txtTimeProgress, txtTimeCompleted;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_order_detail);
+
+        apiService = NetworkModule.INSTANCE.provideBakeryApiService();
+
+        orderId = getIntent().getLongExtra("ORDER_ID", -1);
+        if (orderId == -1) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy đơn hàng", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        initViews();
+        setupToolbar();
+        setupRecyclerView();
+        loadOrderDetail();
+    }
+
+    private void initViews() {
+        txtOrderId = findViewById(R.id.txtOrderId);
+        txtOrderDate = findViewById(R.id.txtOrderDate);
+        txtOrderStatus = findViewById(R.id.txtOrderStatus);
+        txtReceiverName = findViewById(R.id.txtReceiverName);
+        txtReceiverPhone = findViewById(R.id.txtReceiverPhone);
+        txtAddress = findViewById(R.id.txtAddress);
+        txtPaymentMethod = findViewById(R.id.txtPaymentMethod);
+        txtSubtotal = findViewById(R.id.txtSubtotal);
+        txtShippingFee = findViewById(R.id.txtShippingFee);
+        txtTotal = findViewById(R.id.txtTotal);
+        recyclerViewProducts = findViewById(R.id.recyclerViewProducts);
+        btnCancelOrder = findViewById(R.id.btnCancelOrder);
+
+        timelinePending = findViewById(R.id.timelinePending);
+        timelineProgress = findViewById(R.id.timelineProgress);
+        timelineCompleted = findViewById(R.id.timelineCompleted);
+        txtTimePending = findViewById(R.id.txtTimePending);
+        txtTimeProgress = findViewById(R.id.txtTimeProgress);
+        txtTimeCompleted = findViewById(R.id.txtTimeCompleted);
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void setupRecyclerView() {
+        productsAdapter = new OrderProductsAdapter();
+        recyclerViewProducts.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewProducts.setAdapter(productsAdapter);
+    }
+
+    private void loadOrderDetail() {
+        apiService.getOrderDetail(orderId).enqueue(new Callback<Order>() {
+            @Override
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    currentOrder = response.body();
+                    displayOrderDetail();
+                } else {
+                    Toast.makeText(OrderDetailActivity.this,
+                            "Không thể tải chi tiết đơn hàng", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Order> call, Throwable t) {
+                Toast.makeText(OrderDetailActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void displayOrderDetail() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+
+        // Order info
+        txtOrderId.setText("Đơn hàng #" + currentOrder.getId());
+        txtOrderDate.setText(sdf.format(new Date(currentOrder.getOrderDate())));
+        txtOrderStatus.setText(getStatusText(currentOrder.getStatus()));
+        txtOrderStatus.setBackgroundResource(getStatusBackground(currentOrder.getStatus()));
+
+        // Receiver info
+        txtReceiverName.setText(currentOrder.getReceiverName());
+        txtReceiverPhone.setText(currentOrder.getReceiverPhone());
+        txtAddress.setText(currentOrder.getAddress());
+        txtPaymentMethod.setText(currentOrder.getPaymentMethod());
+
+        // Products
+        if (currentOrder.getCartOrderDetails() != null) {
+            productsAdapter.setProducts(currentOrder.getCartOrderDetails());
+        }
+
+        // Price breakdown
+        double subtotal = currentOrder.getTotalPrice() - 30000; // Assuming fixed shipping
+        txtSubtotal.setText(formatter.format(subtotal));
+        txtShippingFee.setText(formatter.format(30000));
+        txtTotal.setText(formatter.format(currentOrder.getTotalPrice()));
+
+        // Timeline
+        updateTimeline();
+
+        // Cancel button visibility
+        if (currentOrder.getStatus().equals("Wait For Approval")) {
+            btnCancelOrder.setVisibility(View.VISIBLE);
+            btnCancelOrder.setOnClickListener(v -> showCancelDialog());
+        } else {
+            btnCancelOrder.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateTimeline() {
+        String status = currentOrder.getStatus();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault());
+        String dateStr = sdf.format(new Date(currentOrder.getOrderDate()));
+
+        switch (status) {
+            case "Wait For Approval":
+                activateTimelineStep(timelinePending, txtTimePending, dateStr);
+                deactivateTimelineStep(timelineProgress, txtTimeProgress);
+                deactivateTimelineStep(timelineCompleted, txtTimeCompleted);
+                break;
+            case "In Progress":
+                activateTimelineStep(timelinePending, txtTimePending, dateStr);
+                activateTimelineStep(timelineProgress, txtTimeProgress, dateStr);
+                deactivateTimelineStep(timelineCompleted, txtTimeCompleted);
+                break;
+            case "Completed":
+                activateTimelineStep(timelinePending, txtTimePending, dateStr);
+                activateTimelineStep(timelineProgress, txtTimeProgress, dateStr);
+                activateTimelineStep(timelineCompleted, txtTimeCompleted, dateStr);
+                break;
+            case "Cancelled":
+                deactivateTimelineStep(timelinePending, txtTimePending);
+                deactivateTimelineStep(timelineProgress, txtTimeProgress);
+                deactivateTimelineStep(timelineCompleted, txtTimeCompleted);
+                break;
+        }
+    }
+
+    private void activateTimelineStep(View stepView, TextView timeText, String time) {
+        stepView.setBackgroundResource(R.drawable.bg_timeline_active);
+        timeText.setText(time);
+        timeText.setVisibility(View.VISIBLE);
+    }
+
+    private void deactivateTimelineStep(View stepView, TextView timeText) {
+        stepView.setBackgroundResource(R.drawable.bg_timeline_inactive);
+        timeText.setVisibility(View.GONE);
+    }
+
+    private void showCancelDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Hủy đơn hàng")
+                .setMessage("Bạn có chắc chắn muốn hủy đơn hàng này?")
+                .setPositiveButton("Hủy đơn", (dialog, which) -> cancelOrder())
+                .setNegativeButton("Không", null)
+                .show();
+    }
+
+    private void cancelOrder() {
+        btnCancelOrder.setEnabled(false);
+
+        apiService.cancelOrder(orderId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(OrderDetailActivity.this,
+                            "Đơn hàng đã được hủy", Toast.LENGTH_SHORT).show();
+                    loadOrderDetail(); // Reload to update status
+                } else {
+                    btnCancelOrder.setEnabled(true);
+                    Toast.makeText(OrderDetailActivity.this,
+                            "Không thể hủy đơn hàng", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                btnCancelOrder.setEnabled(true);
+                Toast.makeText(OrderDetailActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String getStatusText(String status) {
+        switch (status) {
+            case "Wait For Approval":
+                return "Chờ duyệt";
+            case "In Progress":
+                return "Đang xử lý";
+            case "Completed":
+                return "Hoàn thành";
+            case "Cancelled":
+                return "Đã hủy";
+            default:
+                return status;
+        }
+    }
+
+    private int getStatusBackground(String status) {
+        switch (status) {
+            case "Wait For Approval":
+                return R.drawable.bg_status_pending;
+            case "In Progress":
+                return R.drawable.bg_status_progress;
+            case "Completed":
+                return R.drawable.bg_status_completed;
+            case "Cancelled":
+                return R.drawable.bg_status_cancelled;
+            default:
+                return R.drawable.bg_status_pending;
+        }
+    }
+}

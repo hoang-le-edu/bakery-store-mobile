@@ -31,8 +31,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
-//        buildConfigField("String", "API_BASE_URL", "\"https://api-bakery-store-mobile-btfrg4gqevhveyfy.eastasia-01.azurewebsites.net/\"")
-        buildConfigField("String", "API_BASE_URL", "\"https://bepmetayapi-9adx6.ondigitalocean.app/\"")
+        // Production API - Bakery Store
+        buildConfigField("String", "API_BASE_URL", "\"https://bepmetayapi-9adx6.ondigitalocean.app/api/\"")
+        // Old URLs (commented for reference):
+        // buildConfigField("String", "API_BASE_URL", "\"https://api-bakery-store-mobile-btfrg4gqevhveyfy.eastasia-01.azurewebsites.net/\"")
+        // buildConfigField("String", "API_BASE_URL", "\"https://bepmetayapi-9adx6.ondigitalocean.app/\"")
 
         val firebaseKey = localProperties.getProperty("FIREBASE_WEB_API_KEY", "")
         buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"$firebaseKey\"")
@@ -85,6 +88,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation("androidx.compose.material:material-icons-extended")
 
 
     // Networking

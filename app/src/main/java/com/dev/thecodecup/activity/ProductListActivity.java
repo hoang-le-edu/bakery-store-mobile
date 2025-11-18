@@ -1,4 +1,5 @@
 package com.dev.thecodecup.activity;
+
 import com.dev.thecodecup.model.auth.AuthManager;
 
 import android.content.Intent;
@@ -13,12 +14,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.widget.Toast;
+
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.ProductAdapter;
 //import com.dev.thecodecup.model.network.dto.CategoryDto;
 import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 //import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import android.widget.PopupMenu;
 
@@ -33,6 +37,7 @@ public class ProductListActivity extends AppCompatActivity {
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
     private ImageButton btnProfile;
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +45,20 @@ public class ProductListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_list);
 
         // 1) View binding
-        tabLayout  = findViewById(R.id.tabLayout);
+        tabLayout = findViewById(R.id.tabLayout);
         rvProducts = findViewById(R.id.rvProducts);
         btnProfile = findViewById(R.id.btnProfile);
+        bottomNav = findViewById(R.id.bottomNav);
 
         // 2) RecyclerView + Adapter (2 cột)
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(this);
+        adapter.setOnItemClickListener(product -> {
+            // Navigate to ProductDetailActivity
+            Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
+            intent.putExtra("PRODUCT_ID", product.getProductId());
+            startActivity(intent);
+        });
         rvProducts.setAdapter(adapter);
 
         // 3) ViewModel
@@ -54,7 +66,8 @@ public class ProductListActivity extends AppCompatActivity {
 
         // 4) Quan sát Products -> cập nhật adapter để lên hình
         viewModel.getProductsLiveData().observe(this, products -> {
-            android.util.Log.d("ProductActivity", "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
+            android.util.Log.d("ProductActivity",
+                    "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
             if (products != null && !products.isEmpty()) {
                 adapter.setItems(products);
                 rvProducts.post(() -> adapter.notifyDataSetChanged());
@@ -85,8 +98,13 @@ public class ProductListActivity extends AppCompatActivity {
                 String categoryId = (String) tab.getTag();
                 viewModel.loadProducts(null, null, categoryId);
             }
-            @Override public void onTabUnselected(@NonNull TabLayout.Tab tab) {}
-            @Override public void onTabReselected(@NonNull TabLayout.Tab tab) {
+
+            @Override
+            public void onTabUnselected(@NonNull TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(@NonNull TabLayout.Tab tab) {
                 // Có thể refresh lại nếu muốn
                 String categoryId = (String) tab.getTag();
                 viewModel.loadProducts(null, null, categoryId);
@@ -96,6 +114,37 @@ public class ProductListActivity extends AppCompatActivity {
         // 7) Gọi load categories ban đầu
         viewModel.loadCategories();
         btnProfile.setOnClickListener(v -> showProfileMenu(v));
+
+        // 8) Setup bottom navigation
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
+        bottomNav.setSelectedItemId(R.id.navigation_home);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.navigation_home) {
+                // Already on home
+                return true;
+            } else if (itemId == R.id.navigation_cart) {
+                // Navigate to Cart
+                Intent intent = new Intent(ProductListActivity.this, CartActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.navigation_wishlist) {
+                // TODO: Navigate to Wishlist
+                Toast.makeText(this, "Wishlist chưa được triển khai", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                // TODO: Navigate to Profile
+                Toast.makeText(this, "Profile chưa được triển khai", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            return false;
+        });
     }
 
     private void showProfileMenu(View anchorView) {
@@ -124,11 +173,11 @@ public class ProductListActivity extends AppCompatActivity {
         finish();
     }
 
-
     /** Đổ danh sách Tab từ categories */
     private void buildTabs(List<CategoryWithProductsDto> categories) {
         tabLayout.removeAllTabs();
-        if (categories == null || categories.isEmpty()) return;
+        if (categories == null || categories.isEmpty())
+            return;
 
         for (CategoryWithProductsDto c : categories) {
             String title = c.getCategoryName() != null ? c.getCategoryName() : "Danh mục";
