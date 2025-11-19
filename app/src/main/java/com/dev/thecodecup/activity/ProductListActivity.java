@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ProductListActivity extends AppCompatActivity {
+public class ProductListActivity extends BaseBottomNavActivity {
 
     private TabLayout tabLayout;
     private RecyclerView rvProducts;
@@ -43,6 +43,7 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
+        setupBottomNav();
 
         // 1) View binding
         tabLayout = findViewById(R.id.tabLayout);
@@ -133,9 +134,9 @@ public class ProductListActivity extends AppCompatActivity {
                 Intent intent = new Intent(ProductListActivity.this, CartActivity.class);
                 startActivity(intent);
                 return true;
-            } else if (itemId == R.id.navigation_wishlist) {
-                // TODO: Navigate to Wishlist
-                Toast.makeText(this, "Wishlist chưa được triển khai", Toast.LENGTH_SHORT).show();
+            } else if (itemId == R.id.navigation_product) {
+                // TODO: Navigate to Product
+                Toast.makeText(this, "Product chưa được triển khai", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.navigation_profile) {
                 // TODO: Navigate to Profile
@@ -145,6 +146,11 @@ public class ProductListActivity extends AppCompatActivity {
 
             return false;
         });
+    }
+
+    @Override
+    protected int getBottomNavMenuItemId() {
+        return R.id.navigation_home;
     }
 
     private void showProfileMenu(View anchorView) {
@@ -180,7 +186,7 @@ public class ProductListActivity extends AppCompatActivity {
             return;
 
         for (CategoryWithProductsDto c : categories) {
-            String title = c.getCategoryName() != null ? c.getCategoryName() : "Danh mục";
+            String title = c.getCategoryName() != null ? c.getCategoryName() : "Category";
             TabLayout.Tab tab = tabLayout.newTab().setText(title);
             // tag = category_id để khi click tab sẽ dùng id call API
             tab.setTag(c.getCategoryId());

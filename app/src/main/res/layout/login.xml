@@ -4,20 +4,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPinkBackground"> <!-- 1. Đồng bộ màu nền -->
+    android:background="@color/white"> <!-- 1. Đồng bộ màu nền -->
 
     <!-- Spacer để tạo khoảng trống ở trên -->
-    <View
-        android:id="@+id/top_spacer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <ImageView
+        android:id="@+id/headerCake"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
+        android:src="@drawable/header_cake"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHeight_percent="0.05" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/top_spacer"
+        app:layout_constraintTop_toBottomOf="@+id/headerCake"
         app:layout_constraintBottom_toBottomOf="parent"
         android:fillViewport="true">
 
@@ -46,16 +49,17 @@
                 android:text="Login to your account to continue"
                 android:textSize="14sp"
                 android:textColor="@color/colorGrayText"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="24dp" />
 
             <!-- 3. EMAIL - Đồng bộ EditText -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Email"
                 android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp" />
+                android:textSize="16sp" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,12 +113,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:text="@string/quen_mat_khau"
-                android:textColor="@color/colorGreenCheck"
-                android:textStyle="bold"
                 android:layout_marginBottom="32dp"
                 android:clickable="true"
-                android:focusable="true" />
+                android:focusable="true"
+                android:textSize="16sp"
+                android:text="@string/quen_mat_khau"
+                android:textColor="@color/colorRedButton"
+                android:textStyle="bold" />
 
             <!-- 5. NÚT ĐĂNG NHẬP - Full-width, đồng bộ style-->
             <Button
@@ -127,8 +132,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:paddingVertical="14dp"
-                app:cornerRadius="12dp"
-                android:layout_marginBottom="24dp"/>
+                app:cornerRadius="12dp"/>
 
             <!-- HOẶC -->
             <TextView
@@ -138,7 +142,8 @@
                 android:text="@string/hoac"
                 android:textAlignment="center"
                 android:textColor="@color/colorGrayText"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
 
             <!-- GOOGLE - Giữ nguyên style Outlined -->
             <Button
@@ -156,7 +161,7 @@
                 app:strokeWidth="1dp"
                 android:paddingVertical="12dp"
                 app:cornerRadius="12dp"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="24dp" />
 
             <!-- TẠO TÀI KHOẢN -->
             <TextView
