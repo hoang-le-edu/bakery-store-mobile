@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    card_view:cardCornerRadius="8dp"
+    card_view:cardCornerRadius="20dp"
     card_view:cardElevation="3dp"
     android:background="@color/white">
 
@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
             android:background="@android:color/white" />
 
         <!-- Tên sản phẩm -->

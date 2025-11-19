@@ -37,7 +37,6 @@ public class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdap
                 .load(imageUrl)
                 .placeholder(R.drawable.placeholder_image)
                 .error(R.drawable.error_image)
-                .centerCrop()
                 .into(holder.imageView);
     }
 

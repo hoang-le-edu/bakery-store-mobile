@@ -65,6 +65,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
         h.tvName.setText(p.getProductName() != null ? p.getProductName() : "");
 
+
         // price "6000.00" -> "6.000đ"
         String price = p.getProductPrice();
         if (price != null) {

@@ -38,7 +38,6 @@ public class ProductListActivity extends BaseBottomNavActivity {
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
     private ImageButton btnProfile;
-    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +149,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
 
     @Override
     protected int getBottomNavMenuItemId() {
-        return R.id.navigation_home;
+        return R.id.navigation_product;
     }
 
 //    private void showProfileMenu(View anchorView) {
