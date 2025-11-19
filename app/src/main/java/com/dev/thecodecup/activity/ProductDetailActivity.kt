@@ -280,7 +280,7 @@ class ProductDetailActivity : AppCompatActivity() {
                 
                 dialog.dismiss()
                 
-                if (response.isSuccessful && response.body()?.success == true) {
+                if (response.isSuccessful) {
                     Toast.makeText(this@ProductDetailActivity, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {

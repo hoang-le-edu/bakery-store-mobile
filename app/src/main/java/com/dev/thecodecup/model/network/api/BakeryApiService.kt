@@ -260,7 +260,7 @@ data class Topping(
 data class CartResponse(
     val message: String,
     val data: List<Cart>,
-    val userInfo: UserInfo
+    val userInfo: UserInfo? = null
 )
 
 data class Cart(
@@ -411,6 +411,6 @@ data class AdminOrdersResponse(
 )
 
 data class SuccessResponse(
-    val success: Boolean,
+    val success: Boolean? = null,
     val message: String
 )

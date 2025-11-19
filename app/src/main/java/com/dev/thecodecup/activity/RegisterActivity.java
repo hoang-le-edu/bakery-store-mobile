@@ -136,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                 // Sử dụng email từ firebaseUser vì nó là email đã được xác thực
                 String email = firebaseUser.getEmail();
 
-                String url = BuildConfig.API_BASE_URL + "api/auth/register";
+                String url = BuildConfig.API_BASE_URL + "auth/register";
 
                 JSONObject body = new JSONObject();
                 body.put("name", name);
@@ -164,7 +164,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                         // 3. Lưu token API và chuyển Activity
                         runOnUiThread(() -> {
-                            AuthManager.INSTANCE.setTokens(apiToken, "", 3600L);
+                            AuthManager.INSTANCE.setTokens(idToken, "", 3600L);
                             NetworkModule.INSTANCE.setTokenProvider(() ->
                                     AuthManager.INSTANCE.getValidIdTokenBlocking()
                             );
