@@ -134,9 +134,9 @@ public class ProductListActivity extends BaseBottomNavActivity {
                 Intent intent = new Intent(ProductListActivity.this, CartActivity.class);
                 startActivity(intent);
                 return true;
-            } else if (itemId == R.id.navigation_wishlist) {
-                // TODO: Navigate to Wishlist
-                Toast.makeText(this, "Wishlist chưa được triển khai", Toast.LENGTH_SHORT).show();
+            } else if (itemId == R.id.navigation_product) {
+                // TODO: Navigate to Product
+                Toast.makeText(this, "Product chưa được triển khai", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.navigation_profile) {
                 // TODO: Navigate to Profile
@@ -186,7 +186,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
             return;
 
         for (CategoryWithProductsDto c : categories) {
-            String title = c.getCategoryName() != null ? c.getCategoryName() : "Danh mục";
+            String title = c.getCategoryName() != null ? c.getCategoryName() : "Category";
             TabLayout.Tab tab = tabLayout.newTab().setText(title);
             // tag = category_id để khi click tab sẽ dùng id call API
             tab.setTag(c.getCategoryId());
