@@ -46,9 +46,9 @@ public abstract class BaseBottomNavActivity extends AppCompatActivity {
             } else if (itemId == R.id.navigation_product) {
                 intent = new Intent(this, ProductListActivity.class);
             } else if (itemId == R.id.navigation_cart) {
-//                intent = new Intent(this, CartActivity.class);      // nếu có
+                intent = new Intent(this, CartActivity.class);
             } else if (itemId == R.id.navigation_profile) {
-//                intent = new Intent(this, ProfileActivity.class);  // nếu có
+                intent = new Intent(this, ProfileActivity.class);
             }
 
             if (intent != null) {

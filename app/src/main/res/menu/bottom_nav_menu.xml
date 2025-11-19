@@ -6,7 +6,7 @@
         android:title="Home"/>
     <item
         android:id="@+id/navigation_product"
-        android:icon="@drawable/ic_wishlist"
+        android:icon="@drawable/ic_product"
         android:title="Product"/>
     <item
         android:id="@+id/navigation_cart"

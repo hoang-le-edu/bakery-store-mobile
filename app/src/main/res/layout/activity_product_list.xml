@@ -22,66 +22,71 @@
 <!--</LinearLayout>-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:fitsSystemWindows="true"
-    >
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:background="@color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:contentInsetStartWithNavigation="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingEnd="16dp">
+            android:orientation="horizontal">
 
             <!-- Nút Back -->
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="48dp"
+                android:layout_width="42dp"
                 android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrowback"
-                android:contentDescription="Back"
+                android:contentDescription="@string/back"
                 android:scaleType="fitCenter"
-                android:paddingRight="12dp"/>
+                android:src="@drawable/ic_arrowback" />
 
             <!-- Ô tìm kiếm -->
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="36dp"
                 android:layout_weight="1"
-                android:minHeight="48dp"
-                android:hint="@string/tim_kiem_san_pham"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:textSize="16sp"
-                android:textColor="#333333"
-                android:textColorHint="#9E9E9E"
                 android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
                 android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:hint="@string/tim_kiem_san_pham"
                 android:imeOptions="actionSearch"
-                android:inputType="text" />
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="#333333"
+                android:textColorHint="@color/colorGrayText"
+                android:textSize="16sp" />
 
-            <ImageButton
-                android:id="@+id/btnProfile"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_profile_placeholder"
-                android:scaleType="fitCenter"
-                android:contentDescription="Profile/Logout" />
+            <!--            <ImageButton-->
+            <!--                android:id="@+id/btnProfile"-->
+            <!--                android:layout_width="48dp"-->
+            <!--                android:layout_height="48dp"-->
+            <!--                android:layout_marginStart="16dp"-->
+            <!--                android:background="?attr/selectableItemBackgroundBorderless"-->
+            <!--                android:src="@drawable/ic_profile_placeholder"-->
+            <!--                android:scaleType="fitCenter"-->
+            <!--                android:contentDescription="Profile/Logout" />-->
 
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
@@ -90,39 +95,43 @@
         android:id="@+id/tvExploreCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Categories"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="Explore Categories"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         app:tabIndicatorColor="#DB5560"
-        app:tabTextColor="#777777"
-        app:tabSelectedTextColor="#DB5560"
         app:tabMode="scrollable"
-        android:background="@android:color/white"/>
+        app:tabSelectedTextColor="#DB5560"
+        app:tabTextColor="#777777" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProducts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="4dp" />
+        android:padding="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@drawable/bnv_selector"
         app:itemTextColor="@drawable/bnv_selector"
-        app:labelVisibilityMode="labeled"/>
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
 </LinearLayout>

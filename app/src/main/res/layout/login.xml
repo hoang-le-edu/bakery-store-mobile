@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Welcome Back!"
-                android:textSize="30sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_marginBottom="4dp" />
@@ -46,10 +46,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:text="Login to your account to continue"
-                android:textSize="14sp"
                 android:textColor="@color/colorGrayText"
-                android:layout_marginBottom="24dp" />
+                android:textSize="16sp" />
 
             <!-- 3. EMAIL - Đồng bộ EditText -->
             <TextView
@@ -112,7 +112,9 @@
                 android:id="@+id/forgotPasswordText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_gravity="end"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="32dp"
                 android:clickable="true"
                 android:focusable="true"
@@ -161,15 +163,16 @@
                 app:strokeWidth="1dp"
                 android:paddingVertical="12dp"
                 app:cornerRadius="12dp"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="16dp" />
 
             <!-- TẠO TÀI KHOẢN -->
             <TextView
                 android:id="@+id/registerButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
                 android:text="Don't have an account? Sign Up"
-                android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:clickable="true"

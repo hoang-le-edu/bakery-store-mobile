@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tên sản phẩm"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#212121"
                 android:maxLines="2"
@@ -161,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:background="@drawable/bg_quantity_badge"
+                    android:background="@color/white"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:gravity="center">
@@ -169,16 +169,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="SL: "
-                        android:textSize="12sp"
-                        android:textColor="#757575" />
+                        android:text="Quantity: "
+                        android:textSize="14sp"
+                        android:textColor="@color/colorGrayText" />
 
                     <TextView
                         android:id="@+id/txtQuantity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1"
-                        android:textSize="13sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="#212121"
                         tools:text="2" />

@@ -65,6 +65,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
         h.tvName.setText(p.getProductName() != null ? p.getProductName() : "");
 
+
         // price "6000.00" -> "6.000đ"
         String price = p.getProductPrice();
         if (price != null) {
@@ -91,11 +92,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
                 .into(h.ivImage);
 
 
-        h.btnAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(ctx, ProductDetailActivity.class);
-            intent.putExtra("productId", p.getProductId());
-            ctx.startActivity(intent);
-        });
+//        h.btnAdd.setOnClickListener(v -> {
+//            Intent intent = new Intent(ctx, ProductDetailActivity.class);
+//            intent.putExtra("productId", p.getProductId());
+//            ctx.startActivity(intent);
+//        });
 
         // Click on item to view detail
         h.itemView.setOnClickListener(v -> {

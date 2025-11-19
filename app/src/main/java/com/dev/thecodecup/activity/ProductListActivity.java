@@ -38,7 +38,6 @@ public class ProductListActivity extends BaseBottomNavActivity {
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
     private ImageButton btnProfile;
-    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
         // 1) View binding
         tabLayout = findViewById(R.id.tabLayout);
         rvProducts = findViewById(R.id.rvProducts);
-        btnProfile = findViewById(R.id.btnProfile);
+//        btnProfile = findViewById(R.id.btnProfile);
         bottomNav = findViewById(R.id.bottomNav);
 
         // 2) RecyclerView + Adapter (2 cột)
@@ -115,72 +114,71 @@ public class ProductListActivity extends BaseBottomNavActivity {
 
         // 7) Gọi load categories ban đầu
         viewModel.loadCategories();
-        btnProfile.setOnClickListener(v -> showProfileMenu(v));
+//        btnProfile.setOnClickListener(v -> showProfileMenu(v));
 
         // 8) Setup bottom navigation
-        setupBottomNavigation();
+//        setupBottomNavigation();
     }
 
-    private void setupBottomNavigation() {
-        bottomNav.setSelectedItemId(R.id.navigation_home);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.navigation_home) {
-                // Already on home
-                return true;
-            } else if (itemId == R.id.navigation_cart) {
-                // Navigate to Cart
-                Intent intent = new Intent(ProductListActivity.this, CartActivity.class);
-                startActivity(intent);
-                return true;
-            } else if (itemId == R.id.navigation_product) {
-                // TODO: Navigate to Product
-                Toast.makeText(this, "Product chưa được triển khai", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.navigation_profile) {
-                // TODO: Navigate to Profile
-                Toast.makeText(this, "Profile chưa được triển khai", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-
-            return false;
-        });
-    }
+//    private void setupBottomNavigation() {
+//        bottomNav.setSelectedItemId(R.id.navigation_home);
+//
+//        bottomNav.setOnItemSelectedListener(item -> {
+//            int itemId = item.getItemId();
+//
+//            if (itemId == R.id.navigation_home) {
+//                Intent intent = new Intent(ProductListActivity.this, HomeActivity.class);
+//                startActivity(intent);
+//                return true;
+//            } else if (itemId == R.id.navigation_cart) {
+//                // Navigate to Cart
+//                Intent intent = new Intent(ProductListActivity.this, CartActivity.class);
+//                startActivity(intent);
+//                return true;
+//            } else if (itemId == R.id.navigation_product) {
+//                // This is product list activity, do nothing
+//                return true;
+//            } else if (itemId == R.id.navigation_profile) {
+//                Intent intent = new Intent(ProductListActivity.this, ProfileActivity.class);
+//                startActivity(intent);
+//                return true;
+//            }
+//            return false;
+//        });
+//    }
 
     @Override
     protected int getBottomNavMenuItemId() {
-        return R.id.navigation_home;
+        return R.id.navigation_product;
     }
 
-    private void showProfileMenu(View anchorView) {
-        PopupMenu popup = new PopupMenu(this, anchorView);
-        popup.getMenu().add(0, 1, 0, "Logout");
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == 1) { // ID của "Đăng xuất"
-                    handleLogout();
-                    return true;
-                }
-                return false;
-            }
-        });
-        popup.show();
-    }
-
-    private void handleLogout() {
-        AuthManager.INSTANCE.clearTokens();
-
-        GoogleAuthManager.getInstance(this).signOutGoogle();
-
-        Intent intent = new Intent(this, Login.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
+//    private void showProfileMenu(View anchorView) {
+//        PopupMenu popup = new PopupMenu(this, anchorView);
+//        popup.getMenu().add(0, 1, 0, "Logout");
+//
+//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                if (item.getItemId() == 1) { // ID của "Đăng xuất"
+//                    handleLogout();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//        popup.show();
+//    }
+//
+//    private void handleLogout() {
+//        AuthManager.INSTANCE.clearTokens();
+//
+//        GoogleAuthManager.getInstance(this).signOutGoogle();
+//
+//        Intent intent = new Intent(this, Login.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        startActivity(intent);
+//        finish();
+//    }
 
     /** Đổ danh sách Tab từ categories */
     private void buildTabs(List<CategoryWithProductsDto> categories) {

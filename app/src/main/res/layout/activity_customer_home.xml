@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <View
-        android:id="@+id/topSpacer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHeight_percent="0.04" />
 
     <!-- SCROLL NỘI DUNG -->
     <ScrollView
@@ -19,19 +13,60 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/topSpacer"
         app:layout_constraintBottom_toTopOf="@id/bottomNav">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:id="@+id/tvWelcomeUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hi there!"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="What would you like to eat today?"
+                android:textColor="#555555"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="18dp"/>
+
+            <!-- Ô tìm kiếm -->
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_search_rounded"
+                android:drawableStart="@drawable/ic_search_category"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:hint="@string/tim_kiem_san_pham"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginBottom="16dp"
+                android:textColor="#333333"
+                android:textColorHint="@color/colorGrayText"
+                android:textSize="16sp" />
 
             <RelativeLayout
                 android:id="@+id/headerCard"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="150dp"
                 android:background="@drawable/bg_header_cake_card"
                 android:padding="20dp">
 
@@ -48,12 +83,12 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:src="@drawable/logo_bepmetay"
-                        android:padding="0dp"
+                        android:layout_marginStart="8dp"
                         android:contentDescription="@string/app_name" />
 
                     <!-- KHOẢNG CÁCH GIỮA LOGO & TEXT -->
                     <Space
-                        android:layout_width="0dp"
+                        android:layout_width="20dp"
                         android:layout_height="1dp" />
 
                     <!-- TEXT BÊN PHẢI -->
@@ -77,41 +112,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Sweet cakes, sweet moments"
-                            android:textColor="#C94C5C"
-                            android:textSize="18sp"
+                            android:paddingStart="8dp"
+                            android:text="Sweet Cakes, \nSweet Moments"
+                            android:textColor="#fe724c"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tvContactTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:paddingStart="12dp"
-                            android:text="Contact:"
-                            android:textColor="#C94C5C"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/tvContactFacebook"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:paddingStart="12dp"
-                            android:text="• Facebook: DUYEN NGUYEN"
-                            android:textColor="#C94C5C"
-                            android:textSize="14sp" />
 
-                        <TextView
-                            android:id="@+id/tvContactPhone"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:paddingStart="12dp"
-                            android:text="• SDT: 0566.979.979 - 0927.818.888"
-                            android:textColor="#C94C5C"
-                            android:textSize="14sp" />
                     </LinearLayout>
 
                 </LinearLayout>

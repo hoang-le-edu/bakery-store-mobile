@@ -29,5 +29,9 @@
     <string name="user">User</string>
     <string name="success">Success</string>
     <string name="about_us">At Bepmetay, we specialize in soft, sweet cakes, colorful jelly desserts and lovely drinks to go with them. Whether it’s a treat for yourself or a gift for someone you love, we’re here to add a sweet touch to your moments.</string>
+    <string name="logout">Logout</string>
+    <string name="back">Back</string>
+    <string name="note">Note</string>
+    <string name="delete_cart">Delete Cart</string>
 
 </resources>
