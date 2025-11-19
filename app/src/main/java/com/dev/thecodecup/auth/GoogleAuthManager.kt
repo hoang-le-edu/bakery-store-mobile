@@ -36,6 +36,14 @@ class GoogleAuthManager(private val context: Context) {
      */
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
+    fun signOutGoogle() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+        val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+        googleSignInClient.signOut()
+    }
     /**
      * Check if user is signed in
      */
