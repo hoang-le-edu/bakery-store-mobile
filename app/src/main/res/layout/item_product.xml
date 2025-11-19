@@ -5,12 +5,14 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="3dp">
+    card_view:cardElevation="3dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <!-- Ảnh sản phẩm -->
         <ImageView
@@ -29,6 +31,7 @@
             android:text="Rau câu mẫu"
             android:textSize="15sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:paddingTop="6dp"
