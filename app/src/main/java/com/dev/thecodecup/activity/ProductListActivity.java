@@ -23,7 +23,6 @@ import com.dev.thecodecup.adapter.ProductAdapter;
 import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 //import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import android.widget.PopupMenu;
 

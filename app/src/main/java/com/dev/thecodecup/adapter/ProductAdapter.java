@@ -3,6 +3,7 @@ package com.dev.thecodecup.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.activity.ProductDetailActivity;
 import com.dev.thecodecup.model.network.dto.ProductDto;
+import com.bumptech.glide.request.target.Target;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -89,6 +91,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         Glide.with(h.ivImage.getContext())
                 .setDefaultRequestOptions(opts)
                 .load(url)
+                .override((int)(Target.SIZE_ORIGINAL * 2.0f))
+                .centerCrop()
                 .into(h.ivImage);
 
 
@@ -122,6 +126,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
             tvName = itemView.findViewById(R.id.tvName);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             btnAdd = itemView.findViewById(R.id.btnAdd);
+
+            if (tvName != null) {
+                tvName.setSingleLine(true);
+                tvName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                tvName.setMarqueeRepeatLimit(-1);
+                tvName.setHorizontallyScrolling(true);
+                tvName.setSelected(true);   // bắt buộc để marquee chạy
+            }
         }
     }
 }
