@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
 
     <!-- AppBar with Tabs -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:layout_height="56dp"
         android:background="@color/white"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="0dp">
 
         <!-- Header -->
@@ -19,11 +20,9 @@
             android:id="@+id/headerProductDetail"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:background="@android:color/white"
-            >
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <ImageButton
                 android:id="@+id/btnHome"
@@ -33,8 +32,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_home"
                 android:contentDescription="@string/back"
+                android:src="@drawable/ic_home"
                 app:tint="@android:color/black" />
 
             <TextView
@@ -54,12 +53,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_delete"
                 android:contentDescription="@string/delete_cart"
+                android:src="@drawable/ic_delete"
                 app:tint="@android:color/black" />
 
         </RelativeLayout>
-
 
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -87,7 +85,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:background="@color/white">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -105,7 +104,7 @@
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
                         android:paddingHorizontal="8dp"
-                        android:paddingStart="16dp"
+                        android:paddingStart="0dp"
                         android:paddingBottom="8dp" />
 
                     <!-- Empty Cart Message -->
@@ -162,7 +161,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:background="@color/white">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -251,7 +251,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="@color/white">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -285,6 +286,7 @@
                 android:text="Checkout"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:textColor="@color/white"
                 android:backgroundTint="@color/pink_primary"
                 app:cornerRadius="28dp"
                 android:paddingHorizontal="24dp" />

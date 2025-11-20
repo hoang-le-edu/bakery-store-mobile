@@ -1,5 +1,6 @@
 package com.dev.thecodecup.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,7 +19,6 @@ import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.ProductAdapter;
 import com.dev.thecodecup.model.network.dto.ProductDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -63,6 +63,13 @@ public class HomeActivity extends BaseBottomNavActivity  {
         rvBestSeller.setLayoutManager(layoutManager);
 
         bestSellerAdapter = new ProductAdapter(this);
+
+        bestSellerAdapter.setOnItemClickListener(product -> {
+            Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+            intent.putExtra("PRODUCT_ID", product.getProductId());
+            startActivity(intent);
+        });
+
         rvBestSeller.setAdapter(bestSellerAdapter);
         rvBestSeller.setHasFixedSize(true);
 
@@ -73,22 +80,22 @@ public class HomeActivity extends BaseBottomNavActivity  {
                         // 1. THU NHỎ CARD: rộng khoảng 160dp để thấy nhiều item
                         ViewGroup.LayoutParams lpCard = view.getLayoutParams();
                         if (lpCard != null) {
-                            lpCard.width = dpToPx(160); // bạn chỉnh 150/170 tuỳ ý
+                            lpCard.width = dpToPx(150); // bạn chỉnh 150/170 tuỳ ý
                             view.setLayoutParams(lpCard);
                         }
-
-                        // 2. ẢNH VUÔNG (cao = rộng của card trừ padding)
-                        ImageView ivImage = view.findViewById(R.id.ivImage);
-                        if (ivImage != null) {
-                            ivImage.post(() -> {
-                                ViewGroup.LayoutParams lpImg = ivImage.getLayoutParams();
-                                int w = ivImage.getWidth();
-                                if (w > 0) {
-                                    lpImg.height = w;        // cao = rộng
-                                    ivImage.setLayoutParams(lpImg);
-                                }
-                            });
-                        }
+//
+//                        // 2. ẢNH VUÔNG (cao = rộng của card trừ padding)
+//                        ImageView ivImage = view.findViewById(R.id.ivImage);
+//                        if (ivImage != null) {
+//                            ivImage.post(() -> {
+//                                ViewGroup.LayoutParams lpImg = ivImage.getLayoutParams();
+//                                int w = ivImage.getWidth();
+//                                if (w > 0) {
+//                                    lpImg.height = (int) (w * 0.7f);
+//                                    ivImage.setLayoutParams(lpImg);
+//                                }
+//                            });
+//                        }
 
                         // 3. BẬT MARQUEE cho tên product (nếu bạn muốn)
                         TextView tvName = view.findViewById(R.id.tvName);
