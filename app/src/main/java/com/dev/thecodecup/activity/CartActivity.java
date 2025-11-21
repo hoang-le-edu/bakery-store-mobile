@@ -124,7 +124,7 @@ public class CartActivity extends BaseBottomNavActivity {
                 // TODO: điều hướng sang CheckoutActivity khi sẵn sàng
                 Toast.makeText(
                         CartActivity.this,
-                        "Checkout chưa được implement",
+                        "Checkout is not implemented yet",
                         Toast.LENGTH_SHORT
                 ).show();
 
@@ -140,7 +140,7 @@ public class CartActivity extends BaseBottomNavActivity {
         final ProgressDialog dialog = ProgressDialog.show(
                 this,
                 null,
-                "Đang tải giỏ hàng...",
+                "Loading cart...",
                 true,
                 false
         );
@@ -155,7 +155,7 @@ public class CartActivity extends BaseBottomNavActivity {
                         if (error != null) {
                             Toast.makeText(
                                     CartActivity.this,
-                                    "Lỗi kết nối: " + error.getMessage(),
+                                    "Connection error: " + error.getMessage(),
                                     Toast.LENGTH_SHORT
                             ).show();
                             showEmptyCart();
@@ -178,7 +178,7 @@ public class CartActivity extends BaseBottomNavActivity {
                             int code = (response != null) ? response.code() : -1;
                             Toast.makeText(
                                     CartActivity.this,
-                                    "Lỗi: " + code,
+                                    "Error: " + code,
                                     Toast.LENGTH_SHORT
                             ).show();
                             showEmptyCart();
@@ -251,7 +251,7 @@ public class CartActivity extends BaseBottomNavActivity {
         final ProgressDialog dialog = ProgressDialog.show(
                 this,
                 null,
-                "Đang xóa giỏ hàng...",
+                "Deleting cart...",
                 true,
                 false
         );
@@ -267,7 +267,7 @@ public class CartActivity extends BaseBottomNavActivity {
                         if (error != null) {
                             Toast.makeText(
                                     CartActivity.this,
-                                    "Lỗi: " + error.getMessage(),
+                                    "Error: " + error.getMessage(),
                                     Toast.LENGTH_SHORT
                             ).show();
                             return;
@@ -276,7 +276,7 @@ public class CartActivity extends BaseBottomNavActivity {
                         if (response != null && response.isSuccessful()) {
                             Toast.makeText(
                                     CartActivity.this,
-                                    "Đã xóa giỏ hàng",
+                                    "Cart deleted",
                                     Toast.LENGTH_SHORT
                             ).show();
                             loadCarts();
@@ -284,7 +284,7 @@ public class CartActivity extends BaseBottomNavActivity {
                             int code = (response != null) ? response.code() : -1;
                             Toast.makeText(
                                     CartActivity.this,
-                                    "Lỗi: " + code,
+                                    "Error: " + code,
                                     Toast.LENGTH_SHORT
                             ).show();
                         }
