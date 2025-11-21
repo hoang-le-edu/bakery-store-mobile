@@ -18,20 +18,20 @@
     <!-- khoảng cách dưới logo -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="24dp" />
+        android:layout_height="@dimen/space_xl" />
 
     <!-- Title -->
     <TextView
         android:id="@+id/tvWelcomeTitle"
         android:layout_width="210dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_md"
+        android:layout_marginBottom="@dimen/space_md"
         android:gravity="center"
         android:text="Welcome to our store"
         android:textColor="@android:color/white"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp" />
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold" />
 
     <!-- Sub title -->
     <TextView
@@ -40,5 +40,5 @@
         android:layout_height="wrap_content"
         android:text="Get your cakes in as fast as one hour"
         android:textColor="#E0E0E0"
-        android:textSize="18sp" />
+        android:textSize="@dimen/text_lg" />
 </LinearLayout>

@@ -29,7 +29,7 @@
                 android:id="@+id/btnBack"
                 android:layout_width="42dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/space_sm"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back"
                 android:scaleType="fitCenter"
@@ -43,18 +43,18 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
-                android:drawablePadding="8dp"
+                android:drawablePadding="@dimen/space_sm"
                 android:gravity="center_vertical"
                 android:hint="@string/tim_kiem_san_pham"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:minHeight="48dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:layout_marginEnd="16dp"
+                android:paddingStart="@dimen/space_md"
+                android:paddingEnd="@dimen/space_md"
+                android:layout_marginEnd="@dimen/space_lg"
                 android:textColor="#333333"
                 android:textColorHint="@color/colorGrayText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_md" />
 
             <!--            <ImageButton-->
             <!--                android:id="@+id/btnProfile"-->
@@ -73,13 +73,13 @@
         android:id="@+id/tvExploreCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingTop="@dimen/space_sm"
+        android:paddingEnd="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_sm"
         android:text="Explore Categories"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="@dimen/text_subsubtitle"
         android:textStyle="bold" />
 
     <com.google.android.material.tabs.TabLayout
@@ -87,8 +87,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg"
         app:tabIndicatorColor="#DB5560"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="#DB5560"
@@ -99,9 +99,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="4dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp" />
+        android:padding="@dimen/space_xs"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"

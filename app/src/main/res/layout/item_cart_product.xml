@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="@dimen/space_sm"
     app:cardCornerRadius="20dp"
     app:cardElevation="1dp"
     app:strokeWidth="1dp"
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp"
+        android:padding="@dimen/space_md"
         android:background="@color/white">
 
         <!-- Product Image -->
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="@dimen/space_md">
 
             <!-- Product Name -->
             <TextView
@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tên sản phẩm"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_md"
                 android:textStyle="bold"
                 android:textColor="#212121"
                 android:maxLines="2"
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone">
 
                 <ImageView
@@ -78,9 +78,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Size: M"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_xs"
                     android:textColor="#757575"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="@dimen/space_xs"
                     tools:text="Size: M (2-3 người)" />
 
             </LinearLayout>
@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone">
 
                 <ImageView
@@ -108,9 +108,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Toppings"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_xs"
                     android:textColor="#757575"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="@dimen/space_xs"
                     android:maxLines="2"
                     android:ellipsize="end"
                     tools:text="Kem phô mai, Cherry" />
@@ -123,7 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone">
 
                 <ImageView
@@ -140,10 +140,10 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Ghi chú"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_xs"
                     android:textColor="#757575"
                     android:textStyle="italic"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="@dimen/space_xs"
                     android:maxLines="2"
                     android:ellipsize="end"
                     tools:text="Không quá ngọt" />
@@ -155,7 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/space_sm"
                 android:gravity="center_vertical">
 
                 <!-- Quantity Badge -->
@@ -164,15 +164,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/white"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp"
+                    android:paddingHorizontal="@dimen/space_xs"
+                    android:paddingVertical="@dimen/space_xs"
                     android:gravity="center">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Quantity: "
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_sm"
                         android:textColor="@color/colorGrayText" />
 
                     <TextView
@@ -180,7 +180,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_sm"
                         android:textStyle="bold"
                         android:textColor="#212121"
                         tools:text="2" />
@@ -198,7 +198,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="150,000₫"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_md"
                     android:textStyle="bold"
                     android:textColor="@color/pink_primary"
                     tools:text="150,000₫" />

@@ -20,8 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg">
 
             <TextView
                 android:id="@+id/tvWelcomeUser"
@@ -29,9 +29,9 @@
                 android:layout_height="wrap_content"
                 android:text="Hi there!"
                 android:textColor="@color/black"
-                android:textSize="28sp"
+                android:textSize="@dimen/text_subtitle"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="@dimen/space_lg"/>
 
             <TextView
                 android:id="@+id/tvGreeting"
@@ -39,9 +39,9 @@
                 android:layout_height="wrap_content"
                 android:text="What would you like to eat today?"
                 android:textColor="#555555"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="18dp"/>
+                android:textSize="@dimen/text_md"
+                android:layout_marginTop="@dimen/space_xs"
+                android:layout_marginBottom="@dimen/space_lg"/>
 
             <!-- Ô tìm kiếm -->
             <EditText
@@ -51,24 +51,24 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
-                android:drawablePadding="8dp"
+                android:drawablePadding="@dimen/space_sm"
                 android:gravity="center_vertical"
                 android:hint="@string/tim_kiem_san_pham"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:layout_marginBottom="16dp"
+                android:paddingStart="@dimen/space_md"
+                android:paddingEnd="@dimen/space_md"
+                android:layout_marginBottom="@dimen/space_lg"
                 android:textColor="#333333"
                 android:textColorHint="@color/colorGrayText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_md" />
 
             <RelativeLayout
                 android:id="@+id/headerCard"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:background="@drawable/bg_header_cake_card"
-                android:padding="20dp">
+                android:padding="@dimen/space_xl">
 
                 <!-- Hàng ngang: logo trái, text phải -->
                 <LinearLayout
@@ -83,7 +83,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:src="@drawable/logo_bepmetay"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="@dimen/space_sm"
                         android:contentDescription="@string/app_name" />
 
                     <!-- KHOẢNG CÁCH GIỮA LOGO & TEXT -->
@@ -104,18 +104,18 @@
                             android:layout_height="wrap_content"
                             android:text="BEPMETAY"
                             android:textColor="@color/black"
-                            android:textSize="22sp"
+                            android:textSize="@dimen/text_xl"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvTagline"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:paddingStart="8dp"
+                            android:layout_marginTop="@dimen/space_xs"
+                            android:paddingStart="@dimen/space_sm"
                             android:text="Sweet Cakes, \nSweet Moments"
                             android:textColor="#fe724c"
-                            android:textSize="22sp"
+                            android:textSize="@dimen/text_xl"
                             android:textStyle="bold" />
 
 
@@ -131,9 +131,9 @@
                 android:id="@+id/tvAboutTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/space_xl"
                 android:text="About us"
-                android:textSize="24sp"
+                android:textSize="@dimen/text_subsubtitle"
                 android:textStyle="bold"
                 android:textColor="@color/black" />
 
@@ -141,12 +141,12 @@
                 android:id="@+id/tvAboutContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="@dimen/space_sm"
+                android:paddingStart="@dimen/space_lg"
+                android:paddingEnd="@dimen/space_lg"
+                android:layout_marginBottom="@dimen/space_lg"
                 android:text="@string/about_us"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_lg"
                 android:textColor="@color/black"
                 android:justificationMode="inter_word"
                 />
@@ -155,9 +155,9 @@
                 android:id="@+id/tvBestSellerTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/space_sm"
                 android:text="Best Seller"
-                android:textSize="24sp"
+                android:textSize="@dimen/text_subsubtitle"
                 android:textStyle="bold"
                 android:textColor="@color/black" />
 
@@ -165,7 +165,7 @@
                 android:id="@+id/rvBestSeller"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/space_sm"
                 android:overScrollMode="never"
                 android:clipToPadding="false" />
 

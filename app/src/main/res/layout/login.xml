@@ -29,8 +29,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="32dp">
+            android:paddingHorizontal="@dimen/space_xl"
+            android:paddingTop="@dimen/space_xxl">
 
             <!-- 2. TIÊU ĐỀ - Đồng bộ với Register -->
             <TextView
@@ -38,27 +38,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Welcome Back!"
-                android:textSize="32sp"
-                android:textStyle="bold"
+                android:textSize="@dimen/text_title"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="@color/black"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="@dimen/space_xs" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="@dimen/space_xl"
                 android:text="Login to your account to continue"
                 android:textColor="@color/colorGrayText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_md" />
 
             <!-- 3. EMAIL - Đồng bộ EditText -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/space_xs"
                 android:text="Email"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_md" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -66,27 +66,27 @@
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="0dp"
                 app:hintEnabled="false"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="@dimen/space_xl">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="12dp"
+                    android:paddingVertical="@dimen/space_md"
                     android:background="@drawable/edit_text_bottom_line"
-                    android:hint="Enter your email"
+                    android:hint="@string/enter_your_email"
                     android:inputType="textEmailAddress"
                     android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/text_lg" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- 4. MẬT KHẨU - Đồng bộ EditText -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Password"
+                android:text="@string/password"
                 android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp" />
+                android:textSize="@dimen/text_md"
+                android:layout_marginBottom="@dimen/space_xs" />
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -95,17 +95,17 @@
                 app:hintEnabled="false"
                 app:passwordToggleEnabled="true"
                 app:passwordToggleTint="@color/colorGrayLine"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="@dimen/space_lg">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/passwordEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="12dp"
+                    android:paddingVertical="@dimen/space_md"
                     android:background="@drawable/edit_text_bottom_line"
                     android:hint="Enter your password"
                     android:inputType="textPassword"
                     android:textColor="@color/black"
-                    android:textSize="18sp"/>
+                    android:textSize="@dimen/text_lg"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -115,13 +115,14 @@
                 android:minHeight="48dp"
                 android:layout_gravity="end"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="@dimen/space_xxl"
                 android:clickable="true"
                 android:focusable="true"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_md"
+                android:fontFamily="sans-serif-medium"
                 android:text="@string/quen_mat_khau"
                 android:textColor="@color/colorRedButton"
-                android:textStyle="bold" />
+                />
 
             <!-- 5. NÚT ĐĂNG NHẬP - Full-width, đồng bộ style-->
             <Button
@@ -131,9 +132,9 @@
                 android:text="@string/dang_nhap"
                 android:backgroundTint="@color/colorRedButton"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_lg"
                 android:textStyle="bold"
-                android:paddingVertical="14dp"
+                android:paddingVertical="@dimen/text_sm"
                 app:cornerRadius="12dp"/>
 
             <!-- HOẶC -->
@@ -144,8 +145,8 @@
                 android:text="@string/hoac"
                 android:textAlignment="center"
                 android:textColor="@color/colorGrayText"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginTop="@dimen/space_sm"
+                android:layout_marginBottom="@dimen/space_sm" />
 
             <!-- GOOGLE - Giữ nguyên style Outlined -->
             <Button
@@ -158,12 +159,12 @@
                 app:icon="@drawable/ic_google"
                 app:iconTint="@null"
                 app:iconGravity="textStart"
-                app:iconPadding="16dp"
+                app:iconPadding="@dimen/space_lg"
                 app:strokeColor="@color/colorGrayLine"
                 app:strokeWidth="1dp"
-                android:paddingVertical="12dp"
+                android:paddingVertical="@dimen/space_md"
                 app:cornerRadius="12dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="@dimen/space_lg" />
 
             <!-- TẠO TÀI KHOẢN -->
             <TextView
@@ -174,7 +175,7 @@
                 android:gravity="center"
                 android:text="Don't have an account? Sign Up"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_md"
                 android:clickable="true"
                 android:focusable="true" />
 
