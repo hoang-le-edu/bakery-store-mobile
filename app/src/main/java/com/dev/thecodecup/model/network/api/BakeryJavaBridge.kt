@@ -30,6 +30,9 @@ interface CreateCartCallback {
     fun onResult(response: Response<SingleCartResponse>?, error: Throwable?)
 }
 
+interface RemoveProductCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
 
 object BakeryJavaBridge {
 
@@ -106,6 +109,21 @@ object BakeryJavaBridge {
             try {
                 val request = CreateCartRequest(type = "Online", custom_name = null)
                 val response = apiService.createCart(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun removeProductFromCart(
+        owner: LifecycleOwner,
+        request: RemoveProductFromCartRequest,
+        callback: RemoveProductCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.removeProductFromCart(request)
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)

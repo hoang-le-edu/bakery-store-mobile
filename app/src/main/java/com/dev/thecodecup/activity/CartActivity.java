@@ -1,5 +1,6 @@
 package com.dev.thecodecup.activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,17 +22,15 @@ import com.dev.thecodecup.adapter.CartAdapter;
 import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
 import com.dev.thecodecup.model.network.api.Cart;
 import com.dev.thecodecup.model.network.api.CartOrderDetail;
-import com.dev.thecodecup.model.network.api.CartListCallback;
-import com.dev.thecodecup.model.network.api.CartResponse;
-import com.dev.thecodecup.model.network.api.DeleteCartCallback;
-import com.dev.thecodecup.model.network.api.SuccessResponse;
+import com.dev.thecodecup.model.network.api.CreateCartCallback;
+import com.dev.thecodecup.model.network.api.RemoveProductFromCartRequest;
+import com.dev.thecodecup.model.network.api.SingleCartResponse;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 import retrofit2.Response;
 
 public class CartActivity extends BaseBottomNavActivity {
@@ -103,6 +104,10 @@ public class CartActivity extends BaseBottomNavActivity {
                 }
         );
         recyclerViewCartItems.setAdapter(cartAdapter);
+
+        // Setup swipe-to-delete
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerViewCartItems);
     }
 
     private void setupListeners() {
@@ -212,14 +217,17 @@ public class CartActivity extends BaseBottomNavActivity {
     }
 
     private void createNewCart() {
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Creating new cart...", true, false);
-        BakeryJavaBridge.INSTANCE.createCart(this, (response, error) -> {
-            dialog.dismiss();
-            if (response != null && response.isSuccessful()) {
-                Toast.makeText(this, "Cart Created Successfully!", Toast.LENGTH_SHORT).show();
-                loadCarts();
-            } else {
-                Toast.makeText(this, "Failed to create cart", Toast.LENGTH_SHORT).show();
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Đang tạo giỏ hàng mới...", true, false);
+        BakeryJavaBridge.INSTANCE.createCart(this, new CreateCartCallback() {
+            @Override
+            public void onResult(Response<SingleCartResponse> response, Throwable error) {
+                dialog.dismiss();
+                if (response != null && response.isSuccessful()) {
+                    Toast.makeText(CartActivity.this, "Đã tạo giỏ hàng mới thành công!", Toast.LENGTH_SHORT).show();
+                    loadCarts();
+                } else {
+                    Toast.makeText(CartActivity.this, "Tạo giỏ hàng thất bại", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -324,6 +332,21 @@ public class CartActivity extends BaseBottomNavActivity {
         );
     }
 
+    private void removeProductFromCart(String cartId, String orderDetailId) {
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Đang xóa sản phẩm...", true, false);
+        RemoveProductFromCartRequest request = new RemoveProductFromCartRequest(cartId, orderDetailId);
+
+        BakeryJavaBridge.INSTANCE.removeProductFromCart(this, request, (response, error) -> {
+            dialog.dismiss();
+            if (response != null && response.isSuccessful()) {
+                Toast.makeText(this, "Đã xóa sản phẩm khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+                loadCarts(); // Reload to reflect changes
+            } else {
+                Toast.makeText(this, "Xóa sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private String formatPrice(int price) {
         return String.format("%,d", price).replace(",", ".");
     }
@@ -332,5 +355,40 @@ public class CartActivity extends BaseBottomNavActivity {
     protected void onResume() {
         super.onResume();
         loadCarts(); // Refresh cart mỗi lần quay lại màn
+    }
+
+    private class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
+
+        SwipeToDeleteCallback() {
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            CartOrderDetail item = cartAdapter.getItem(position);
+
+            if (item != null) {
+                new AlertDialog.Builder(CartActivity.this)
+                        .setTitle("Xác nhận xóa")
+                        .setMessage("Bạn có chắc muốn xóa sản phẩm '" + item.getProduct_name() + "' khỏi giỏ hàng?")
+                        .setPositiveButton("Xóa", (dialog, which) -> {
+                            if (selectedCartIndex >= 0 && selectedCartIndex < carts.size()) {
+                                String cartId = carts.get(selectedCartIndex).getOrder_id();
+                                removeProductFromCart(cartId, item.getId());
+                            }
+                        })
+                        .setNegativeButton("Hủy", (dialog, which) -> {
+                            cartAdapter.notifyItemChanged(position); // Revert swipe
+                        })
+                        .setCancelable(false)
+                        .show();
+            }
+        }
     }
 }
