@@ -45,6 +45,13 @@ interface BakeryApiService {
     ): Response<ProductDetailResponse>
     
     // ==================== Cart APIs ====================
+
+    /**
+     * Create a new empty cart
+     * Used in: CartScreen, ProductDetailScreen
+     */
+    @POST("cart/createCart")
+    suspend fun createCart(@Body request: CreateCartRequest): Response<SingleCartResponse>
     
     /**
      * Add product to cart (creates new cart or adds to existing)
@@ -167,6 +174,11 @@ interface BakeryApiService {
 
 // ==================== Request DTOs ====================
 
+data class CreateCartRequest(
+    val type: String,
+    val custom_name: String? = null
+)
+
 data class AddToCartRequest(
     val product: CartProductRequest,
     val order_ids: List<String> = emptyList()  // Empty = new cart, Filled = add to existing cart
@@ -224,6 +236,11 @@ data class UpdateOrderStatusRequest(
 )
 
 // ==================== Response DTOs ====================
+
+data class SingleCartResponse(
+    val message: String,
+    val data: Cart
+)
 
 data class ProductDetailResponse(
     val success: Boolean,

@@ -1,5 +1,6 @@
 package com.dev.thecodecup.activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.dev.thecodecup.adapter.ImageCarouselAdapter;
 import com.dev.thecodecup.model.network.api.AddToCartRequest;
 import com.dev.thecodecup.model.network.api.AddToCartCallback;
 import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
+import com.dev.thecodecup.model.network.api.Cart;
 import com.dev.thecodecup.model.network.api.CartProductRequest;
 import com.dev.thecodecup.model.network.api.ProductDetail;
 import com.dev.thecodecup.model.network.api.ProductDetailCallback;
@@ -129,56 +131,53 @@ public class ProductDetailActivity extends AppCompatActivity {
         BakeryJavaBridge.INSTANCE.loadProductDetail(
                 this,
                 productId,
-                new ProductDetailCallback() {
-                    @Override
-                    public void onResult(Response<ProductDetailResponse> response, Throwable error) {
-                        dialog.dismiss();
+                (response, error) -> {
+                    dialog.dismiss();
 
-                        if (error != null) {
-                            String errorMsg = "Exception: " +
-                                    error.getClass().getSimpleName() + " - " +
-                                    error.getMessage() + "\nProduct ID: " + productId;
-                            Toast.makeText(ProductDetailActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-                            Log.e("ProductDetail", "Exception loading product", error);
-                            return;
-                        }
+                    if (error != null) {
+                        String errorMsg = "Exception: " +
+                                error.getClass().getSimpleName() + " - " +
+                                error.getMessage() + "\nProduct ID: " + productId;
+                        Toast.makeText(ProductDetailActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                        Log.e("ProductDetail", "Exception loading product", error);
+                        return;
+                    }
 
-                        if (response == null) {
-                            Toast.makeText(ProductDetailActivity.this,
-                                    "Response null", Toast.LENGTH_LONG).show();
-                            return;
-                        }
+                    if (response == null) {
+                        Toast.makeText(ProductDetailActivity.this,
+                                "Response null", Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
-                        try {
-                            if (response.isSuccessful()
-                                    && response.body() != null
-                                    && Boolean.TRUE.equals(response.body().getSuccess())) {
+                    try {
+                        if (response.isSuccessful()
+                                && response.body() != null
+                                && Boolean.TRUE.equals(response.body().getSuccess())) {
 
-                                productDetail = response.body().getData();
-                                if (productDetail != null) {
-                                    displayProductDetail();
-                                } else {
-                                    Toast.makeText(ProductDetailActivity.this,
-                                            "Dữ liệu sản phẩm null", Toast.LENGTH_LONG).show();
-                                }
+                            productDetail = response.body().getData();
+                            if (productDetail != null) {
+                                displayProductDetail();
                             } else {
-                                String apiMsg = "API Error: " +
-                                        response.code() + " - " + response.message() +
-                                        "\nProduct ID: " + productId;
-
                                 Toast.makeText(ProductDetailActivity.this,
-                                        apiMsg, Toast.LENGTH_LONG).show();
-
-                                Log.e("ProductDetail", "API failed: " + apiMsg);
-
-                                if (response.errorBody() != null) {
-                                    String body = response.errorBody().string();
-                                    Log.e("ProductDetail", "Response body: " + body);
-                                }
+                                        "Dữ liệu sản phẩm null", Toast.LENGTH_LONG).show();
                             }
-                        } catch (IOException e) {
-                            Log.e("ProductDetail", "Error reading errorBody", e);
+                        } else {
+                            String apiMsg = "API Error: " +
+                                    response.code() + " - " + response.message() +
+                                    "\nProduct ID: " + productId;
+
+                            Toast.makeText(ProductDetailActivity.this,
+                                    apiMsg, Toast.LENGTH_LONG).show();
+
+                            Log.e("ProductDetail", "API failed: " + apiMsg);
+
+                            if (response.errorBody() != null) {
+                                String body = response.errorBody().string();
+                                Log.e("ProductDetail", "Response body: " + body);
+                            }
                         }
+                    } catch (IOException e) {
+                        Log.e("ProductDetail", "Error reading errorBody", e);
                     }
                 }
         );
@@ -356,9 +355,68 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void addToCart() {
         if (productDetail == null) return;
-        ProductDetail product = productDetail;
 
-        int basePrice = parsePrice(product.getPrice());
+        final ProgressDialog checkCartDialog = ProgressDialog.show(this, null, "Đang kiểm tra giỏ hàng...", true, false);
+
+        BakeryJavaBridge.INSTANCE.fetchCart(this, (response, error) -> {
+            checkCartDialog.dismiss();
+
+            if (error != null || response == null || !response.isSuccessful() || response.body() == null) {
+                Toast.makeText(this, "Không thể lấy thông tin giỏ hàng, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<Cart> userCarts = response.body().getData();
+
+            if (userCarts == null || userCarts.isEmpty()) {
+                createNewCartAndAddProduct();
+            } else if (userCarts.size() == 1) {
+                String cartId = userCarts.get(0).getOrder_id();
+                addProductToExistingCart(cartId);
+            } else {
+                showSelectCartDialog(userCarts);
+            }
+        });
+    }
+
+    // HÀM MỚI: Hiển thị Dialog lựa chọn giỏ hàng
+    private void showSelectCartDialog(List<Cart> carts) {
+        List<String> cartNames = new ArrayList<>();
+        for (Cart cart : carts) {
+            cartNames.add(cart.getName());
+        }
+        cartNames.add("Tạo giỏ hàng mới...");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn giỏ hàng");
+        builder.setItems(cartNames.toArray(new String[0]), (dialog, which) -> {
+            if (which == cartNames.size() - 1) {
+                createNewCartAndAddProduct();
+            } else {
+                String selectedCartId = carts.get(which).getOrder_id();
+                addProductToExistingCart(selectedCartId);
+            }
+        });
+        builder.show();
+    }
+
+    private void createNewCartAndAddProduct() {
+        final ProgressDialog createDialog = ProgressDialog.show(this, null, "Creating new cart...", true, false);
+        BakeryJavaBridge.INSTANCE.createCart(this, (response, error) -> {
+            createDialog.dismiss();
+            if (response != null && response.isSuccessful() && response.body() != null) {
+                String newCartId = response.body().getData().getOrder_id();
+                Toast.makeText(this, "Adding product to new cart...", Toast.LENGTH_SHORT).show();
+                addProductToExistingCart(newCartId); // Thêm sản phẩm vào giỏ vừa tạo
+            } else {
+                Toast.makeText(this, "Failed to create new cart", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addProductToExistingCart(String cartId) {
+
+        int basePrice = parsePrice(productDetail.getPrice());
         int toppingsPrice = 0;
         for (Topping t : selectedToppings) {
             toppingsPrice += parsePrice(t.getPrice());
@@ -369,7 +427,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // sizeToSend logic
         String sizeToSend;
-        List<com.dev.thecodecup.model.network.api.Size> sizeList = product.getSize_list();
+        List<com.dev.thecodecup.model.network.api.Size> sizeList = productDetail.getSize_list();
         if (sizeList == null || sizeList.isEmpty()) {
             sizeToSend = "";
         } else {
@@ -396,72 +454,29 @@ public class ProductDetailActivity extends AppCompatActivity {
         );
 
         List<String> orderIds = new ArrayList<>();
+        orderIds.add(cartId);
         AddToCartRequest request = new AddToCartRequest(productRequest, orderIds);
 
-        ProgressDialog dialog =
-                ProgressDialog.show(this, null, "Đang thêm vào giỏ...", true, false);
-
-        Log.d("ProductDetail", "Adding to cart: " + request.toString());
-
-        BakeryJavaBridge.INSTANCE.addProductToCart(
-                this,
-                request,
-                new AddToCartCallback() {
-                    @Override
-                    public void onResult(Response<SuccessResponse> response, Throwable error) {
-                        dialog.dismiss();
-
-                        if (error != null) {
-                            Log.e("ProductDetail", "Exception adding to cart", error);
-                            Toast.makeText(ProductDetailActivity.this,
-                                    "Lỗi: " + error.getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if (response == null) {
-                            Toast.makeText(ProductDetailActivity.this,
-                                    "Response null", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        try {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(ProductDetailActivity.this,
-                                        "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                String errorBody =
-                                        response.errorBody() != null
-                                                ? response.errorBody().string()
-                                                : null;
-                                Log.e("ProductDetail", "Add to cart failed: "
-                                        + response.code() + " - " + errorBody);
-
-                                String errorMsg;
-                                if (errorBody != null) {
-                                    try {
-                                        JSONObject json = new JSONObject(errorBody);
-                                        errorMsg = json.optString(
-                                                "message",
-                                                "Lỗi: " + response.code()
-                                        );
-                                    } catch (Exception e) {
-                                        errorMsg = "Lỗi: " + response.code();
-                                    }
-                                } else {
-                                    errorMsg = "Lỗi: " + response.code();
-                                }
-
-                                Toast.makeText(ProductDetailActivity.this,
-                                        errorMsg, Toast.LENGTH_LONG).show();
-                            }
-                        } catch (IOException e) {
-                            Log.e("ProductDetail", "Error reading errorBody", e);
-                        }
+        final ProgressDialog addDialog = ProgressDialog.show(this, null, "Đang thêm vào giỏ...", true, false);
+        BakeryJavaBridge.INSTANCE.addProductToCart(this, request, (response, error) -> {
+            addDialog.dismiss();
+            if (response != null && response.isSuccessful()) {
+                Toast.makeText(this, "Đã thêm vào giỏ hàng thành công!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                String errorMsg = "Thêm vào giỏ hàng thất bại";
+                if (error != null) {
+                    errorMsg += ": " + error.getMessage();
+                } else if (response != null) {
+                    try {
+                        errorMsg = new JSONObject(response.errorBody().string()).getString("message");
+                    } catch (Exception e) {
+                        errorMsg += ". Code: " + response.code();
                     }
                 }
-        );
+                Toast.makeText(ProductDetailActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private int parsePrice(String price) {
