@@ -48,7 +48,7 @@
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
+                android:minHeight="48dp"
                 android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
                 android:drawablePadding="@dimen/space_sm"

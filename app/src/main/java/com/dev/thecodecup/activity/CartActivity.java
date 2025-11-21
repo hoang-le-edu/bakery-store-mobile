@@ -142,7 +142,7 @@ public class CartActivity extends BaseBottomNavActivity {
                 Cart selectedCart = carts.get(selectedCartIndex);
                 Toast.makeText(
                         CartActivity.this,
-                        "Checkout chưa được implement",
+                        "Checkout is not implemented yet",
                         Toast.LENGTH_SHORT
                 ).show();
             }
@@ -153,7 +153,7 @@ public class CartActivity extends BaseBottomNavActivity {
         final ProgressDialog dialog = ProgressDialog.show(
                 this,
                 null,
-                "Đang tải giỏ hàng...",
+                "Loading cart...",
                 true,
                 false
         );
@@ -163,6 +163,15 @@ public class CartActivity extends BaseBottomNavActivity {
                 (response, error) -> {
                     dialog.dismiss();
 
+                        if (error != null) {
+                            Toast.makeText(
+                                    CartActivity.this,
+                                    "Connection error: " + error.getMessage(),
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            showEmptyCart();
+                            return;
+                        }
                     if (error != null) {
                         Toast.makeText(
                                 CartActivity.this,
@@ -190,7 +199,7 @@ public class CartActivity extends BaseBottomNavActivity {
                         int code = (response != null) ? response.code() : -1;
                         Toast.makeText(
                                 CartActivity.this,
-                                "Lỗi: " + code,
+                                "Error: " + code,
                                 Toast.LENGTH_SHORT
                         ).show();
                         showEmptyCart();
@@ -307,7 +316,7 @@ public class CartActivity extends BaseBottomNavActivity {
                     if (error != null) {
                         Toast.makeText(
                                 CartActivity.this,
-                                "Lỗi: " + error.getMessage(),
+                                "Error: " + error.getMessage(),
                                 Toast.LENGTH_SHORT
                         ).show();
                         return;
@@ -316,7 +325,7 @@ public class CartActivity extends BaseBottomNavActivity {
                     if (response != null && response.isSuccessful()) {
                         Toast.makeText(
                                 CartActivity.this,
-                                "Đã xóa giỏ hàng",
+                                "Cart deleted",
                                 Toast.LENGTH_SHORT
                         ).show();
                         loadCarts();
@@ -324,7 +333,7 @@ public class CartActivity extends BaseBottomNavActivity {
                         int code = (response != null) ? response.code() : -1;
                         Toast.makeText(
                                 CartActivity.this,
-                                "Lỗi: " + code,
+                                "Error: " + code,
                                 Toast.LENGTH_SHORT
                         ).show();
                     }
@@ -375,15 +384,15 @@ public class CartActivity extends BaseBottomNavActivity {
 
             if (item != null) {
                 new AlertDialog.Builder(CartActivity.this)
-                        .setTitle("Xác nhận xóa")
-                        .setMessage("Bạn có chắc muốn xóa sản phẩm '" + item.getProduct_name() + "' khỏi giỏ hàng?")
-                        .setPositiveButton("Xóa", (dialog, which) -> {
+                        .setTitle("Confirm Deletion")
+                        .setMessage("Are you sure you want to remove the product '" + item.getProduct_name() + "' from the cart?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
                             if (selectedCartIndex >= 0 && selectedCartIndex < carts.size()) {
                                 String cartId = carts.get(selectedCartIndex).getOrder_id();
                                 removeProductFromCart(cartId, item.getId());
                             }
                         })
-                        .setNegativeButton("Hủy", (dialog, which) -> {
+                        .setNegativeButton("Cancel", (dialog, which) -> {
                             cartAdapter.notifyItemChanged(position); // Revert swipe
                         })
                         .setCancelable(false)
