@@ -10,14 +10,14 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="0dp">
 
         <!-- Header -->
         <RelativeLayout
-            android:id="@+id/headerProductDetail"
+            android:id="@+id/headerLayout"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@android:color/white"
@@ -58,6 +58,32 @@
                 app:tint="@android:color/black" />
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/cartSelectorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical">
+
+            <Spinner
+                android:id="@+id/spinnerCarts"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_border" />
+
+            <ImageButton
+                android:id="@+id/btnCreateNewCart"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginStart="8dp"
+                android:contentDescription="Tạo giỏ hàng mới" />
+        </LinearLayout>
 
 
     </com.google.android.material.appbar.AppBarLayout>

@@ -15,10 +15,6 @@ interface BakeryApiService {
     
     // ==================== Category APIs ====================
     
-    /**
-     * Get all categories
-     * GET /api/categories/options/all
-     */
     @GET("categories/options/all")
     suspend fun getAllCategories(): Response<CategoriesResponse>
     
@@ -45,6 +41,13 @@ interface BakeryApiService {
     ): Response<ProductDetailResponse>
     
     // ==================== Cart APIs ====================
+
+    /**
+     * Create a new empty cart
+     * Used in: CartScreen, ProductDetailScreen
+     */
+    @POST("cart/createCart")
+    suspend fun createCart(@Body request: CreateCartRequest): Response<SingleCartResponse>
     
     /**
      * Add product to cart (creates new cart or adds to existing)
@@ -70,30 +73,21 @@ interface BakeryApiService {
     suspend fun updateProductInCart(
         @Body request: UpdateCartProductRequest
     ): Response<SuccessResponse>
-    
-    /**
-     * Delete product from cart
-     * Used in: CartScreen -> Delete icon
-     */
-    @DELETE("cart/deleteProductInCart")
-    suspend fun deleteProductFromCart(
-        @Query("order_id") orderId: String,
-        @Query("order_detail_id") orderDetailId: String
+
+    @POST("cart/removeProductFromCart")
+    suspend fun removeProductFromCart(
+        @Body request: RemoveProductFromCartRequest
     ): Response<SuccessResponse>
     
     /**
      * Delete entire cart (draft order)
-     * Used in: CartScreen -> Delete cart button
+     * NOTE: Changed from @DELETE to @PUT to match server implementation.
      */
-    @DELETE("cart/deleteCart")
+    @PUT("cart/deleteCart")
     suspend fun deleteCart(
         @Query("order_id") orderId: String
     ): Response<SuccessResponse>
     
-    /**
-     * Delete topping from cart item
-     * Used in: CartScreen -> Topping delete icon
-     */
     @DELETE("cart/deleteToppingInCart")
     suspend fun deleteToppingFromCart(
         @Query("order_id") orderId: String,
@@ -167,9 +161,19 @@ interface BakeryApiService {
 
 // ==================== Request DTOs ====================
 
+data class CreateCartRequest(
+    val type: String,
+    val custom_name: String? = null
+)
+
 data class AddToCartRequest(
     val product: CartProductRequest,
     val order_ids: List<String> = emptyList()  // Empty = new cart, Filled = add to existing cart
+)
+
+data class RemoveProductFromCartRequest(
+    val cart_id: String,
+    val order_detail_id: String
 )
 
 data class CartProductRequest(
@@ -224,6 +228,11 @@ data class UpdateOrderStatusRequest(
 )
 
 // ==================== Response DTOs ====================
+
+data class SingleCartResponse(
+    val message: String,
+    val data: Cart
+)
 
 data class ProductDetailResponse(
     val success: Boolean,
