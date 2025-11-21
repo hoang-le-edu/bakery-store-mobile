@@ -27,13 +27,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="@dimen/space_lg">
 
             <!-- HEADER USER -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/space_lg"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="3dp">
 
@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="16dp"
+                    android:padding="@dimen/space_lg"
                     android:background="@color/white">
 
                     <ImageView
@@ -51,13 +51,13 @@
                         android:layout_height="72dp"
                         android:src="@drawable/ic_profile"
                         android:background="@drawable/bg_logo_circle"
-                        android:padding="12dp"
+                        android:padding="@dimen/space_md"
                         android:contentDescription="@string/app_name" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="@dimen/space_lg"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -66,7 +66,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Guest"
-                            android:textSize="20sp"
+                            android:textSize="@dimen/text_xl"
                             android:textStyle="bold"
                             android:textColor="@color/black" />
 
@@ -74,9 +74,9 @@
                             android:id="@+id/tvUserEmail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="@dimen/space_xs"
                             android:text="your@email.com"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/text_sm"
                             android:textColor="@color/colorGrayText" />
                     </LinearLayout>
 
@@ -94,7 +94,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/space_lg"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp">
 
@@ -102,19 +102,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="8dp"
+                    android:paddingHorizontal="@dimen/space_lg"
+                    android:paddingTop="@dimen/space_md"
+                    android:paddingBottom="@dimen/space_sm"
                     android:background="@color/white">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Account"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/text_md"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:layout_marginBottom="8dp" />
+                        android:layout_marginBottom="@dimen/space_sm" />
 
                     <!-- Row: My info -->
                     <LinearLayout
@@ -123,14 +123,14 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp">
+                        android:paddingVertical="@dimen/space_sm">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="My information"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/text_sm"
                             android:textColor="@color/black" />
 
                         <ImageView
@@ -147,14 +147,14 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp">
+                        android:paddingVertical="@dimen/space_sm">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Delivery address"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/text_sm"
                             android:textColor="@color/black" />
 
                         <ImageView
@@ -171,14 +171,14 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp">
+                        android:paddingVertical="@dimen/space_sm">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="My orders"
-                            android:textSize="14sp"
+                            android:textSize="@dimen/text_sm"
                             android:textColor="@color/black" />
 
                         <ImageView
@@ -197,12 +197,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/logout"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_md"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/colorRedButton"
                 app:cornerRadius="50dp"
-                android:paddingVertical="12dp" />
+                android:paddingVertical="@dimen/space_md" />
 
         </LinearLayout>
     </ScrollView>

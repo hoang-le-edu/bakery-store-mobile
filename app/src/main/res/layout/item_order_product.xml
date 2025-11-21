@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:padding="@dimen/space_md">
 
     <!-- Product Image -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="@dimen/space_sm"
         app:cardElevation="0dp">
 
         <ImageView
@@ -30,14 +30,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_marginStart="12dp">
+        android:layout_marginStart="@dimen/space_md">
 
         <TextView
             android:id="@+id/txtProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tên sản phẩm"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_sm"
             android:textStyle="bold"
             android:textColor="#212121"
             android:maxLines="2"
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:visibility="gone">
 
             <TextView
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Size M"
-                android:textSize="11sp"
+                android:textSize="@dimen/text_xs"
                 android:textColor="#757575"
                 tools:text="Size: M" />
 
@@ -68,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:visibility="gone">
 
             <TextView
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Toppings"
-                android:textSize="11sp"
+                android:textSize="@dimen/text_xs"
                 android:textColor="#757575"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -89,7 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="@dimen/space_xs"
             android:visibility="gone">
 
             <TextView
@@ -97,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ghi chú"
-                android:textSize="11sp"
+                android:textSize="@dimen/text_xs"
                 android:textColor="#757575"
                 android:textStyle="italic"
                 android:maxLines="1"
@@ -114,14 +114,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="end"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="@dimen/space_sm">
 
         <TextView
             android:id="@+id/txtQuantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="x1"
-            android:textSize="13sp"
+            android:textSize="@dimen/text_sm"
             android:textColor="#757575"
             tools:text="x2" />
 
@@ -130,10 +130,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="150,000₫"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_sm"
             android:textStyle="bold"
             android:textColor="@color/pink_primary"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/space_xs"
             tools:text="150,000₫" />
 
     </LinearLayout>
