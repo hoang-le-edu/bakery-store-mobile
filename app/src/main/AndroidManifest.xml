@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,15 +16,49 @@
         android:theme="@style/Theme.TheCodeCup"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.TheCodeCup">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="MainActivity" />
+        <activity android:name=".activity.Login" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.HomeActivity" />
+        <activity android:name=".activity.ProductListActivity" />
+        <activity android:name=".activity.ProductDetailActivity" />
+        <activity android:name=".activity.AdminOrdersActivity" />
+
+
+
+        <activity android:name=".activity.CartActivity" />
+<!--        <activity android:name=".activity.CheckoutActivity" />-->
+<!--        <activity android:name=".activity.OrdersActivity" />-->
+<!--        <activity android:name=".ProductDetailActivity" />-->
+<!--        <activity android:name=".CartActivity" />-->
+<!--        <activity android:name=".CheckoutActivity" />-->
+<!--        <activity android:name=".OrdersActivity" />-->
+<!--        <activity android:name=".OrderDetailActivity" />-->
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:exported="false" />
+
+        <!--        <activity android:name=".activity.ResetPasswordActivity"-->
+<!--            android:exported="true">-->
+
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data android:scheme="https"-->
+<!--                    android:host="bakery-store-a7e4f.web.app"-->
+<!--                    android:pathPrefix="/resetPassword" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
     </application>
 
 </manifest>

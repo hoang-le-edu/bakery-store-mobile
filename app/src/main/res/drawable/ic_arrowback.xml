@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="14dp"
+    android:viewportWidth="14"
+    android:viewportHeight="14">
+
+    <!-- Nhóm để scale & căn giữa -->
+    <group
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:translateX="3.5"
+        android:translateY="3.5">
+
+        <path
+            android:fillColor="#FF212121"
+            android:pathData="M10.32924 12.4225C10.62276 12.7148 10.62378 13.1897 10.33152 13.4832C10.06583 13.75 9.64922 13.7751 9.35514 13.5579L9.27086 13.4855L3.22086 7.46147C2.95323 7.19498 2.92888 6.77687 3.14783 6.4828L3.22082 6.39857L9.27082 0.373573C9.56432 0.0812869 10.03919 0.0822701 10.33148 0.375769C10.59719 0.642586 10.62053 1.0593 10.40207 1.35246L10.32928 1.43643L4.81325 6.9303L10.32924 12.4225Z"/>
+    </group>
+</vector>

@@ -1,0 +1,163 @@
+package com.dev.thecodecup.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.dev.thecodecup.adapter.OrdersAdapter;
+import com.dev.thecodecup.model.network.NetworkModule;
+import com.dev.thecodecup.model.network.api.BakeryApiService;
+import com.dev.thecodecup.model.network.api.Order;
+import com.dev.thecodecup.R;
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class OrdersActivity extends AppCompatActivity {
+
+    private BakeryApiService apiService;
+    private TabLayout tabLayout;
+    private RecyclerView recyclerViewOrders;
+    private OrdersAdapter ordersAdapter;
+    private View emptyView;
+
+    private List<Order> allOrders = new ArrayList<>();
+    private String currentStatus = "Wait For Approval";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_orders);
+
+        apiService = NetworkModule.INSTANCE.provideBakeryApiService();
+
+        initViews();
+        setupToolbar();
+        setupTabs();
+        setupRecyclerView();
+        loadOrders();
+    }
+
+    private void initViews() {
+        tabLayout = findViewById(R.id.tabLayout);
+        recyclerViewOrders = findViewById(R.id.recyclerViewOrders);
+        emptyView = findViewById(R.id.emptyOrdersLayout);
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void setupTabs() {
+        tabLayout.addTab(tabLayout.newTab().setText("Chờ duyệt"));
+        tabLayout.addTab(tabLayout.newTab().setText("Đang xử lý"));
+        tabLayout.addTab(tabLayout.newTab().setText("Hoàn thành"));
+        tabLayout.addTab(tabLayout.newTab().setText("Đã hủy"));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
+                        currentStatus = "Wait For Approval";
+                        break;
+                    case 1:
+                        currentStatus = "In Progress";
+                        break;
+                    case 2:
+                        currentStatus = "Completed";
+                        break;
+                    case 3:
+                        currentStatus = "Cancelled";
+                        break;
+                }
+                filterOrdersByStatus();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+    }
+
+    private void setupRecyclerView() {
+        ordersAdapter = new OrdersAdapter(new ArrayList<>(), order -> {
+            // Navigate to order detail
+            Intent intent = new Intent(OrdersActivity.this, OrderDetailActivity.class);
+            intent.putExtra("ORDER_ID", order.getId());
+            startActivity(intent);
+        });
+
+        recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewOrders.setAdapter(ordersAdapter);
+    }
+
+    private void loadOrders() {
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        
+        apiService.loadCustomerOrders(userEmail).enqueue(new Callback<List<Order>>() {
+            @Override
+            public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allOrders = response.body();
+                    filterOrdersByStatus();
+                } else {
+                    Toast.makeText(OrdersActivity.this, 
+                            "Không thể tải đơn hàng", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Order>> call, Throwable t) {
+                Toast.makeText(OrdersActivity.this, 
+                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void filterOrdersByStatus() {
+        List<Order> filteredOrders = new ArrayList<>();
+        
+        for (Order order : allOrders) {
+            if (order.getStatus().equals(currentStatus)) {
+                filteredOrders.add(order);
+            }
+        }
+
+        ordersAdapter.updateOrders(filteredOrders);
+        
+        if (filteredOrders.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerViewOrders.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            recyclerViewOrders.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload orders when returning to this activity
+        loadOrders();
+    }
+}

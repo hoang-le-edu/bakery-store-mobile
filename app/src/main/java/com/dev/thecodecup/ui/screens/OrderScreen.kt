@@ -45,7 +45,8 @@ import com.dev.thecodecup.ui.theme.poppinsFontFamily
 @Composable
 fun OrderScreen(
     orderViewModel: OrderViewModel,
-    onNavClick: (String) -> Unit
+    onNavClick: (String) -> Unit,
+    onOrderDetail: (Int) -> Unit = {}
 ) {
     Scaffold(
         containerColor = Color.White,
@@ -142,7 +143,10 @@ fun OrderScreen(
                                 .padding(horizontal = 14.dp),
                                 contentAlignment = Alignment.Center) {
                                 OnGoingList(
-                                    orderViewModel = orderViewModel
+                                    orderViewModel = orderViewModel,
+                                    onOrderSelected = { order ->
+                                        onOrderDetail(order.id)
+                                    }
                                 )
                             }
                         }
@@ -154,7 +158,10 @@ fun OrderScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 HistoryList(
-                                    orderViewModel = orderViewModel
+                                    orderViewModel = orderViewModel,
+                                    onOrderSelected = { order ->
+                                        onOrderDetail(order.id)
+                                    }
                                 )
                             }
                         }

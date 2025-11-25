@@ -1,9 +1,12 @@
 package com.dev.thecodecup.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +21,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -35,7 +42,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Tune
 import com.dev.thecodecup.model.item.CoffeeItem
+import com.dev.thecodecup.model.item.FilterPreferences
 import com.dev.thecodecup.model.network.dto.ProductDto
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel
 import com.dev.thecodecup.ui.components.CoffeeCard
@@ -54,8 +65,11 @@ fun HomeScreen(
     onCoffeeClick: (CoffeeItem) -> Unit,
     onProductClick: (ProductDto) -> Unit,
     onNavClick: (String) -> Unit,
+    onSearchClick: () -> Unit = {},
+    onFilterClick: () -> Unit = {},
     showEmptyCartDialog: Boolean = false,
-    onDismissEmptyCartDialog: () -> Unit = {}
+    onDismissEmptyCartDialog: () -> Unit = {},
+    activeFilters: FilterPreferences? = null
 ) {
     val user by userViewModel.user.collectAsState()
     val userName = user?.name?.split(" ")?.firstOrNull() ?: "User"
@@ -116,6 +130,14 @@ fun HomeScreen(
                 HomeHeader(
                     userName = userName,
                     onNavClick = onNavClick
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                HomeSearchBar(
+                    onSearchClick = onSearchClick,
+                    onFilterClick = onFilterClick,
+                    activeFilters = activeFilters
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
@@ -255,6 +277,91 @@ fun HomeScreen(
                     onItemSelected = onNavClick
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun HomeSearchBar(
+    modifier: Modifier = Modifier,
+    onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit,
+    activeFilters: FilterPreferences?
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(24.dp),
+            color = Color(0xFFF4F5F7)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { onSearchClick() },
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.White, RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Search",
+                            tint = Color(0xFF324A59)
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Search menu",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = Color(0xFF324A59),
+                                fontFamily = poppinsFontFamily
+                            )
+                        )
+                        Text(
+                            text = "Coffee, pastry, more",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color(0xFF7A8A99),
+                                fontFamily = poppinsFontFamily
+                            )
+                        )
+                    }
+                }
+                IconButton(onClick = onFilterClick) {
+                    Icon(
+                        imageVector = Icons.Outlined.Tune,
+                        contentDescription = "Filters",
+                        tint = Color(0xFF324A59)
+                    )
+                }
+            }
+        }
+        if (activeFilters != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            AssistChip(
+                onClick = onFilterClick,
+                label = {
+                    Text(
+                        text = "₫${activeFilters.priceRange.start.toInt()} - ₫${activeFilters.priceRange.endInclusive.toInt()} | ${activeFilters.minRating}★+",
+                        fontFamily = poppinsFontFamily
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = Color(0xFFE8EEF2)
+                )
+            )
         }
     }
 }

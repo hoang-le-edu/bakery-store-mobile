@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dev.thecodecup.model.db.order.OrderEntity
 import com.dev.thecodecup.model.db.order.OrderViewModel
 
 @Composable
 fun HistoryList(
-    orderViewModel: OrderViewModel
+    orderViewModel: OrderViewModel,
+    onOrderSelected: (OrderEntity) -> Unit = {}
 ) {
     val historyOrderList = orderViewModel.historyOrders.collectAsState().value
     LazyColumn(
@@ -24,7 +26,8 @@ fun HistoryList(
             val order = historyOrderList[it]
             OrderItemCard(
                 orderItem = order,
-                isHistoryCard = true
+                isHistoryCard = true,
+                onClick = { onOrderSelected(order) }
             )
         }
     }

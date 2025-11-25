@@ -21,6 +21,7 @@ object NetworkTest {
     /**
      * Test API connection by fetching products
      */
+    @JvmStatic
     fun testApiConnection() {
         Log.d(TAG, "Testing API connection...")
         
