@@ -47,7 +47,6 @@ public class ProductListActivity extends BaseBottomNavActivity {
         // 1) View binding
         tabLayout = findViewById(R.id.tabLayout);
         rvProducts = findViewById(R.id.rvProducts);
-//        btnProfile = findViewById(R.id.btnProfile);
         bottomNav = findViewById(R.id.bottomNav);
 
         // 2) RecyclerView + Adapter (2 cột)
@@ -79,7 +78,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
         // 5) Quan sát Categories -> đổ TabLayout và load category đầu tiên
         viewModel.getCategoriesLiveData().observe(this, categories -> {
             buildTabs(categories);
-            // Chọn tab đầu tiên (nếu có) để load sản phẩm ban đầu
+            // Chọn tab đầu tiên (tab All) để load sản phẩm ban đầu
             if (tabLayout.getTabCount() > 0) {
                 TabLayout.Tab first = tabLayout.getTabAt(0);
                 if (first != null) {
@@ -100,8 +99,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
             }
 
             @Override
-            public void onTabUnselected(@NonNull TabLayout.Tab tab) {
-            }
+            public void onTabUnselected(@NonNull TabLayout.Tab tab) { }
 
             @Override
             public void onTabReselected(@NonNull TabLayout.Tab tab) {
@@ -111,86 +109,40 @@ public class ProductListActivity extends BaseBottomNavActivity {
             }
         });
 
+
+
         // 7) Gọi load categories ban đầu
         viewModel.loadCategories();
-//        btnProfile.setOnClickListener(v -> showProfileMenu(v));
-
-        // 8) Setup bottom navigation
-//        setupBottomNavigation();
     }
 
-//    private void setupBottomNavigation() {
-//        bottomNav.setSelectedItemId(R.id.navigation_home);
-//
-//        bottomNav.setOnItemSelectedListener(item -> {
-//            int itemId = item.getItemId();
-//
-//            if (itemId == R.id.navigation_home) {
-//                Intent intent = new Intent(ProductListActivity.this, HomeActivity.class);
-//                startActivity(intent);
-//                return true;
-//            } else if (itemId == R.id.navigation_cart) {
-//                // Navigate to Cart
-//                Intent intent = new Intent(ProductListActivity.this, CartActivity.class);
-//                startActivity(intent);
-//                return true;
-//            } else if (itemId == R.id.navigation_product) {
-//                // This is product list activity, do nothing
-//                return true;
-//            } else if (itemId == R.id.navigation_profile) {
-//                Intent intent = new Intent(ProductListActivity.this, ProfileActivity.class);
-//                startActivity(intent);
-//                return true;
-//            }
-//            return false;
-//        });
-//    }
 
     @Override
     protected int getBottomNavMenuItemId() {
         return R.id.navigation_product;
     }
 
-//    private void showProfileMenu(View anchorView) {
-//        PopupMenu popup = new PopupMenu(this, anchorView);
-//        popup.getMenu().add(0, 1, 0, "Logout");
-//
-//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                if (item.getItemId() == 1) { // ID của "Đăng xuất"
-//                    handleLogout();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//        popup.show();
-//    }
-//
-//    private void handleLogout() {
-//        AuthManager.INSTANCE.clearTokens();
-//
-//        GoogleAuthManager.getInstance(this).signOutGoogle();
-//
-//        Intent intent = new Intent(this, Login.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        startActivity(intent);
-//        finish();
-//    }
 
     /** Đổ danh sách Tab từ categories */
     private void buildTabs(List<CategoryWithProductsDto> categories) {
         tabLayout.removeAllTabs();
-        if (categories == null || categories.isEmpty())
-            return;
 
+        // 1) Tab "All" đứng đầu
+        TabLayout.Tab allTab = tabLayout.newTab().setText("All");
+        allTab.setTag("all");  // <-- QUAN TRỌNG: dùng đúng với default trong ViewModel
+        tabLayout.addTab(allTab);
+
+        // 2) Nếu không có category nào thì thôi, chỉ có tab All
+        if (categories == null || categories.isEmpty()) {
+            return;
+        }
+
+        // 3) Các tab category phía sau
         for (CategoryWithProductsDto c : categories) {
             String title = c.getCategoryName() != null ? c.getCategoryName() : "Category";
             TabLayout.Tab tab = tabLayout.newTab().setText(title);
-            // tag = category_id để khi click tab sẽ dùng id call API
-            tab.setTag(c.getCategoryId());
+            tab.setTag(c.getCategoryId());  // tag = ID category thực tế
             tabLayout.addTab(tab);
         }
     }
+
 }

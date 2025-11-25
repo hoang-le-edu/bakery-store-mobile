@@ -207,6 +207,13 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- Shadow mỏng phía trên bottom nav -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_top"
+        app:layout_constraintBottom_toBottomOf="@+id/profileScroll" />
+
     <!-- BOTTOM NAV -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
