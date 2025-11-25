@@ -21,8 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@android:color/white"
-            android:paddingStart="@dimen/space_lg"
-            android:paddingEnd="@dimen/space_lg">
+            >
 
             <ImageButton
                 android:id="@+id/btnHome"
@@ -42,7 +41,7 @@
                 android:layout_centerInParent="true"
                 android:text="Cart"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_xl"
+                android:textSize="@dimen/text_subsubtitle"
                 android:textStyle="bold" />
 
 
@@ -64,8 +63,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingTop="@dimen/space_lg"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
             android:gravity="center_vertical">
 
             <Spinner
@@ -79,10 +79,10 @@
                 android:id="@+id/btnCreateNewCart"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_add"
+                android:src="@drawable/bg_add_button"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:layout_marginStart="8dp"
-                android:contentDescription="Tạo giỏ hàng mới" />
+                android:layout_marginStart="@dimen/space_sm"
+                android:contentDescription="Create new cart" />
         </LinearLayout>
 
 
@@ -263,20 +263,30 @@
 
     </androidx.core.widget.NestedScrollView>
 
+
+
     <!-- Bottom Action Bar -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:cardElevation="8dp"
         app:cardCornerRadius="0dp">
+
+        <!-- Shadow mỏng phía trên bottom nav -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@drawable/shadow_top" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/space_lg"
+            android:paddingTop="@dimen/space_md"
+            android:paddingBottom="@dimen/space_md"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
             android:gravity="center_vertical"
             android:background="@color/white">
 

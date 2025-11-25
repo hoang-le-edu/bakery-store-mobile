@@ -171,11 +171,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                             dlg.dismiss();
                             Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(this, ProductListActivity.class));
+                            startActivity(new Intent(this, HomeActivity.class));
                             finish();
                         });
                     } else {
-                        uiFail(dlg, "Đăng ký thất bại: Phản hồi API không có trường 'data' hợp lệ.");
+                        uiFail(dlg, "Registration failed: API response does not have a valid 'data' field.");
                         firebaseUser.delete();
                     }
                 } else {
