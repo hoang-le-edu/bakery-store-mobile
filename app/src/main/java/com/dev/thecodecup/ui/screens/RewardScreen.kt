@@ -155,7 +155,7 @@ fun RewardScreen(
                 ) {
                     items(historyOrderList.size) {
                         val rewards = historyOrderList[it]
-                        if(rewards.cartItem.point <= 0) return@items
+                        if(rewards.toCartItem().point <= 0) return@items
                         Spacer(modifier = Modifier.height(8.dp))
                         Row (
                             modifier = Modifier
@@ -168,7 +168,7 @@ fun RewardScreen(
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
                             ){
                                 Text(
-                                    text = rewards.cartItem.name,
+                                    text = rewards.toCartItem().name,
                                     color = Color(0xFF324A59),
                                     fontFamily = poppinsFontFamily,
                                     fontSize = 16.sp
@@ -181,7 +181,7 @@ fun RewardScreen(
                                 )
                             }
                             Text(
-                                text = "+ ${rewards.cartItem.point * rewards.cartItem.quantity} Pts",
+                                text = "+ ${rewards.toCartItem().point * rewards.toCartItem().quantity} Pts",
                                 color = Color(0xFF324A59),
                                 fontFamily = poppinsFontFamily,
                                 fontSize = 20.sp,

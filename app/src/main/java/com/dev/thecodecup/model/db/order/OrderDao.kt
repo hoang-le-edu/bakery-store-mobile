@@ -24,4 +24,7 @@ interface OrderDao {
 
     @Query("DELETE FROM orders WHERE isHistory = 1")
     suspend fun clearHistoryOrders()
+
+    @Query("SELECT * FROM orders WHERE id = :orderId LIMIT 1")
+    suspend fun getOrderById(orderId: Int): OrderEntity?
 }

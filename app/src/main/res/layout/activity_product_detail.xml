@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/white">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:id="@+id/headerProductDetail"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/space_xxl"
+        android:layout_marginTop="@dimen/space_lg"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg"
+        android:background="@android:color/white"
+        >
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="@dimen/space_sm"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrowback"
+            android:contentDescription="@string/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Sweetie Detail"
+            android:textColor="#324A59"
+            android:textSize="@dimen/text_xl"
+            android:textStyle="bold"
+            />
+
+        <ImageButton
+            android:id="@+id/btnCart"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/space_sm"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_cart"
+            android:contentDescription="@string/back" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headerProductDetail"
+        android:layout_above="@+id/bottomBar"
+        android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- Image Carousel -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_margin="@dimen/space_lg"
+            android:background="@drawable/error_image"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="2dp">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/imageCarousel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="0dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Product Info Card -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/space_lg"-->
+<!--            android:layout_marginEnd="@dimen/space_lg"-->
+<!--            android:layout_marginBottom="@dimen/space_lg"-->
+<!--            app:cardCornerRadius="20dp"-->
+<!--            app:cardElevation="2dp"-->
+<!--            android:backgroundTint="@android:color/white">-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/space_lg"
+                android:layout_marginEnd="@dimen/space_lg"
+                android:padding="@dimen/space_sm">
+
+                <TextView
+                    android:id="@+id/tvProductName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Product name"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_xl"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/tvProductPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="0₫"
+                    android:textColor="@color/red_add_button"
+                    android:textSize="@dimen/text_xl"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+<!--        </androidx.cardview.widget.CardView>-->
+
+        <!-- Size Selection Card -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/space_lg"-->
+<!--            android:layout_marginEnd="@dimen/space_lg"-->
+<!--            android:layout_marginBottom="@dimen/space_lg"-->
+<!--            app:cardCornerRadius="20dp"-->
+<!--            app:cardElevation="2dp"-->
+<!--            android:backgroundTint="@android:color/white">-->
+
+        <!--        </androidx.cardview.widget.CardView>-->
+
+        <!-- Topping Selection Card -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:layout_marginBottom="16dp"-->
+<!--            app:cardCornerRadius="20dp"-->
+<!--            app:cardElevation="2dp"-->
+<!--            android:backgroundTint="@android:color/white">-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_lg"
+            android:layout_marginEnd="@dimen/space_lg"
+            android:orientation="vertical"
+            android:padding="@dimen/space_sm">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Size"
+                android:textColor="@color/colorGrayText"
+                android:textSize="@dimen/text_md"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupSizes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                app:chipCornerRadius="20dp"
+                app:chipSpacing="@dimen/space_sm"
+                app:singleSelection="true" />
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/space_lg"
+                android:layout_marginEnd="@dimen/space_lg"
+                android:padding="@dimen/space_sm">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Topping"
+                    android:textColor="@color/colorGrayText"
+                    android:textSize="@dimen/text_md"
+                    android:textStyle="bold"
+                    />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupToppings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    app:chipSpacing="@dimen/space_sm" />
+            </LinearLayout>
+<!--        </androidx.cardview.widget.CardView>-->
+
+        <!-- Quantity Card -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/space_lg"-->
+<!--            android:layout_marginEnd="@dimen/space_lg"-->
+<!--            android:layout_marginBottom="@dimen/space_lg"-->
+<!--            app:cardCornerRadius="20dp"-->
+<!--            app:cardElevation="2dp"-->
+<!--            android:backgroundTint="@android:color/white">-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/space_lg"
+                android:layout_marginEnd="@dimen/space_lg"
+                android:padding="@dimen/space_sm">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quantity"
+                    android:textColor="@color/colorGrayText"
+                    android:textSize="@dimen/text_md"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnDecrease"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_pink"
+                        android:contentDescription="Decrease"
+                        android:src="@drawable/ic_remove" />
+
+                    <TextView
+                        android:id="@+id/tvQuantity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_md" />
+
+                    <ImageButton
+                        android:id="@+id/btnIncrease"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_pink"
+                        android:contentDescription="Increase"
+                        android:src="@drawable/ic_add" />
+                </LinearLayout>
+            </LinearLayout>
+<!--        </androidx.cardview.widget.CardView>-->
+
+        <!-- Note Card -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/space_lg"-->
+<!--            android:layout_marginEnd="@dimen/space_lg"-->
+<!--            android:layout_marginBottom="@dimen/space_lg"-->
+<!--            app:cardCornerRadius="12dp"-->
+<!--            app:cardElevation="2dp"-->
+<!--            android:backgroundTint="@android:color/white">-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/space_lg"
+            android:layout_marginStart="@dimen/space_lg"
+            android:layout_marginEnd="@dimen/space_lg"
+            android:gravity="top">
+
+            <ImageView
+                android:id="@+id/imageNote"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top"
+                android:paddingTop="@dimen/space_md"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/colorGrayText" />
+
+            <EditText
+                android:id="@+id/etNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="Add working on your cake"
+                android:minLines="3"
+                android:padding="@dimen/space_md"
+                android:textColor="@color/black"
+                android:textColorHint="@color/colorGrayText" />
+        </LinearLayout>
+
+        <!--        </androidx.cardview.widget.CardView>-->
+
+        <!-- Bottom spacer for fixed button -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/space_xxl" />
+    </LinearLayout>
+    </ScrollView>
+
+
+    <!-- Fixed Bottom Bar -->
+    <RelativeLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:elevation="@dimen/space_sm"
+        android:padding="@dimen/space_lg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total"
+                    android:textColor="@color/colorGrayText"
+                    android:textSize="@dimen/text_md" />
+
+                <TextView
+                    android:id="@+id/tvTotalPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0₫"
+                    android:textColor="@color/colorRedButton"
+                    android:textSize="@dimen/text_xl"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnAddToCart"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Add to cart"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#f26d78"
+                android:paddingStart="@dimen/space_xl"
+                android:paddingEnd="@dimen/space_xl"
+                
+                app:cornerRadius="25dp" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

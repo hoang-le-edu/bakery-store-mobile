@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- vòng tròn trắng -->
+    <solid android:color="@android:color/white" />
+
+    <!-- nếu muốn có viền nâu mỏng -->
+    <!--
+    <stroke
+        android:width="2dp"
+        android:color="#5F321E" />
+    -->
+</shape>

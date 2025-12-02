@@ -5,16 +5,22 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class CategoryDto(
-    @Json(name = "category_id")
+    @Json(name = "id")
     val categoryId: String,
     
-    @Json(name = "category_name")
+    @Json(name = "name")
     val categoryName: String,
     
     @Json(name = "description")
     val description: String? = null,
     
-    @Json(name = "image_url")
+    @Json(name = "type")
+    val type: String? = null,
+    
+    @Json(name = "priority")
+    val priority: Int? = null,
+    
+    @Json(name = "image_path")
     val imageUrl: String? = null
 )
 

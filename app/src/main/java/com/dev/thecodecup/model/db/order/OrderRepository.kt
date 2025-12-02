@@ -34,6 +34,10 @@ class OrderRepository private constructor(context: Context) {
 
     suspend fun updateOrder(order: OrderEntity) = orderDao.updateOrder(order)
 
+    suspend fun getOrderById(orderId: Int): OrderEntity? = withContext(Dispatchers.IO) {
+        orderDao.getOrderById(orderId)
+    }
+
     companion object {
         @Volatile private var instance: OrderRepository? = null
         fun getInstance(context: Context): OrderRepository =

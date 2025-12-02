@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
+
+    <!-- AppBar with Tabs -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="0dp">
+
+        <!-- Header -->
+        <RelativeLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@android:color/white"
+            >
+
+            <ImageButton
+                android:id="@+id/btnHome"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/space_sm"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:src="@drawable/ic_home"
+                app:tint="@android:color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Cart"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_subsubtitle"
+                android:textStyle="bold" />
+
+
+            <ImageButton
+                android:id="@+id/btnDeleteCart"
+                android:layout_width="55dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/delete_cart"
+                android:src="@drawable/ic_delete"
+                app:tint="@android:color/black" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/cartSelectorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/space_lg"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
+            android:gravity="center_vertical">
+
+            <Spinner
+                android:id="@+id/spinnerCarts"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_border" />
+
+            <ImageButton
+                android:id="@+id/btnCreateNewCart"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/bg_add_button"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginStart="@dimen/space_sm"
+                android:contentDescription="Create new cart" />
+        </LinearLayout>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/space_lg">
+
+            <!-- Cart Items RecyclerView -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Products in cart"
+                        android:textSize="@dimen/text_xl"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:padding="@dimen/space_lg"
+                        android:paddingBottom="@dimen/space_sm" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewCartItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingHorizontal="@dimen/space_sm"
+                        android:paddingStart="0dp"
+                        android:paddingBottom="@dimen/space_sm" />
+
+                    <!-- Empty Cart Message -->
+                    <LinearLayout
+                        android:id="@+id/emptyCartLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="@dimen/space_xxl"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:src="@drawable/ic_cart_empty"
+                            android:alpha="0.3"
+                            android:contentDescription="Empty cart" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Giỏ hàng trống"
+                            android:textSize="@dimen/text_lg"
+                            android:textStyle="bold"
+                            android:textColor="#757575"
+                            android:layout_marginTop="@dimen/space_lg" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hãy thêm sản phẩm vào giỏ hàng"
+                            android:textSize="@dimen/text_sm"
+                            android:textColor="#9E9E9E"
+                            android:layout_marginTop="@dimen/space_sm" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Cart Summary -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cartSummaryCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_lg"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Order Summary"
+                        android:textSize="@dimen/text_xl"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:paddingBottom="@dimen/space_md" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/space_sm">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total quantity:"
+                            android:textSize="@dimen/text_md"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/txtTotalQuantity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="@dimen/text_md"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E0E0E0" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/space_md">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total price:"
+                            android:textSize="@dimen/text_lg"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                        <TextView
+                            android:id="@+id/txtTotalPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0₫"
+                            android:textSize="@dimen/text_lg"
+                            android:textStyle="bold"
+                            android:textColor="@color/pink_primary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+
+    <!-- Bottom Action Bar -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardCornerRadius="0dp">
+
+        <!-- Shadow mỏng phía trên bottom nav -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@drawable/shadow_top" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/space_md"
+            android:paddingBottom="@dimen/space_md"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
+            android:gravity="center_vertical"
+            android:background="@color/white">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total"
+                    android:textSize="@dimen/space_md"
+                    android:textColor="#757575" />
+
+                <TextView
+                    android:id="@+id/txtBottomTotalPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0₫"
+                    android:textSize="@dimen/text_xl"
+                    android:textStyle="bold"
+                    android:textColor="@color/pink_primary" />
+
+            </LinearLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProceedToCheckout"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:text="Checkout"
+                android:textSize="@dimen/text_md"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/pink_primary"
+                app:cornerRadius="28dp"
+                android:paddingHorizontal="@dimen/space_xl" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
