@@ -31,6 +31,8 @@
         <activity android:name=".activity.ProductListActivity" />
         <activity android:name=".activity.ProductDetailActivity" />
         <activity android:name=".activity.AdminOrdersActivity" />
+        <activity android:name=".activity.AdminHomeActivity" />
+        <activity android:name=".activity.AdminProfileActivity" />
 
 
 
