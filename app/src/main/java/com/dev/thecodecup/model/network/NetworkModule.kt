@@ -44,10 +44,13 @@ object NetworkModule {
         val original: Request = chain.request()
         val builder = original.newBuilder()
 
+        val path = original.url.encodedPath
+        val isAuthRoute = path.contains("/auth/login") || path.contains("/auth/register")
+
         val token = try { tokenProvider?.invoke() ?: AuthManager.getValidIdTokenBlocking() }
         catch (_: Throwable) { null }
 
-        if (!token.isNullOrBlank()) {
+        if (!isAuthRoute && !token.isNullOrBlank()) {
             builder.addHeader("Authorization", "Bearer $token")
             if (BuildConfig.DEBUG) Log.d("AuthInt", "Authorization attached")
         } else if (BuildConfig.DEBUG) {
@@ -61,7 +64,7 @@ object NetworkModule {
         var res: Response = chain.proceed(builder.build())
 
         // 2) Nếu 401 -> thử refresh (AuthManager.getValidIdTokenBlocking()) rồi gọi lại 1 lần
-        if (res.code == 401) {
+        if (!isAuthRoute && res.code == 401) {
             res.close()
             val newToken = try { tokenProvider?.invoke() ?: AuthManager.getValidIdTokenBlocking() }
             catch (_: Throwable) { null }

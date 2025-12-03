@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +16,7 @@ import com.dev.thecodecup.model.network.dto.OrderDto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminOrdersActivity extends AppCompatActivity {
+public class AdminOrdersActivity extends AdminBottomNavActivity {
 
     private TextView tabAll, tabPending, tabOnGoing, tabSuccess, tabCancelled;
     private RecyclerView rvOrders;
@@ -39,6 +38,7 @@ public class AdminOrdersActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_orders);
+        setupAdminBottomNav();
 
         initViews();
         setupTabs();
@@ -46,6 +46,11 @@ public class AdminOrdersActivity extends AppCompatActivity {
 
         loadMockData();
         applyFilter();
+    }
+
+    @Override
+    protected int getAdminMenuItemId() {
+        return R.id.navigation_admin_orders;
     }
 
     private void initViews() {
