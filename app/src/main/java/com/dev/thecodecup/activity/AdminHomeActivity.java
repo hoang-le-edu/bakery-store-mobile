@@ -67,55 +67,66 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
         apiService = NetworkModule.INSTANCE.getApiService();
 
         String accessToken = getIntent().getStringExtra("accessToken");
+        String tokenSource = "intent";
         if (accessToken == null || accessToken.isEmpty()) {
-            Toast.makeText(this, "Không tìm thấy access token", Toast.LENGTH_SHORT).show();
+            // Fallback: read from SharedPreferences saved at login
+            accessToken = getSharedPreferences("APP_PREFS", MODE_PRIVATE)
+                    .getString("ACCESS_TOKEN", null);
+            tokenSource = "prefs";
+        }
+        if (accessToken == null || accessToken.isEmpty()) {
+            Toast.makeText(this, "Missing access token. Please login again.", Toast.LENGTH_SHORT).show();
             return;
         }
+        // Hiển thị nhanh nguồn token để kiểm chứng
+        Toast.makeText(this, "Using admin token from " + tokenSource, Toast.LENGTH_SHORT).show();
 
-        String bearer = "Bearer " + accessToken;
-        loadDashboardData(bearer);
+        // Admin endpoints expect Firebase ID token via interceptor; do not pass backend token here
+        loadDashboardData();
     }
 
-    private void loadDashboardData(String bearerToken) {
+    private void loadDashboardData() {
         // 1. Products
-        apiService.getAdminProducts(bearerToken, null, null, null)
-                .enqueue(new Callback<AdminProductsResponseDto>() {
-                    @Override
-                    public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            AdminProductsResponseDto body = response.body();
-                            totalProducts = countProducts(body);
-                            tvProductCount.setText("Tổng số sản phẩm: " + totalProducts);
-                            updateChart();
-                        } else {
-                            Toast.makeText(AdminHomeActivity.this,
-                                    "Lỗi lấy danh sách sản phẩm",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
+        apiService.getAdminProducts(null, null, null)
+            .enqueue(new Callback<AdminProductsResponseDto>() {
+                @Override
+                public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AdminProductsResponseDto body = response.body();
+                    totalProducts = countProducts(body);
+                    tvProductCount.setText("Total products: " + totalProducts);
+                    updateChart();
+                } else {
+                    String errBody = null;
+                    try { if (response.errorBody() != null) errBody = response.errorBody().string(); } catch (Exception ignored) {}
+                    String msg = "Error loading product list (" + response.code() + ")" + (errBody != null ? ": " + errBody : "");
+                    Toast.makeText(AdminHomeActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+                }
 
-                    @Override
-                    public void onFailure(Call<AdminProductsResponseDto> call, Throwable t) {
-                        Toast.makeText(AdminHomeActivity.this,
-                                t.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                @Override
+                public void onFailure(Call<AdminProductsResponseDto> call, Throwable t) {
+                Toast.makeText(AdminHomeActivity.this,
+                    t.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+                }
+            });
 
         // 2. Orders
-        apiService.getAdminOrders(bearerToken)
+        apiService.getAdminOrders()
                 .enqueue(new Callback<AdminOrdersResponseDto>() {
                     @Override
                     public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             AdminOrdersResponseDto body = response.body();
                             totalOrders = countOrders(body);
-                            tvOrderCount.setText("Tổng số đơn hàng: " + totalOrders);
+                            tvOrderCount.setText("Total orders: " + totalOrders);
                             updateChart();
                         } else {
-                            Toast.makeText(AdminHomeActivity.this,
-                                    "Lỗi lấy danh sách đơn hàng",
-                                    Toast.LENGTH_SHORT).show();
+                            String errBody = null;
+                            try { if (response.errorBody() != null) errBody = response.errorBody().string(); } catch (Exception ignored) {}
+                            String msg = "Error loading order list (" + response.code() + ")" + (errBody != null ? ": " + errBody : "");
+                            Toast.makeText(AdminHomeActivity.this, msg, Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -153,7 +164,7 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
         entries.add(new BarEntry(0f, (float) totalProducts)); // x=0 -> Products
         entries.add(new BarEntry(1f, (float) totalOrders));   // x=1 -> Orders
 
-        BarDataSet dataSet = new BarDataSet(entries, "Thống kê");
+        BarDataSet dataSet = new BarDataSet(entries, "Statistics");
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.4f);
 
@@ -171,7 +182,7 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
         });
 
         Description description = new Description();
-        description.setText("Tổng số sản phẩm & đơn hàng");
+        description.setText("Total products & orders");
         barChart.setDescription(description);
 
         barChart.invalidate(); // refresh

@@ -47,14 +47,21 @@ object NetworkModule {
         val path = original.url.encodedPath
         val isAuthRoute = path.contains("/auth/login") || path.contains("/auth/register")
 
+        // If caller already set Authorization (e.g., admin endpoints using backend access token), do not add a second one
+        val hasAuthHeaderAlready = original.headers("Authorization").isNotEmpty()
+
         val token = try { tokenProvider?.invoke() ?: AuthManager.getValidIdTokenBlocking() }
         catch (_: Throwable) { null }
 
-        if (!isAuthRoute && !token.isNullOrBlank()) {
-            builder.addHeader("Authorization", "Bearer $token")
-            if (BuildConfig.DEBUG) Log.d("AuthInt", "Authorization attached")
+        if (!hasAuthHeaderAlready) {
+            if (!isAuthRoute && !token.isNullOrBlank()) {
+                builder.addHeader("Authorization", "Bearer $token")
+                if (BuildConfig.DEBUG) Log.d("AuthInt", "Authorization attached")
+            } else if (BuildConfig.DEBUG) {
+                Log.d("AuthInt", "No token -> skip Authorization")
+            }
         } else if (BuildConfig.DEBUG) {
-            Log.d("AuthInt", "No token -> skip Authorization")
+            Log.d("AuthInt", "Authorization already present -> not adding")
         }
 
         // Header chung
@@ -64,7 +71,7 @@ object NetworkModule {
         var res: Response = chain.proceed(builder.build())
 
         // 2) Nếu 401 -> thử refresh (AuthManager.getValidIdTokenBlocking()) rồi gọi lại 1 lần
-        if (!isAuthRoute && res.code == 401) {
+        if (!isAuthRoute && res.code == 401 && !hasAuthHeaderAlready) {
             res.close()
             val newToken = try { tokenProvider?.invoke() ?: AuthManager.getValidIdTokenBlocking() }
             catch (_: Throwable) { null }

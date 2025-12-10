@@ -68,7 +68,6 @@ interface ApiService {
      */
     @GET("admin/products/all")
     fun getAdminProducts(
-        @Header("Authorization") bearerToken: String,
         @Query("limit") limit: Int? = null,
         @Query("searchText") searchText: String? = null,
         @Query("category_id") categoryId: String? = null
@@ -79,9 +78,7 @@ interface ApiService {
      * Example: /api/admin/orders/all
      */
     @GET("admin/orders/all")
-    fun getAdminOrders(
-        @Header("Authorization") bearerToken: String
-    ): Call<AdminOrdersResponseDto>
+    fun getAdminOrders(): Call<AdminOrdersResponseDto>
 
 }
 
