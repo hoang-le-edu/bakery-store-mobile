@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
-    <!-- Nội dung chính -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -30,14 +30,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_md"
-                android:text="Tổng số sản phẩm: 0" />
+                android:text="Total products: 0" />
 
             <TextView
                 android:id="@+id/tvOrderCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_sm"
-                android:text="Tổng số đơn hàng: 0" />
+                android:text="Total orders: 0" />
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/barChartSummary"
