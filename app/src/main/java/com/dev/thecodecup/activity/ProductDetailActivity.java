@@ -68,6 +68,12 @@ public class ProductDetailActivity extends AppCompatActivity {
     private final Handler carouselHandler = new Handler(Looper.getMainLooper());
     private int currentImageIndex = 0;
 
+    // Edit mode fields
+    private boolean isEditMode = false;
+    private String orderId = "";
+    private String orderDetailId = "";
+    private List<String> currentToppingIds = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +84,18 @@ public class ProductDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Product ID không hợp lệ", Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }
+
+        // Check if in edit mode
+        isEditMode = getIntent().getBooleanExtra("EDIT_MODE", false);
+        if (isEditMode) {
+            orderId = getIntent().getStringExtra("ORDER_ID");
+            orderDetailId = getIntent().getStringExtra("ORDER_DETAIL_ID");
+            quantity = getIntent().getIntExtra("CURRENT_QUANTITY", 1);
+            selectedSize = getIntent().getStringExtra("CURRENT_SIZE");
+            currentToppingIds = getIntent().getStringArrayListExtra("CURRENT_TOPPING_IDS");
+            if (currentToppingIds == null)
+                currentToppingIds = new ArrayList<>();
         }
 
         initViews();
@@ -99,6 +117,21 @@ public class ProductDetailActivity extends AppCompatActivity {
         etNote = findViewById(R.id.etNote);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
+
+        // Update button text if in edit mode
+        if (isEditMode) {
+            btnAddToCart.setText("Cập nhật");
+            btnCart.setVisibility(android.view.View.GONE);
+        }
+
+        // Set initial quantity and note if in edit mode
+        if (isEditMode) {
+            tvQuantity.setText(String.valueOf(quantity));
+            String currentNote = getIntent().getStringExtra("CURRENT_NOTE");
+            if (currentNote != null && !currentNote.isEmpty()) {
+                etNote.setText(currentNote);
+            }
+        }
     }
 
     private void setupListeners() {
@@ -121,12 +154,17 @@ public class ProductDetailActivity extends AppCompatActivity {
             updateQuantityAndPrice();
         });
 
-        btnAddToCart.setOnClickListener(v -> addToCart());
+        btnAddToCart.setOnClickListener(v -> {
+            if (isEditMode) {
+                updateCartItem();
+            } else {
+                addToCart();
+            }
+        });
     }
 
     private void loadProductDetail() {
-        ProgressDialog dialog =
-                ProgressDialog.show(this, null, "Đang tải...", true, false);
+        ProgressDialog dialog = ProgressDialog.show(this, null, "Đang tải...", true, false);
 
         BakeryJavaBridge.INSTANCE.loadProductDetail(
                 this,
@@ -179,12 +217,12 @@ public class ProductDetailActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         Log.e("ProductDetail", "Error reading errorBody", e);
                     }
-                }
-        );
+                });
     }
 
     private void displayProductDetail() {
-        if (productDetail == null) return;
+        if (productDetail == null)
+            return;
         ProductDetail product = productDetail;
 
         tvProductName.setText(product.getName());
@@ -196,8 +234,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             imageUrls.add(product.getImage_url());
         }
         if (product.getProductDetailImages() != null) {
-            for (com.dev.thecodecup.model.network.api.ProductImage img
-                    : product.getProductDetailImages()) {
+            for (com.dev.thecodecup.model.network.api.ProductImage img : product.getProductDetailImages()) {
                 if (img.getImage_url() != null) {
                     imageUrls.add(img.getImage_url());
                 }
@@ -209,7 +246,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             imageCarousel.setAdapter(adapter);
             startAutoCarousel(imageUrls.size());
         }
-
 
         // Sizes
         chipGroupSizes.removeAllViews();
@@ -267,15 +303,21 @@ public class ProductDetailActivity extends AppCompatActivity {
 
                 chipGroupSizes.addView(chip);
 
-                // Auto-select first
-                if (index == 0) {
-                    chip.setChecked(true); // sẽ tự chạy OnCheckedChangeListener và tô màu nổi bật
+                // Auto-select based on mode
+                if (isEditMode) {
+                    // In edit mode, select the current size
+                    if (size.getName().equals(selectedSize)) {
+                        chip.setChecked(true);
+                    }
+                } else {
+                    // In add mode, auto-select first
+                    if (index == 0) {
+                        chip.setChecked(true);
+                    }
                 }
             }
         }
 
-
-        // Toppings
         // Toppings
         chipGroupToppings.removeAllViews();
         List<Topping> toppingList = product.getTopping_list();
@@ -314,15 +356,20 @@ public class ProductDetailActivity extends AppCompatActivity {
                 });
 
                 chipGroupToppings.addView(chip);
+
+                // Pre-select toppings in edit mode
+                if (isEditMode && currentToppingIds.contains(topping.getId())) {
+                    chip.setChecked(true);
+                }
             }
         }
-
 
         updateTotalPrice();
     }
 
     private void startAutoCarousel(final int imageCount) {
-        if (imageCount <= 1) return;
+        if (imageCount <= 1)
+            return;
 
         carouselHandler.postDelayed(new Runnable() {
             @Override
@@ -340,7 +387,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void updateTotalPrice() {
-        if (productDetail == null) return;
+        if (productDetail == null)
+            return;
         ProductDetail product = productDetail;
 
         int basePrice = parsePrice(product.getPrice());
@@ -354,67 +402,14 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void addToCart() {
-        if (productDetail == null) return;
+        if (productDetail == null)
+            return;
 
-        final ProgressDialog checkCartDialog = ProgressDialog.show(this, null, "Đang kiểm tra giỏ hàng...", true, false);
-
-        BakeryJavaBridge.INSTANCE.fetchCart(this, (response, error) -> {
-            checkCartDialog.dismiss();
-
-            if (error != null || response == null || !response.isSuccessful() || response.body() == null) {
-                Toast.makeText(this, "Không thể lấy thông tin giỏ hàng, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            List<Cart> userCarts = response.body().getData();
-
-            if (userCarts == null || userCarts.isEmpty()) {
-                createNewCartAndAddProduct();
-            } else if (userCarts.size() == 1) {
-                String cartId = userCarts.get(0).getOrder_id();
-                addProductToExistingCart(cartId);
-            } else {
-                showSelectCartDialog(userCarts);
-            }
-        });
+        // Single cart system - just add product directly
+        addProductToCart();
     }
 
-    // HÀM MỚI: Hiển thị Dialog lựa chọn giỏ hàng
-    private void showSelectCartDialog(List<Cart> carts) {
-        List<String> cartNames = new ArrayList<>();
-        for (Cart cart : carts) {
-            cartNames.add(cart.getName());
-        }
-        cartNames.add("Tạo giỏ hàng mới...");
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Chọn giỏ hàng");
-        builder.setItems(cartNames.toArray(new String[0]), (dialog, which) -> {
-            if (which == cartNames.size() - 1) {
-                createNewCartAndAddProduct();
-            } else {
-                String selectedCartId = carts.get(which).getOrder_id();
-                addProductToExistingCart(selectedCartId);
-            }
-        });
-        builder.show();
-    }
-
-    private void createNewCartAndAddProduct() {
-        final ProgressDialog createDialog = ProgressDialog.show(this, null, "Creating new cart...", true, false);
-        BakeryJavaBridge.INSTANCE.createCart(this, (response, error) -> {
-            createDialog.dismiss();
-            if (response != null && response.isSuccessful() && response.body() != null) {
-                String newCartId = response.body().getData().getOrder_id();
-                Toast.makeText(this, "Adding product to new cart...", Toast.LENGTH_SHORT).show();
-                addProductToExistingCart(newCartId); // Thêm sản phẩm vào giỏ vừa tạo
-            } else {
-                Toast.makeText(this, "Failed to create new cart", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void addProductToExistingCart(String cartId) {
+    private void addProductToCart() {
 
         int basePrice = parsePrice(productDetail.getPrice());
         int toppingsPrice = 0;
@@ -450,12 +445,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                 sizeToSend,
                 toppingIds,
                 note,
-                quantity
-        );
+                quantity);
 
-        List<String> orderIds = new ArrayList<>();
-        orderIds.add(cartId);
-        AddToCartRequest request = new AddToCartRequest(productRequest, orderIds);
+        AddToCartRequest request = new AddToCartRequest(productRequest);
 
         final ProgressDialog addDialog = ProgressDialog.show(this, null, "Đang thêm vào giỏ...", true, false);
         BakeryJavaBridge.INSTANCE.addProductToCart(this, request, (response, error) -> {
@@ -468,19 +460,87 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if (error != null) {
                     errorMsg += ": " + error.getMessage();
                 } else if (response != null) {
-                    try {
-                        errorMsg = new JSONObject(response.errorBody().string()).getString("message");
-                    } catch (Exception e) {
-                        errorMsg += ". Code: " + response.code();
-                    }
+                    errorMsg += ". Code: " + response.code();
                 }
-                Toast.makeText(ProductDetailActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProductDetailActivity.this, errorMsg, Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    private void updateCartItem() {
+        if (productDetail == null)
+            return;
+
+        int basePrice = parsePrice(productDetail.getPrice());
+        int toppingsPrice = 0;
+        for (Topping t : selectedToppings) {
+            toppingsPrice += parsePrice(t.getPrice());
+        }
+
+        int totalPrice = (basePrice + selectedSizePrice + toppingsPrice) * quantity;
+        String note = etNote.getText().toString().trim();
+
+        // sizeToSend logic
+        String sizeToSend;
+        List<com.dev.thecodecup.model.network.api.Size> sizeList = productDetail.getSize_list();
+        if (sizeList == null || sizeList.isEmpty()) {
+            sizeToSend = "";
+        } else {
+            if (selectedSize != null) {
+                sizeToSend = selectedSize;
+            } else {
+                com.dev.thecodecup.model.network.api.Size firstSize = sizeList.get(0);
+                sizeToSend = firstSize != null ? firstSize.getName() : "";
+            }
+        }
+
+        List<String> toppingIds = new ArrayList<>();
+        for (Topping t : selectedToppings) {
+            toppingIds.add(t.getId());
+        }
+
+        com.dev.thecodecup.model.network.api.UpdateCartProductRequest updateRequest = new com.dev.thecodecup.model.network.api.UpdateCartProductRequest(
+                orderId,
+                orderDetailId,
+                sizeToSend,
+                toppingIds,
+                quantity,
+                note,
+                totalPrice);
+
+        final ProgressDialog updateDialog = ProgressDialog.show(this, null, "Đang cập nhật...", true, false);
+        BakeryJavaBridge.INSTANCE.updateProductInCart(this, updateRequest,
+                new com.dev.thecodecup.model.network.api.UpdateCartProductCallback() {
+                    @Override
+                    public void onResult(Response<com.dev.thecodecup.model.network.api.SuccessResponse> response,
+                            Throwable error) {
+                        updateDialog.dismiss();
+
+                        if (error != null) {
+                            Log.e("ProductDetail", "Update error", error);
+                            Toast.makeText(ProductDetailActivity.this,
+                                    "Lỗi: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        if (response != null && response.isSuccessful() && response.body() != null) {
+                            Toast.makeText(ProductDetailActivity.this,
+                                    "Đã cập nhật sản phẩm!", Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            String errorMsg = "Cập nhật thất bại";
+                            if (response != null) {
+                                errorMsg += ". Code: " + response.code();
+                            }
+                            Toast.makeText(ProductDetailActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
     private int parsePrice(String price) {
-        if (price == null) return 0;
+        if (price == null)
+            return 0;
         try {
             double d = Double.parseDouble(price);
             return (int) d;
@@ -488,8 +548,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             return 0;
         }
     }
-
-
 
     private String formatPrice(String price) {
         int p = parsePrice(price);

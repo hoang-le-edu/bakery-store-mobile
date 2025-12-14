@@ -1,0 +1,18 @@
+[
+  {"name": "Ba Dinh", "code": "001", "parent_code": "01"},
+  {"name": "Hoan Kiem", "code": "002", "parent_code": "01"},
+  {"name": "Tay Ho", "code": "003", "parent_code": "01"},
+  {"name": "Long Bien", "code": "004", "parent_code": "01"},
+  {"name": "Cau Giay", "code": "005", "parent_code": "01"},
+  {"name": "Dong Da", "code": "006", "parent_code": "01"},
+  {"name": "Hai Ba Trung", "code": "007", "parent_code": "01"},
+  {"name": "Hoang Mai", "code": "008", "parent_code": "01"},
+  {"name": "Thanh Xuan", "code": "009", "parent_code": "01"},
+  {"name": "District 1", "code": "760", "parent_code": "79"},
+  {"name": "District 3", "code": "761", "parent_code": "79"},
+  {"name": "District 4", "code": "762", "parent_code": "79"},
+  {"name": "District 5", "code": "763", "parent_code": "79"},
+  {"name": "District 6", "code": "764", "parent_code": "79"},
+  {"name": "District 10", "code": "765", "parent_code": "79"},
+  {"name": "District 11", "code": "766", "parent_code": "79"}
+]

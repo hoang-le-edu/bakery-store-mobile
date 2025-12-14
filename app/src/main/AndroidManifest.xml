@@ -35,13 +35,14 @@
 
 
         <activity android:name=".activity.CartActivity" />
-<!--        <activity android:name=".activity.CheckoutActivity" />-->
-<!--        <activity android:name=".activity.OrdersActivity" />-->
-<!--        <activity android:name=".ProductDetailActivity" />-->
-<!--        <activity android:name=".CartActivity" />-->
-<!--        <activity android:name=".CheckoutActivity" />-->
-<!--        <activity android:name=".OrdersActivity" />-->
-<!--        <activity android:name=".OrderDetailActivity" />-->
+        <activity 
+            android:name=".activity.CheckoutActivity"
+            android:parentActivityName=".activity.CartActivity"
+            android:theme="@style/Theme.TheCodeCup" />
+        <activity 
+            android:name=".activity.PaymentActivity"
+            android:parentActivityName=".activity.CheckoutActivity"
+            android:theme="@style/Theme.TheCodeCup" />
         <activity
             android:name=".activity.ProfileActivity"
             android:exported="false" />

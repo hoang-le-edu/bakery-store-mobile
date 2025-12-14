@@ -18,7 +18,7 @@ interface AddToCartCallback {
 
 // ==== CALLBACK CHO CART ====
 
-interface CartListCallback {
+interface CartCallback {
     fun onResult(response: Response<CartResponse>?, error: Throwable?)
 }
 
@@ -32,6 +32,22 @@ interface CreateCartCallback {
 
 interface RemoveProductCallback {
     fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface RemoveToppingCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface UpdateCartProductCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface CheckoutCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface PaymentLinkCallback {
+    fun onResult(response: Response<PaymentLinkResponse>?, error: Throwable?)
 }
 
 object BakeryJavaBridge {
@@ -74,7 +90,7 @@ object BakeryJavaBridge {
 
     fun fetchCart(
         owner: LifecycleOwner,
-        callback: CartListCallback
+        callback: CartCallback
     ) {
         owner.lifecycleScope.launch {
             try {
@@ -124,6 +140,67 @@ object BakeryJavaBridge {
         owner.lifecycleScope.launch {
             try {
                 val response = apiService.removeProductFromCart(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun removeToppingFromCart(
+        owner: LifecycleOwner,
+        request: RemoveToppingRequest,
+        callback: RemoveToppingCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.removeToppingFromCart(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun updateProductInCart(
+        owner: LifecycleOwner,
+        request: UpdateCartProductRequest,
+        callback: UpdateCartProductCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.updateProductInCart(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun proceedCheckout(
+        owner: LifecycleOwner,
+        request: CheckoutRequest,
+        callback: CheckoutCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.proceedOrder(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun createPaymentLink(
+        owner: LifecycleOwner,
+        orderId: String,
+        callback: PaymentLinkCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val request = CreatePaymentLinkRequest(order_id = orderId)
+                val response = apiService.createPaymentLink(request)
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)
