@@ -6,7 +6,7 @@ import retrofit2.http.*
 
 /**
  * Bakery Store API Service
- * Base URL: https://bepmetay.id.vn/api
+ * Base URL: https://bepmetayapi-9adx6.ondigitalocean.app/api
  * 
  * All endpoints require Firebase Auth token in header:
  * Authorization: Bearer {firebaseIdToken}
@@ -59,7 +59,8 @@ interface BakeryApiService {
     ): Response<SuccessResponse>
     
     /**
-     * Fetch all user's carts (multiple draft orders)
+     * Fetch user's cart (single draft order)
+     * Each user has only ONE cart at a time
      * Used in: CartScreen on open
      */
     @GET("cart/fetchCart")
@@ -88,11 +89,13 @@ interface BakeryApiService {
         @Query("order_id") orderId: String
     ): Response<SuccessResponse>
     
-    @DELETE("cart/deleteToppingInCart")
-    suspend fun deleteToppingFromCart(
-        @Query("order_id") orderId: String,
-        @Query("order_detail_id") orderDetailId: String,
-        @Query("topping_id") toppingId: String
+    /**
+     * Remove a topping from cart item
+     * Used in: CartScreen -> Remove topping chip
+     */
+    @POST("cart/removeToppingFromCart")
+    suspend fun removeToppingFromCart(
+        @Body request: RemoveToppingRequest
     ): Response<SuccessResponse>
     
     // ==================== Order APIs ====================
@@ -125,10 +128,10 @@ interface BakeryApiService {
     // ==================== Payment APIs ====================
     
     /**
-     * Create payment link for online banking
+     * Create payment link for online banking via PayOS
      * Used in: CheckoutScreen -> Pay Now button (if payment_method == "Banking")
      */
-    @POST("payment/createLink")
+    @POST("payos/create-payment-link")
     suspend fun createPaymentLink(
         @Body request: CreatePaymentLinkRequest
     ): Response<PaymentLinkResponse>
@@ -167,13 +170,18 @@ data class CreateCartRequest(
 )
 
 data class AddToCartRequest(
-    val product: CartProductRequest,
-    val order_ids: List<String> = emptyList()  // Empty = new cart, Filled = add to existing cart
+    val product: CartProductRequest
 )
 
 data class RemoveProductFromCartRequest(
     val cart_id: String,
     val order_detail_id: String
+)
+
+data class RemoveToppingRequest(
+    val cart_id: String,
+    val order_detail_id: String,
+    val topping_id: String
 )
 
 data class CartProductRequest(
@@ -196,7 +204,7 @@ data class UpdateCartProductRequest(
 )
 
 data class CheckoutRequest(
-    val order_id: String,
+    val order_detail_ids: List<String>,  // Array of selected cart item IDs for checkout
     val receiver_name: String,
     val receiver_address: String,  // Full address string
     val payment_method: String,  // "Cash" or "Banking"
@@ -209,8 +217,7 @@ data class CheckoutRequest(
     val street: String,
     val phone_number: String,
     val shipping_fee: Int,
-    val discount_number: Int,
-    val order_total: Int
+    val discount_number: Int
 )
 
 data class CancelOrderRequest(
@@ -268,20 +275,21 @@ data class Topping(
 
 data class CartResponse(
     val message: String,
-    val data: List<Cart>,
-    val userInfo: UserInfo? = null
+    val data: Cart?  // Single cart (null if cart is empty)
 )
 
 data class Cart(
     val order_id: String,
     val order_number: String,
-    val name: String,  // Display name for cart tab
     val date_created: String,  // ISO 8601 format
     val host_id: String,
     val count_product: Int,
     val total_price: Int,
     val order_detail: List<CartOrderDetail>
-)
+) {
+    // Helper method to get display name (use order_number as display name)
+    fun getName(): String = order_number
+}
 
 data class CartOrderDetail(
     val id: String,  // order_detail_id
@@ -363,13 +371,14 @@ data class OrderTopping(
 )
 
 data class PaymentLinkResponse(
-    val success: Boolean,
+    val message: String,
     val data: PaymentLinkData
 )
 
 data class PaymentLinkData(
     val checkoutUrl: String,  // QR code payment URL
-    val qrCodeUrl: String
+    val qrCode: String,  // QR code image URL
+    val order_id: String
 )
 
 data class AdminProductsResponse(
