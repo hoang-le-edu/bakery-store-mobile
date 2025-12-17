@@ -1,0 +1,12 @@
+[
+  {"name": "Phuc Xa Ward", "code": "00001", "parent_code": "001"},
+  {"name": "Truc Bach Ward", "code": "00004", "parent_code": "001"},
+  {"name": "Vinh Phuc Ward", "code": "00006", "parent_code": "001"},
+  {"name": "Cua Nam Ward", "code": "00007", "parent_code": "001"},
+  {"name": "Hang Bac Ward", "code": "00034", "parent_code": "002"},
+  {"name": "Hang Buom Ward", "code": "00037", "parent_code": "002"},
+  {"name": "Hang Dao Ward", "code": "00040", "parent_code": "002"},
+  {"name": "Ward 1", "code": "27004", "parent_code": "760"},
+  {"name": "Ward 2", "code": "27007", "parent_code": "760"},
+  {"name": "Ward 3", "code": "27010", "parent_code": "760"}
+]
