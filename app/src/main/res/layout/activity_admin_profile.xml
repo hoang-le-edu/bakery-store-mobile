@@ -54,6 +54,14 @@
                         android:text="admin@example.com"
                         android:textSize="@dimen/text_sm"
                         android:textColor="@color/colorGrayText" />
+
+                    <TextView
+                        android:id="@+id/tvAdminPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="000-000-0000"
+                        android:textSize="@dimen/text_sm"
+                        android:textColor="@color/colorGrayText" />
                 </LinearLayout>
             </LinearLayout>
 

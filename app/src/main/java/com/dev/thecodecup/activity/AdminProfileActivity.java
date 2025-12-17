@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
  */
 public class AdminProfileActivity extends AdminBottomNavActivity {
 
-    private TextView tvAdminName, tvAdminEmail;
+    private TextView tvAdminName, tvAdminEmail, tvAdminPhone;
     private ImageView ivAvatar;
     private Button btnLogout;
 
@@ -31,6 +31,7 @@ public class AdminProfileActivity extends AdminBottomNavActivity {
         ivAvatar = findViewById(R.id.ivAvatar);
         tvAdminName = findViewById(R.id.tvAdminName);
         tvAdminEmail = findViewById(R.id.tvAdminEmail);
+        tvAdminPhone = findViewById(R.id.tvAdminPhone);
         btnLogout = findViewById(R.id.btnLogout);
 
         bindAdminData();
@@ -47,10 +48,12 @@ public class AdminProfileActivity extends AdminBottomNavActivity {
     private void bindAdminData() {
         // Pull from saved prefs if available
         SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
-        String email = prefs.getString("ADMIN_EMAIL", "admin@example.com");
-        String name = prefs.getString("ADMIN_NAME", "Admin");
-        tvAdminEmail.setText(email);
+        String email = prefs.getString("USER_EMAIL", "admin@example.com");
+        String name = prefs.getString("USER_NAME", "Admin");
+        String phone = prefs.getString("USER_PHONE", "");
         tvAdminName.setText(name);
+        tvAdminEmail.setText(email);
+        tvAdminPhone.setText("Phone number: " + (phone.isEmpty() ? "N/A" : phone));
     }
 
     private void handleLogout() {
@@ -58,9 +61,12 @@ public class AdminProfileActivity extends AdminBottomNavActivity {
         AuthManager.INSTANCE.clearTokens();
         SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
         prefs.edit()
-                .remove("USER_TYPE")
-                .remove("ACCESS_TOKEN")
-                .apply();
+            .remove("USER_TYPE")
+            .remove("ACCESS_TOKEN")
+            .remove("USER_NAME")
+            .remove("USER_EMAIL")
+            .remove("USER_PHONE")
+            .apply();
 
         // Firebase + Google sign out
         try { FirebaseAuth.getInstance().signOut(); } catch (Exception ignored) {}

@@ -12,16 +12,16 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
-import com.dev.thecodecup.model.network.dto.OrderDto;
+import com.dev.thecodecup.model.network.dto.AdminOrderDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.OrderViewHolder> {
 
-    private final List<OrderDto> items = new ArrayList<>();
+    private final List<AdminOrderDto> items = new ArrayList<>();
 
-    public void setItems(List<OrderDto> newItems) {
+    public void setItems(List<AdminOrderDto> newItems) {
         items.clear();
         if (newItems != null) {
             items.addAll(newItems);
@@ -39,32 +39,78 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
 
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
-        OrderDto order = items.get(position);
+        AdminOrderDto order = items.get(position);
 
-        holder.tvOrderId.setText("#" + order.getOrderId());
-        holder.tvReceiverName.setText(order.getReceiverName());
-        holder.tvOrderTime.setText(order.getOrderTime());
-        holder.tvOrderTotal.setText(String.format("%.0fđ", order.getTotal()));
+        // Order Number
+        holder.tvOrderId.setText(order.getOrderNumber() != null ? order.getOrderNumber() : "N/A");
+        
+        // Receiver Name
+        holder.tvReceiverName.setText(order.getReceiverName() != null ? order.getReceiverName() : "N/A");
+        
+        // Created At
+        holder.tvOrderTime.setText(order.getCreatedAt() != null ? order.getCreatedAt() : "N/A");
+        
+        // Order Total
+        if (order.getOrderTotal() != null) {
+            try {
+                double total = Double.parseDouble(order.getOrderTotal());
+                holder.tvOrderTotal.setText(String.format("%.0fđ", total));
+            } catch (NumberFormatException e) {
+                holder.tvOrderTotal.setText(order.getOrderTotal() + "đ");
+            }
+        } else {
+            holder.tvOrderTotal.setText("0đ");
+        }
+        
+        // Receiver Address
+        holder.tvReceiverAddress.setText(order.getReceiverAddress() != null && !order.getReceiverAddress().isEmpty() 
+            ? order.getReceiverAddress() 
+            : "No address provided");
+        
+        // Payment Method
+        holder.tvPaymentMethod.setText(order.getPaymentMethod() != null ? order.getPaymentMethod() : "N/A");
+        
+        // Payment Status
+        String paymentStatus = order.getPaymentStatus() != null ? order.getPaymentStatus() : "pending";
+        holder.tvPaymentStatus.setText(paymentStatus);
+        
+        // Set payment status color
+        GradientDrawable paymentBg = (GradientDrawable) holder.tvPaymentStatus.getBackground().mutate();
+        int paymentColor;
+        if ("paid".equalsIgnoreCase(paymentStatus) || "completed".equalsIgnoreCase(paymentStatus)) {
+            paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_completed);
+        } else if ("pending".equalsIgnoreCase(paymentStatus)) {
+            paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_pending);
+        } else {
+            paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_cancelled);
+        }
+        paymentBg.setColor(paymentColor);
 
-        String status = order.getOrderStatus();
-        holder.tvOrderStatus.setText(status.replace("_", " "));
+        // Order Status
+        String status = order.getOrderStatus() != null ? order.getOrderStatus() : "Draft";
+        holder.tvOrderStatus.setText(status);
 
-        // ---- set màu theo status, dùng 1 shape chung ----
+        // Set order status color
         GradientDrawable bg = (GradientDrawable) holder.tvOrderStatus.getBackground().mutate();
-
         int color;
         switch (status) {
-            case "PENDING":
+            case "Wait For Approval":
                 color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_pending);
                 break;
-            case "ON_GOING":
+            case "In Progress":
                 color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_ongoing);
                 break;
-            case "CANCELLED":
+            case "Delivering":
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_ongoing);
+                break;
+            case "Completed":
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_completed);
+                break;
+            case "Cancelled":
                 color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_cancelled);
                 break;
-            default: // COMPLETED, v.v.
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_completed);
+            default: // Draft, etc.
+                color = ContextCompat.getColor(holder.itemView.getContext(), android.R.color.darker_gray);
                 break;
         }
         bg.setColor(color);
@@ -79,6 +125,7 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
     static class OrderViewHolder extends RecyclerView.ViewHolder {
         CardView cardRoot;
         TextView tvOrderId, tvReceiverName, tvOrderStatus, tvOrderTime, tvOrderTotal;
+        TextView tvReceiverAddress, tvPaymentMethod, tvPaymentStatus;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -88,6 +135,9 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
             tvOrderStatus = itemView.findViewById(R.id.tvOrderStatus);
             tvOrderTime = itemView.findViewById(R.id.tvOrderTime);
             tvOrderTotal = itemView.findViewById(R.id.tvOrderTotal);
+            tvReceiverAddress = itemView.findViewById(R.id.tvReceiverAddress);
+            tvPaymentMethod = itemView.findViewById(R.id.tvPaymentMethod);
+            tvPaymentStatus = itemView.findViewById(R.id.tvPaymentStatus);
         }
     }
 }
