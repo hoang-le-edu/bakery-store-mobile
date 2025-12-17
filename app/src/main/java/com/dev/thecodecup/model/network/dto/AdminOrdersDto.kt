@@ -28,6 +28,12 @@ data class AdminOrderDto(
     @Json(name = "order_number")
     val orderNumber: String? = null,
 
+    @Json(name = "receiver_name")
+    val receiverName: String? = null,
+
+    @Json(name = "receiver_address")
+    val receiverAddress: String? = null,
+
     @Json(name = "order_total")
     val orderTotal: String? = null,
 
@@ -38,5 +44,8 @@ data class AdminOrderDto(
     val orderStatus: String? = null,
 
     @Json(name = "payment_status")
-    val paymentStatus: String? = null
+    val paymentStatus: String? = null,
+
+    @Json(name = "payment_method")
+    val paymentMethod: String? = null
 )

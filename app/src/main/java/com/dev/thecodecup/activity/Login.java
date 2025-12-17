@@ -379,12 +379,17 @@ public class Login extends AppCompatActivity {
                 UserDto user = data.getUser();
                 String userType = user != null ? user.getUserType() : null;
 
-                // LƯU userType + accessToken lại để auto login lần sau
+                // LƯU user info + token để dùng cho profile và auto login
                 SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
-                prefs.edit()
-                        .putString("USER_TYPE", userType)          // "user" hoặc "customer"
-                        .putString("ACCESS_TOKEN", accessToken)    // cho AdminHomeActivity dùng
-                        .apply();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("USER_TYPE", userType);          // "user" hoặc "customer"
+                editor.putString("ACCESS_TOKEN", accessToken);    // cho AdminHomeActivity dùng
+                if (user != null) {
+                    editor.putString("USER_NAME", user.getName());
+                    editor.putString("USER_EMAIL", user.getEmail());
+                    editor.putString("USER_PHONE", user.getPhoneNumber());
+                }
+                editor.apply();
 
                 Toast.makeText(Login.this, "Sign in successfully", Toast.LENGTH_SHORT).show();
 

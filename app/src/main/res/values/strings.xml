@@ -21,8 +21,10 @@
     <string name="admin">Admin</string>
     <string name="orders">Orders</string>
     <string name="all">All</string>
-    <string name="pending">Pending</string>
-    <string name="on_going">On Going</string>
+    <string name="wait_for_approval">Wait For Approval</string>
+    <string name="in_progress">In Progress</string>
+    <string name="out_for_delivery">Delivering</string>
+    <string name="delivered">Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="home">Home</string>
     <string name="dashboard">Dashboard</string>
