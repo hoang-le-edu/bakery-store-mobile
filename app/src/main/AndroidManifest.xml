@@ -48,6 +48,11 @@
         <activity
             android:name=".activity.ProfileActivity"
             android:exported="false" />
+            
+        <activity
+            android:name=".activity.MyOrdersActivity"
+            android:parentActivityName=".activity.ProfileActivity"
+            android:theme="@style/Theme.TheCodeCup" />
 
         <!--        <activity android:name=".activity.ResetPasswordActivity"-->
 <!--            android:exported="true">-->

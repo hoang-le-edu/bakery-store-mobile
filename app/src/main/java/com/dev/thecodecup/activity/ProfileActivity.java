@@ -73,8 +73,7 @@ public class ProfileActivity extends BaseBottomNavActivity {
         });
 
         rowOrders.setOnClickListener(v -> {
-            // ví dụ: tái dùng AdminOrdersActivity hoặc tạo CustomerOrdersActivity
-            startActivity(new Intent(this, AdminOrdersActivity.class));
+            startActivity(new Intent(this, MyOrdersActivity.class));
         });
 
         btnLogout.setOnClickListener(v -> {
