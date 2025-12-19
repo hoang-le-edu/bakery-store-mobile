@@ -50,6 +50,10 @@ interface PaymentLinkCallback {
     fun onResult(response: Response<PaymentLinkResponse>?, error: Throwable?)
 }
 
+interface CustomerOrdersCallback {
+    fun onResult(response: Response<CustomerOrdersResponse>?, error: Throwable?)
+}
+
 object BakeryJavaBridge {
 
     private val apiService = NetworkModule.bakeryApiService
@@ -201,6 +205,20 @@ object BakeryJavaBridge {
             try {
                 val request = CreatePaymentLinkRequest(order_id = orderId)
                 val response = apiService.createPaymentLink(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun loadCustomerOrders(
+        owner: LifecycleOwner,
+        callback: CustomerOrdersCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.loadCustomerOrders()
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)
