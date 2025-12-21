@@ -16,9 +16,9 @@ import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
 import com.dev.thecodecup.model.network.api.CheckoutCallback;
 import com.dev.thecodecup.model.network.api.CheckoutRequest;
+import com.dev.thecodecup.model.network.api.CheckoutResponse;
 import com.dev.thecodecup.model.network.api.PaymentLinkCallback;
 import com.dev.thecodecup.model.network.api.PaymentLinkResponse;
-import com.dev.thecodecup.model.network.api.SuccessResponse;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -306,8 +306,7 @@ public class CheckoutActivity extends AppCompatActivity {
         String paymentMethod = (checkedId == R.id.radioCOD) ? "Cash" : "Banking";
 
         // Get voucher code
-        String voucherCode = edtVoucherCode.getText() != null ? 
-                edtVoucherCode.getText().toString().trim() : "";
+        String voucherCode = edtVoucherCode.getText() != null ? edtVoucherCode.getText().toString().trim() : "";
 
         // Build full address
         String fullAddress = streetAddress + ", " + getSelectedWardName() + ", " +
@@ -335,7 +334,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         BakeryJavaBridge.INSTANCE.proceedCheckout(this, request, new CheckoutCallback() {
             @Override
-            public void onResult(Response<SuccessResponse> response, Throwable error) {
+            public void onResult(Response<CheckoutResponse> response, Throwable error) {
                 dialog.dismiss();
 
                 if (error != null) {
@@ -346,12 +345,14 @@ public class CheckoutActivity extends AppCompatActivity {
                 }
 
                 if (response != null && response.isSuccessful() && response.body() != null) {
+                    CheckoutResponse checkoutResponse = response.body();
                     Toast.makeText(CheckoutActivity.this,
-                            response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                            checkoutResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
-                    if ("Banking".equals(paymentMethod)) {
-                        // TODO: Get order_id from response and create payment link
-                        createPaymentLink("dummy-order-id");
+                    if ("Banking".equals(paymentMethod) && checkoutResponse.getData() != null) {
+                        // Get real order_id from response
+                        String orderId = checkoutResponse.getData().getOrder_id();
+                        createPaymentLink(orderId);
                     } else {
                         // Cash payment - go to success screen
                         Toast.makeText(CheckoutActivity.this,
@@ -387,13 +388,18 @@ public class CheckoutActivity extends AppCompatActivity {
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     PaymentLinkResponse paymentResponse = response.body();
 
-                    // Open payment screen
-                    Intent intent = new Intent(CheckoutActivity.this, PaymentActivity.class);
-                    intent.putExtra("CHECKOUT_URL", paymentResponse.getData().getCheckoutUrl());
-                    intent.putExtra("QR_CODE_URL", paymentResponse.getData().getQrCode());
-                    intent.putExtra("ORDER_ID", paymentResponse.getData().getOrder_id());
-                    startActivity(intent);
-                    finish();
+                    if (paymentResponse.getError() == 0) {
+                        // Open payment screen
+                        Intent intent = new Intent(CheckoutActivity.this, PaymentActivity.class);
+                        intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
+                        intent.putExtra("ORDER_ID", orderId);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(CheckoutActivity.this,
+                                "Payment error: " + paymentResponse.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(CheckoutActivity.this,
                             "Failed to create payment link", Toast.LENGTH_SHORT).show();

@@ -43,7 +43,7 @@ interface UpdateCartProductCallback {
 }
 
 interface CheckoutCallback {
-    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+    fun onResult(response: Response<CheckoutResponse>?, error: Throwable?)
 }
 
 interface PaymentLinkCallback {

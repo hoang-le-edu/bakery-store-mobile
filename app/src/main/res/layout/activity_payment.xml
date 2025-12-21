@@ -123,7 +123,21 @@
                 android:textSize="14sp"
                 android:textColor="#FF9800"
                 android:textStyle="italic"
+                android:layout_marginBottom="12dp"
                 android:visibility="visible" />
+
+            <!-- Checkout URL (optional display) -->
+            <TextView
+                android:id="@+id/txtCheckoutUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="11sp"
+                android:textColor="#9E9E9E"
+                android:textAlignment="center"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:visibility="gone" />
 
         </LinearLayout>
 
