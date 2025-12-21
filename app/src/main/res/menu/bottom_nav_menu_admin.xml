@@ -7,7 +7,7 @@
         android:title="@string/home" />
 
     <item
-        android:id="@+id/navigation_admin_dashboard"
+        android:id="@+id/navigation_admin_product"
         android:icon="@drawable/ic_product"
         android:title="@string/product" />
 
@@ -20,5 +20,4 @@
         android:id="@+id/navigation_admin_user"
         android:icon="@drawable/ic_profile"
         android:title="@string/user" />
-
 </menu>

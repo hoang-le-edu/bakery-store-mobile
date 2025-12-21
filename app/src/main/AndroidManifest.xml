@@ -31,20 +31,28 @@
         <activity android:name=".activity.ProductListActivity" />
         <activity android:name=".activity.ProductDetailActivity" />
         <activity android:name=".activity.AdminOrdersActivity" />
+        <activity android:name=".activity.AdminHomeActivity" />
+        <activity android:name=".activity.AdminProfileActivity" />
 
 
 
         <activity android:name=".activity.CartActivity" />
-<!--        <activity android:name=".activity.CheckoutActivity" />-->
-<!--        <activity android:name=".activity.OrdersActivity" />-->
-<!--        <activity android:name=".ProductDetailActivity" />-->
-<!--        <activity android:name=".CartActivity" />-->
-<!--        <activity android:name=".CheckoutActivity" />-->
-<!--        <activity android:name=".OrdersActivity" />-->
-<!--        <activity android:name=".OrderDetailActivity" />-->
+        <activity 
+            android:name=".activity.CheckoutActivity"
+            android:parentActivityName=".activity.CartActivity"
+            android:theme="@style/Theme.TheCodeCup" />
+        <activity 
+            android:name=".activity.PaymentActivity"
+            android:parentActivityName=".activity.CheckoutActivity"
+            android:theme="@style/Theme.TheCodeCup" />
         <activity
             android:name=".activity.ProfileActivity"
             android:exported="false" />
+            
+        <activity
+            android:name=".activity.MyOrdersActivity"
+            android:parentActivityName=".activity.ProfileActivity"
+            android:theme="@style/Theme.TheCodeCup" />
 
         <!--        <activity android:name=".activity.ResetPasswordActivity"-->
 <!--            android:exported="true">-->

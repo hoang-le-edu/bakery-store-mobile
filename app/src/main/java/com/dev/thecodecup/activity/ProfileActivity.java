@@ -1,6 +1,7 @@
 package com.dev.thecodecup.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,7 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
  */
 public class ProfileActivity extends BaseBottomNavActivity {
 
-    private TextView tvUserName, tvUserEmail;
+    private TextView tvUserName, tvUserEmail, tvUserPhone;
     private ImageView ivAvatar, btnEditProfile;
     private LinearLayout rowMyInfo, rowAddress, rowOrders;
     private Button btnLogout;
@@ -38,6 +39,7 @@ public class ProfileActivity extends BaseBottomNavActivity {
     private void initViews() {
         tvUserName = findViewById(R.id.tvUserName);
         tvUserEmail = findViewById(R.id.tvUserEmail);
+        tvUserPhone = findViewById(R.id.tvUserPhone);
         ivAvatar = findViewById(R.id.ivAvatar);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         rowMyInfo = findViewById(R.id.rowMyInfo);
@@ -47,10 +49,14 @@ public class ProfileActivity extends BaseBottomNavActivity {
     }
 
     private void bindUserData() {
-        // TODO: lấy thông tin user thực từ AuthManager / Firebase
-        // Tạm để text demo
-        tvUserName.setText("Sweet Guest");
-        tvUserEmail.setText("guest@bepmetay.com");
+        SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
+        String name = prefs.getString("USER_NAME", "Sweet Guest");
+        String email = prefs.getString("USER_EMAIL", "guest@bepmetay.com");
+        String phone = prefs.getString("USER_PHONE", "");
+
+        tvUserName.setText(name);
+        tvUserEmail.setText(email);
+        tvUserPhone.setText("Phone number: " + (phone.isEmpty() ? "N/A" : phone));
     }
 
     private void setupClicks() {
@@ -67,8 +73,7 @@ public class ProfileActivity extends BaseBottomNavActivity {
         });
 
         rowOrders.setOnClickListener(v -> {
-            // ví dụ: tái dùng AdminOrdersActivity hoặc tạo CustomerOrdersActivity
-            startActivity(new Intent(this, AdminOrdersActivity.class));
+            startActivity(new Intent(this, MyOrdersActivity.class));
         });
 
         btnLogout.setOnClickListener(v -> {
@@ -84,6 +89,15 @@ public class ProfileActivity extends BaseBottomNavActivity {
 
     private void handleLogout() {
         AuthManager.INSTANCE.clearTokens();
+
+        SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
+        prefs.edit()
+            .remove("USER_TYPE")
+            .remove("ACCESS_TOKEN")
+            .remove("USER_NAME")
+            .remove("USER_EMAIL")
+            .remove("USER_PHONE")
+            .apply();
 
         GoogleAuthManager.getInstance(this).signOutGoogle();
 

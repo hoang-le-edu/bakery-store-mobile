@@ -318,6 +318,7 @@
     </LinearLayout>
     </ScrollView>
 
+
     <!-- Fixed Bottom Bar -->
     <RelativeLayout
         android:id="@+id/bottomBar"

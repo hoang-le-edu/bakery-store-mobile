@@ -78,6 +78,15 @@
                             android:text="your@email.com"
                             android:textSize="@dimen/text_sm"
                             android:textColor="@color/colorGrayText" />
+
+                        <TextView
+                            android:id="@+id/tvUserPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_xs"
+                            android:text="000-000-0000"
+                            android:textSize="@dimen/text_sm"
+                            android:textColor="@color/colorGrayText" />
                     </LinearLayout>
 
                     <ImageView
@@ -206,6 +215,13 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- Shadow mỏng phía trên bottom nav -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_top"
+        app:layout_constraintBottom_toBottomOf="@+id/profileScroll" />
 
     <!-- BOTTOM NAV -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

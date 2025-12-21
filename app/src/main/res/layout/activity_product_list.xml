@@ -39,7 +39,7 @@
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
@@ -73,11 +73,11 @@
         android:id="@+id/tvExploreCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/space_lg"
+        android:paddingStart="@dimen/space_xl"
         android:paddingTop="@dimen/space_sm"
-        android:paddingEnd="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_xl"
         android:paddingBottom="@dimen/space_sm"
-        android:text="Explore Categories"
+        android:text="@string/explore_categories"
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_subsubtitle"
         android:textStyle="bold" />
@@ -92,7 +92,15 @@
         app:tabIndicatorColor="#DB5560"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="#DB5560"
-        app:tabTextColor="#777777" />
+        app:tabTextColor="#777777"
+        />
+
+    <View
+        android:id="@+id/tabShadow"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_bottom" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProducts"
@@ -103,11 +111,17 @@
         android:paddingStart="@dimen/space_lg"
         android:paddingEnd="@dimen/space_lg" />
 
+    <!-- Shadow mỏng phía trên bottom nav -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_top" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="@color/white"
         app:itemIconTint="@drawable/bnv_selector"
         app:itemTextColor="@drawable/bnv_selector"
         app:labelVisibilityMode="labeled"
