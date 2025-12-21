@@ -12,23 +12,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:padding="@dimen/space_lg">
 
-        <TextView
-            android:id="@+id/tvAdminTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/admin"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:textSize="18sp" />
 
-        <ImageView
-            android:id="@+id/ivAdminProfile"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_profile" />
     </LinearLayout>
 
     <!-- Title Orders -->
@@ -36,12 +22,12 @@
         android:id="@+id/tvOrdersTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:paddingLeft="@dimen/space_lg"
+        android:paddingRight="@dimen/space_lg"
         android:text="@string/orders"
         android:textStyle="bold"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="@dimen/text_subsubtitle" />
 
     <!-- Tabs status -->
     <HorizontalScrollView
@@ -55,8 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp">
+            android:paddingHorizontal="@dimen/space_lg"
+            android:paddingVertical="@dimen/space_sm">
 
             <!-- Các tab nằm ở đây -->
             <TextView
@@ -65,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="@dimen/space_lg"
                 android:text="@string/all"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
@@ -73,42 +59,56 @@
                 android:foreground="?attr/selectableItemBackgroundBorderless" />
 
             <TextView
-                android:id="@+id/tabPending"
+                android:id="@+id/tabWaitForApproval"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:gravity="center"
-                android:layout_marginStart="8dp"
-                android:paddingHorizontal="16dp"
-                android:text="@string/pending"
+                android:layout_marginStart="@dimen/space_sm"
+                android:paddingHorizontal="@dimen/space_lg"
+                android:text="@string/wait_for_approval"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless" />
 
             <TextView
-                android:id="@+id/tabOnGoing"
+                android:id="@+id/tabInProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:gravity="center"
-                android:layout_marginStart="8dp"
-                android:paddingHorizontal="16dp"
-                android:text="@string/on_going"
+                android:layout_marginStart="@dimen/space_sm"
+                android:paddingHorizontal="@dimen/space_lg"
+                android:text="@string/in_progress"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:clickable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless" />
 
             <TextView
-                android:id="@+id/tabSuccess"
+                android:id="@+id/tabOutForDelivery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:gravity="center"
-                android:layout_marginStart="8dp"
-                android:paddingHorizontal="16dp"
-                android:text="@string/success"
+                android:layout_marginStart="@dimen/space_sm"
+                android:paddingHorizontal="@dimen/space_lg"
+                android:text="@string/out_for_delivery"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabDelivered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="@dimen/space_sm"
+                android:paddingHorizontal="@dimen/space_lg"
+                android:text="@string/delivered"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:clickable="true"
@@ -120,8 +120,8 @@
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:gravity="center"
-                android:layout_marginStart="8dp"
-                android:paddingHorizontal="16dp"
+                android:layout_marginStart="@dimen/space_sm"
+                android:paddingHorizontal="@dimen/space_lg"
                 android:text="@string/cancelled"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
@@ -131,40 +131,18 @@
     </HorizontalScrollView>
 
 
-
-    <!-- Header nhỏ: All + Order (sort) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="8dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="All" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Order" />
-    </LinearLayout>
-
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvOrders"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp" />
+        android:paddingLeft="@dimen/space_sm"
+        android:paddingRight="@dimen/space_sm" />
 
     <!-- Bottom nav -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavAdmin"
+        android:id="@+id/bottom_nav_admin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"

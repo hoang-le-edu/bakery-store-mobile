@@ -140,4 +140,6 @@ dependencies {
 
     // Google Identity Services (GIS)
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

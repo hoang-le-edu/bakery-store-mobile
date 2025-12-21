@@ -3,6 +3,7 @@ package com.dev.thecodecup.model.network.api
 import com.dev.thecodecup.model.network.dto.*
 import retrofit2.Response
 import retrofit2.http.*
+import java.io.Serializable
 
 /**
  * Bakery Store API Service
@@ -169,8 +170,10 @@ data class CreateCartRequest(
     val custom_name: String? = null
 )
 
+// Add order_ids back as a workaround for the backend API
 data class AddToCartRequest(
-    val product: CartProductRequest
+    val product: CartProductRequest,
+    val order_ids: List<String> = emptyList()
 )
 
 data class RemoveProductFromCartRequest(
@@ -324,8 +327,8 @@ data class CustomerOrdersResponse(
 )
 
 data class Order(
-    val id: String,  // Same as order_id in some APIs
-    val order_id: String?,
+    // Removed 'val id: String' which caused the JSON parsing error
+    val order_id: String, // Made non-nullable as it's the primary key returned by API
     val order_number: String,
     val date_created: String,
     val host_id: String,
@@ -334,19 +337,21 @@ data class Order(
     val receiver_name: String,
     val receiver_address: String?,
     val receiver_phone: String?,
-    val order_status: String,  // "Wait For Approval", "In Progress", "Completed", "Cancelled", "Draft"
-    val status: String?,  // Alternative field name
+    val order_status: String? = null,
+    val status: String?,
     val count_product: Int,
     val order_total: String?,
     val total_price: String?,  // Alternative field name
     val order_date: String,
     val rate: Int?,
-    val feedback: String,
+    val feedback: String?, // Made nullable just in case
     val note: String?,
     val created_at: String?,
     val source: String?,  // "Online" or "Offline"
     val order_detail: List<OrderDetail>? = null
-)
+) : Serializable {
+    fun getId(): String = order_id
+}
 
 data class OrderDetail(
     val id: String,
@@ -357,18 +362,18 @@ data class OrderDetail(
     val size: String,
     val quantity: Int,
     val image: String?,
-    val note: String,
+    val note: String?, // Made nullable
     val total_price: String,
     val count_topping: Int,
     val toppings: List<OrderTopping>? = null
-)
+) : Serializable
 
 data class OrderTopping(
     val id: String,
     val topping_id: String,
     val name: String,
     val price: String
-)
+) : Serializable
 
 data class PaymentLinkResponse(
     val message: String,
