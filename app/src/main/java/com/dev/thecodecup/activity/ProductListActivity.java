@@ -55,7 +55,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
         adapter.setOnItemClickListener(product -> {
             // Navigate to ProductDetailActivity
             Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
-            intent.putExtra("PRODUCT_ID", product.getProductId());
+            intent.putExtra("productId", product.getProductId());
             startActivity(intent);
         });
         rvProducts.setAdapter(adapter);

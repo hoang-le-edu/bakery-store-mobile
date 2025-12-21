@@ -66,7 +66,7 @@ public class HomeActivity extends BaseBottomNavActivity  {
 
         bestSellerAdapter.setOnItemClickListener(product -> {
             Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
-            intent.putExtra("PRODUCT_ID", product.getProductId());
+            intent.putExtra("productId", product.getProductId());
             startActivity(intent);
         });
 
