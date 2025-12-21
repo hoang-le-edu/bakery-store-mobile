@@ -126,6 +126,45 @@
                     android:textSize="@dimen/text_xl"
                     android:textStyle="bold"
                     />
+                
+                <!-- NEW: View Reviews Button -->
+                <LinearLayout
+                    android:id="@+id/btnViewReviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:paddingVertical="4dp"
+                    android:background="?attr/selectableItemBackground">
+                    
+                    <RatingBar
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:rating="5"
+                        android:numStars="5"
+                        android:progressTint="#FFC107"
+                        android:secondaryProgressTint="#FFC107"
+                        android:isIndicator="true"/>
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See Reviews"
+                        android:textColor="@color/purple_500"
+                        android:textSize="14sp"
+                        android:layout_marginStart="8dp"
+                        android:textStyle="bold"/>
+                        
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_arrow_right"
+                        android:layout_marginStart="4dp"
+                        app:tint="@color/purple_500"/>
+                </LinearLayout>
+
             </LinearLayout>
 <!--        </androidx.cardview.widget.CardView>-->
 

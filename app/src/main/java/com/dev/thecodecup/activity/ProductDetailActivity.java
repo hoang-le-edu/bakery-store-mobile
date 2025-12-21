@@ -1,6 +1,7 @@
 package com.dev.thecodecup.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +45,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ImageButton btnDecrease, btnIncrease;
     private Button btnAddToCart;
     private EditText etNote;
+    private LinearLayout btnViewReviews; // Added review button
 
     private final Handler carouselHandler = new Handler();
     private int currentImageIndex = 0;
@@ -88,7 +91,14 @@ public class ProductDetailActivity extends AppCompatActivity {
             
             if (btnAddToCart != null) btnAddToCart.setText("Update Cart");
         } else {
+            // Try getting ID with standard camelCase key
             productId = getIntent().getStringExtra("productId");
+            
+            // Fallback: Try getting ID with legacy constant key
+            if (productId == null) {
+                productId = getIntent().getStringExtra("PRODUCT_ID");
+            }
+            
             initViews();
         }
 
@@ -115,6 +125,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         etNote = findViewById(R.id.etNote);
+        btnViewReviews = findViewById(R.id.btnViewReviews); // Find the reviews button
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         
@@ -142,6 +153,19 @@ public class ProductDetailActivity extends AppCompatActivity {
                 addToCart();
             }
         });
+
+        // Set click listener for reviews button
+        if (btnViewReviews != null) {
+            btnViewReviews.setOnClickListener(v -> {
+                if (productId != null) {
+                    Intent intent = new Intent(ProductDetailActivity.this, ProductReviewsActivity.class);
+                    intent.putExtra("productId", productId);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(ProductDetailActivity.this, "Cannot load reviews: Product ID missing", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void loadProductDetail() {

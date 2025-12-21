@@ -40,6 +40,15 @@ interface BakeryApiService {
     suspend fun getProductDetail(
         @Path("productId") productId: String
     ): Response<ProductDetailResponse>
+
+    /**
+     * Get product reviews
+     */
+    @GET("products/{productId}/reviews")
+    suspend fun getProductReviews(
+        @Path("productId") productId: String,
+        @Query("page") page: Int = 1
+    ): Response<ReviewResponse>
     
     // ==================== Cart APIs ====================
 
@@ -377,7 +386,7 @@ data class OrderTopping(
 
 data class PaymentLinkResponse(
     val message: String,
-    val data: PaymentLinkData
+    val data: PaymentLinkData? = null
 )
 
 data class PaymentLinkData(
@@ -436,4 +445,54 @@ data class AdminOrdersResponse(
 data class SuccessResponse(
     val success: Boolean? = null,
     val message: String
+)
+
+// ==================== Review DTOs ====================
+
+data class ReviewResponse(
+    val success: Boolean,
+    val message: String,
+    val data: ReviewDataWrapper
+)
+
+data class ReviewDataWrapper(
+    val reviews: ReviewPagination,
+    val summary: ReviewSummary
+)
+
+data class ReviewPagination(
+    val current_page: Int,
+    val data: List<ReviewItem>,
+    val last_page: Int,
+    val total: Int
+)
+
+data class ReviewItem(
+    val id: String,
+    val rating: Int,
+    val review_text: String?,
+    val reviewed_at: String,
+    val is_verified_purchase: Boolean,
+    val user: ReviewUser,
+    val helpful_count: Int
+) : Serializable
+
+data class ReviewUser(
+    val id: String,
+    val name: String,
+    val avatar: String?
+) : Serializable
+
+data class ReviewSummary(
+    val average_rating: Double,
+    val total_reviews: Int,
+    val rating_distribution: RatingDistribution
+)
+
+data class RatingDistribution(
+    @com.google.gson.annotations.SerializedName("1") val one: Int = 0,
+    @com.google.gson.annotations.SerializedName("2") val two: Int = 0,
+    @com.google.gson.annotations.SerializedName("3") val three: Int = 0,
+    @com.google.gson.annotations.SerializedName("4") val four: Int = 0,
+    @com.google.gson.annotations.SerializedName("5") val five: Int = 0
 )

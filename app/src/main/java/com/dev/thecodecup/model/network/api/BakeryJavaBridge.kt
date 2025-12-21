@@ -54,6 +54,10 @@ interface CustomerOrdersCallback {
     fun onResult(response: Response<CustomerOrdersResponse>?, error: Throwable?)
 }
 
+interface ProductReviewsCallback {
+    fun onResult(response: Response<ReviewResponse>?, error: Throwable?)
+}
+
 object BakeryJavaBridge {
 
     private val apiService = NetworkModule.bakeryApiService
@@ -83,6 +87,22 @@ object BakeryJavaBridge {
         owner.lifecycleScope.launch {
             try {
                 val response = apiService.addProductToCart(request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun getProductReviews(
+        owner: LifecycleOwner,
+        productId: String,
+        page: Int = 1,
+        callback: ProductReviewsCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.getProductReviews(productId, page)
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)
