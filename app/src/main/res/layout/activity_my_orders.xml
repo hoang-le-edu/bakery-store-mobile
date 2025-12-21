@@ -19,7 +19,7 @@
             android:layout_height="48dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@color/white"
             android:src="@drawable/ic_arrowback"
             android:contentDescription="Back" />
 
@@ -39,9 +39,9 @@
         android:layout_height="wrap_content"
         app:tabMode="fixed"
         app:tabGravity="fill"
-        app:tabIndicatorColor="@color/purple_500"
-        app:tabSelectedTextColor="@color/purple_500"
-        app:tabTextColor="@android:color/darker_gray"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        app:tabTextColor="@android:color/black"
         app:tabTextAppearance="@style/MyCustomTabText" />
 
     <androidx.viewpager2.widget.ViewPager2

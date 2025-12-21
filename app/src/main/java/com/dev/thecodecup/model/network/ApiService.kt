@@ -1,5 +1,7 @@
 package com.dev.thecodecup.model.network
 
+import com.dev.thecodecup.model.network.api.SuccessResponse
+import com.dev.thecodecup.model.network.dto.AdminOrderDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto
 import com.dev.thecodecup.model.network.dto.ApiResponse
@@ -10,8 +12,8 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -79,6 +81,25 @@ interface ApiService {
      */
     @GET("admin/orders/all")
     fun getAdminOrders(): Call<AdminOrdersResponseDto>
+
+    /**
+     * Get order detail (admin)
+     * Example: /api/admin/orders/detail/{id}
+     */
+    @GET("admin/orders/detail/{id}")
+    fun getAdminOrderDetail(
+        @Path("id") orderId: String
+    ): Call<AdminOrderDetailResponseDto>
+
+    /**
+     * Update order status and record history
+     * Example: /api/orders/status/{id} with body {"status":"In Progress"}
+     */
+    @POST("orders/status/{id}")
+    fun updateOrderStatus(
+        @Path("id") orderId: String,
+        @Body body: Map<String, String>
+    ): Call<SuccessResponse>
 
 }
 

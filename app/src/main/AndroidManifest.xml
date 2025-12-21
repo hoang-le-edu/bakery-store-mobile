@@ -33,6 +33,7 @@
         <activity android:name=".activity.AdminOrdersActivity" />
         <activity android:name=".activity.AdminHomeActivity" />
         <activity android:name=".activity.AdminProfileActivity" />
+        <activity android:name=".activity.AdminOrderDetailActivity" />
 
 
 
