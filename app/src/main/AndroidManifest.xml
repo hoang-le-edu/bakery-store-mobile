@@ -34,6 +34,7 @@
         <activity android:name=".activity.AdminHomeActivity" />
         <activity android:name=".activity.AdminProfileActivity" />
         <activity android:name=".activity.AdminOrderDetailActivity" />
+        <activity android:name=".activity.ProductReviewsActivity"/>
 
 
 
