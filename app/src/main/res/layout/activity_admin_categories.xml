@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvAdminTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/admin"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/ivAdminProfile"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_profile" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCategoryTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Categories"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvTotalCategoriesLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tất cả danh mục"
+                android:textColor="#757575"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvSort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sắp xếp"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                app:drawableEndCompat="@drawable/ic_sort_small"
+                android:drawablePadding="4dp"/>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAdminCategories"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:clipToPadding="false"
+            android:paddingBottom="80dp"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:menu="@menu/bottom_nav_menu_admin"
+            app:itemIconTint="@drawable/bnv_selector"
+            app:itemTextColor="@drawable/bnv_selector"
+            app:labelVisibilityMode="labeled"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="72dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@android:color/black"
+        app:tint="@android:color/white"
+        android:contentDescription="Add New Category" />
+
+</RelativeLayout>
