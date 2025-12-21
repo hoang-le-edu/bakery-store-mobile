@@ -118,7 +118,7 @@ interface BakeryApiService {
     @POST("orders/proceed")
     suspend fun proceedOrder(
         @Body request: CheckoutRequest
-    ): Response<SuccessResponse>
+    ): Response<CheckoutResponse>
     
     /**
      * Load customer's orders grouped by status
@@ -389,14 +389,9 @@ data class OrderTopping(
 ) : Serializable
 
 data class PaymentLinkResponse(
+    val error: Int,
     val message: String,
-    val data: PaymentLinkData? = null
-)
-
-data class PaymentLinkData(
-    val checkoutUrl: String,  // QR code payment URL
-    val qrCode: String,  // QR code image URL
-    val order_id: String
+    val checkoutUrl: String  // URL to display as QR code for payment
 )
 
 data class AdminProductsResponse(
@@ -493,11 +488,21 @@ data class ReviewSummary(
     val rating_distribution: RatingDistribution
 )
 
-// Đã thay @SerializedName (Gson) bằng @Json(name = ...) (Moshi)
+// �? thay @SerializedName (Gson) b?ng @Json(name = ...) (Moshi)
 data class RatingDistribution(
     @Json(name = "1") val one: Int = 0,
     @Json(name = "2") val two: Int = 0,
     @Json(name = "3") val three: Int = 0,
     @Json(name = "4") val four: Int = 0,
     @Json(name = "5") val five: Int = 0
+)
+
+data class CheckoutResponse(
+    val success: Boolean,
+    val message: String,
+    val data: CheckoutData? = null
+)
+
+data class CheckoutData(
+    val order_id: String
 )

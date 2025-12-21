@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.network.api.Order;
 import com.dev.thecodecup.model.network.api.OrderDetail;
+import com.google.android.material.button.MaterialButton;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
     public interface OnOrderClickListener {
         void onOrderClick(Order order);
+
+        void onPayNowClick(Order order);
     }
 
     public OrderHistoryAdapter(Context context, OnOrderClickListener listener) {
@@ -63,7 +66,8 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     }
 
     class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvOrderNumber, tvOrderDate, tvOrderStatus, tvItemCount, tvPaymentMethod, tvTotalPrice, tvProductName, tvProductVariant;
+        TextView tvOrderNumber, tvOrderDate, tvOrderStatus, tvItemCount, tvPaymentMethod, tvTotalPrice, tvProductName,
+                tvProductVariant;
         ImageView ivProductImage;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -87,7 +91,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
         public void bind(Order order) {
             tvOrderNumber.setText(order.getOrder_number());
-            
+
             // Format date if needed, currently using raw string
             // Extract just the date part if it's ISO format
             String dateStr = order.getOrder_date() != null ? order.getOrder_date() : "";
@@ -96,7 +100,8 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             }
             tvOrderDate.setText(dateStr);
 
-            // Ưu tiên lấy status từ trường 'status' (API trả về), nếu null thì lấy 'order_status'
+            // Ưu tiên lấy status từ trường 'status' (API trả về), nếu null thì lấy
+            // 'order_status'
             String status = order.getStatus();
             if (status == null) {
                 status = order.getOrder_status();
@@ -104,9 +109,9 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             if (status == null) {
                 status = "Unknown";
             }
-            
+
             tvOrderStatus.setText(status);
-            
+
             int color;
             switch (status) {
                 case "Completed":
@@ -138,7 +143,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             if (priceStr == null && order.getTotal_price() != null) {
                 priceStr = order.getTotal_price();
             }
-            
+
             if (priceStr != null) {
                 try {
                     double price = Double.parseDouble(priceStr);
@@ -161,13 +166,13 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                 if (firstItem.getSize() != null && !firstItem.getSize().isEmpty()) {
                     variantBuilder.append("Size: ").append(firstItem.getSize());
                 }
-                
+
                 variantBuilder.append(" • x").append(firstItem.getQuantity());
-                
+
                 if (firstItem.getCount_topping() > 0) {
                     variantBuilder.append(" • ").append(firstItem.getCount_topping()).append(" Topping");
                 } else if (firstItem.getToppings() != null && !firstItem.getToppings().isEmpty()) {
-                     variantBuilder.append(" • ").append(firstItem.getToppings().size()).append(" Topping");
+                    variantBuilder.append(" • ").append(firstItem.getToppings().size()).append(" Topping");
                 }
 
                 tvProductVariant.setText(variantBuilder.toString());
@@ -182,6 +187,16 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                 tvProductName.setText("Order Details");
                 tvProductVariant.setVisibility(View.GONE);
                 ivProductImage.setImageResource(R.drawable.placeholder_image);
+            }
+
+            // Show Pay Now button for Banking orders with pending payment
+            boolean isBanking = "Banking".equalsIgnoreCase(order.getPayment_method());
+            boolean isPending = "pending".equalsIgnoreCase(order.getPayment_status());
+
+            if (isBanking && isPending) {
+                btnPayNow.setVisibility(View.VISIBLE);
+            } else {
+                btnPayNow.setVisibility(View.GONE);
             }
         }
     }

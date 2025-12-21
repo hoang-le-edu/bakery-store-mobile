@@ -175,5 +175,18 @@
                 tools:text="150.000₫" />
         </LinearLayout>
 
+        <!-- Pay Now Button (only for Banking + pending payment) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pay_now"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:text="Thanh toán ngay"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/pink_primary"
+            app:cornerRadius="8dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
