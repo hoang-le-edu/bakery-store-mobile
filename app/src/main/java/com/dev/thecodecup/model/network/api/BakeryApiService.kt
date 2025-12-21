@@ -1,6 +1,7 @@
 package com.dev.thecodecup.model.network.api
 
 import com.dev.thecodecup.model.network.dto.*
+import com.squareup.moshi.Json
 import retrofit2.Response
 import retrofit2.http.*
 import java.io.Serializable
@@ -264,6 +265,9 @@ data class ProductDetail(
     val description: String?,
     val price: String,  // e.g. "6000.00"
     val image_url: String,
+    // Add new fields for rating
+    val avg_rating: Double? = 0.0,
+    val review_count: Int? = 0,
     val productDetailImages: List<ProductImage>,
     val size_list: List<Size>,
     val topping_list: List<Topping>
@@ -489,10 +493,11 @@ data class ReviewSummary(
     val rating_distribution: RatingDistribution
 )
 
+// Đã thay @SerializedName (Gson) bằng @Json(name = ...) (Moshi)
 data class RatingDistribution(
-    @com.google.gson.annotations.SerializedName("1") val one: Int = 0,
-    @com.google.gson.annotations.SerializedName("2") val two: Int = 0,
-    @com.google.gson.annotations.SerializedName("3") val three: Int = 0,
-    @com.google.gson.annotations.SerializedName("4") val four: Int = 0,
-    @com.google.gson.annotations.SerializedName("5") val five: Int = 0
+    @Json(name = "1") val one: Int = 0,
+    @Json(name = "2") val two: Int = 0,
+    @Json(name = "3") val three: Int = 0,
+    @Json(name = "4") val four: Int = 0,
+    @Json(name = "5") val five: Int = 0
 )

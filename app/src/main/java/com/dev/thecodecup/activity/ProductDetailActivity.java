@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,12 +41,13 @@ import retrofit2.Response;
 public class ProductDetailActivity extends AppCompatActivity {
 
     private ViewPager2 imageCarousel;
-    private TextView tvProductName, tvProductPrice, tvQuantity, tvTotalPrice;
+    private TextView tvProductName, tvProductPrice, tvQuantity, tvTotalPrice, tvReviewCount;
     private ChipGroup chipGroupSizes, chipGroupToppings;
     private ImageButton btnDecrease, btnIncrease;
     private Button btnAddToCart;
     private EditText etNote;
     private LinearLayout btnViewReviews; // Added review button
+    private RatingBar productRatingBar;
 
     private final Handler carouselHandler = new Handler();
     private int currentImageIndex = 0;
@@ -125,7 +127,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         etNote = findViewById(R.id.etNote);
-        btnViewReviews = findViewById(R.id.btnViewReviews); // Find the reviews button
+        btnViewReviews = findViewById(R.id.btnViewReviews);
+        productRatingBar = findViewById(R.id.productRatingBar);
+        tvReviewCount = findViewById(R.id.tvReviewCount);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         
@@ -190,6 +194,22 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         tvProductName.setText(product.getName());
         tvProductPrice.setText(formatPrice(product.getPrice()) + "₫");
+
+        // Update review info
+        Double avgRating = product.getAvg_rating();
+        Integer reviewCount = product.getReview_count();
+
+        if (avgRating != null) {
+            productRatingBar.setRating(avgRating.floatValue());
+        } else {
+            productRatingBar.setRating(0f);
+        }
+
+        if (reviewCount != null && reviewCount > 0) {
+            tvReviewCount.setText(reviewCount + " Reviews");
+        } else {
+            tvReviewCount.setText("No reviews yet");
+        }
 
         // Image carousel
         List<String> imageUrls = new ArrayList<>();

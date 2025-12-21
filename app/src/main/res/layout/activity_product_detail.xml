@@ -88,16 +88,6 @@
         </androidx.cardview.widget.CardView>
 
         <!-- Product Info Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -139,16 +129,18 @@
                     android:background="?attr/selectableItemBackground">
                     
                     <RatingBar
+                        android:id="@+id/productRatingBar"
                         style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:rating="5"
+                        android:rating="0"
                         android:numStars="5"
                         android:progressTint="#FFC107"
                         android:secondaryProgressTint="#FFC107"
                         android:isIndicator="true"/>
                     
                     <TextView
+                        android:id="@+id/tvReviewCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="See Reviews"
@@ -166,31 +158,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Size Selection Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
-
-        <!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Topping Selection Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginEnd="16dp"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -242,18 +209,6 @@
                     android:layout_marginTop="@dimen/space_md"
                     app:chipSpacing="@dimen/space_sm" />
             </LinearLayout>
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Quantity Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -305,18 +260,6 @@
                         android:src="@drawable/ic_add" />
                 </LinearLayout>
             </LinearLayout>
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Note Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="12dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -347,8 +290,6 @@
                 android:textColor="@color/black"
                 android:textColorHint="@color/colorGrayText" />
         </LinearLayout>
-
-        <!--        </androidx.cardview.widget.CardView>-->
 
         <!-- Bottom spacer for fixed button -->
         <View
