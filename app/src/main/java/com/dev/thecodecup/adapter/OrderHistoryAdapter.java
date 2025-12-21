@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -109,16 +110,16 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             int color;
             switch (status) {
                 case "Completed":
-                    color = Color.parseColor("#4CAF50"); // Green
+                    color = ContextCompat.getColor(context, R.color.status_completed);
                     break;
                 case "Cancelled":
-                    color = Color.parseColor("#F44336"); // Red
+                    color = ContextCompat.getColor(context, R.color.status_cancelled);
                     break;
                 case "Wait For Approval":
-                    color = Color.parseColor("#FF9800"); // Orange
+                    color = ContextCompat.getColor(context, R.color.status_pending);
                     break;
                 case "In Progress":
-                    color = Color.parseColor("#2196F3"); // Blue
+                    color = ContextCompat.getColor(context, R.color.status_ongoing);
                     break;
                 default:
                     color = Color.BLACK;
@@ -126,11 +127,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             tvOrderStatus.setTextColor(color);
 
             // Item count
-            String itemCountText = order.getCount_product() + " sản phẩm";
+            String itemCountText = order.getCount_product() + " items";
             tvItemCount.setText(itemCountText);
 
             // Payment method
-            tvPaymentMethod.setText("Thanh toán: " + (order.getPayment_method() != null ? order.getPayment_method() : ""));
+            tvPaymentMethod.setText("Payment: " + (order.getPayment_method() != null ? order.getPayment_method() : ""));
 
             // Total price
             String priceStr = order.getOrder_total();
@@ -178,7 +179,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                         .error(R.drawable.error_image)
                         .into(ivProductImage);
             } else {
-                tvProductName.setText("Chi tiết đơn hàng");
+                tvProductName.setText("Order Details");
                 tvProductVariant.setVisibility(View.GONE);
                 ivProductImage.setImageResource(R.drawable.placeholder_image);
             }
