@@ -15,6 +15,7 @@ import com.dev.thecodecup.model.network.ApiService;
 import com.dev.thecodecup.model.network.NetworkModule;
 import com.dev.thecodecup.model.network.dto.AdminOrderDto;
 import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto;
+import com.dev.thecodecup.activity.AdminOrderDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,12 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
         adapter = new AdminOrderAdapter();
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
         rvOrders.setAdapter(adapter);
+        adapter.setListener(order -> {
+            if (order.getId() == null) return;
+            android.content.Intent intent = new android.content.Intent(this, AdminOrderDetailActivity.class);
+            intent.putExtra(AdminOrderDetailActivity.EXTRA_ORDER_ID, order.getId());
+            startActivity(intent);
+        });
     }
 
     private void setupTabs() {

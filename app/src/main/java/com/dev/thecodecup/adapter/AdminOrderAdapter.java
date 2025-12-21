@@ -19,7 +19,12 @@ import java.util.List;
 
 public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.OrderViewHolder> {
 
+    public interface OnOrderClickListener {
+        void onOrderClick(AdminOrderDto order);
+    }
+
     private final List<AdminOrderDto> items = new ArrayList<>();
+    private OnOrderClickListener listener;
 
     public void setItems(List<AdminOrderDto> newItems) {
         items.clear();
@@ -27,6 +32,10 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
             items.addAll(newItems);
         }
         notifyDataSetChanged();
+    }
+
+    public void setListener(OnOrderClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -114,6 +123,12 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
                 break;
         }
         bg.setColor(color);
+
+        holder.cardRoot.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onOrderClick(order);
+            }
+        });
     }
 
 
