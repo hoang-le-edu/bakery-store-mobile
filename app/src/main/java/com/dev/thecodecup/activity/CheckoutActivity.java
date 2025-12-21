@@ -38,6 +38,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextInputEditText edtReceiverName;
     private TextInputEditText edtReceiverPhone;
     private TextInputEditText edtStreetAddress;
+    private TextInputEditText edtVoucherCode;
     private Spinner spinnerProvince;
     private Spinner spinnerDistrict;
     private Spinner spinnerWard;
@@ -86,6 +87,7 @@ public class CheckoutActivity extends AppCompatActivity {
         edtReceiverName = findViewById(R.id.edtReceiverName);
         edtReceiverPhone = findViewById(R.id.edtReceiverPhone);
         edtStreetAddress = findViewById(R.id.edtStreetAddress);
+        edtVoucherCode = findViewById(R.id.edtVoucherCode);
         spinnerProvince = findViewById(R.id.spinnerProvince);
         spinnerDistrict = findViewById(R.id.spinnerDistrict);
         spinnerWard = findViewById(R.id.spinnerWard);
@@ -303,6 +305,10 @@ public class CheckoutActivity extends AppCompatActivity {
         int checkedId = radioGroupPayment.getCheckedRadioButtonId();
         String paymentMethod = (checkedId == R.id.radioCOD) ? "Cash" : "Banking";
 
+        // Get voucher code
+        String voucherCode = edtVoucherCode.getText() != null ? 
+                edtVoucherCode.getText().toString().trim() : "";
+
         // Build full address
         String fullAddress = streetAddress + ", " + getSelectedWardName() + ", " +
                 getSelectedDistrictName() + ", " + getSelectedProvinceName();
@@ -313,7 +319,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 receiverName,
                 fullAddress,
                 paymentMethod,
-                "", // voucher
+                voucherCode, // voucher_code
                 "", // voucher_shipping
                 "", // note
                 selectedProvinceId,

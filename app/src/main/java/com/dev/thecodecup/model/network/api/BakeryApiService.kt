@@ -208,7 +208,7 @@ data class CheckoutRequest(
     val receiver_name: String,
     val receiver_address: String,  // Full address string
     val payment_method: String,  // "Cash" or "Banking"
-    val voucher: String = "",
+    val voucher_code: String = "",  // Voucher/promo code
     val voucher_shipping: String = "",
     val note: String = "",
     val province: String,  // ProvinceID from tinh_tp.json
