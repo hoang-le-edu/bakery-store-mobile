@@ -1,5 +1,6 @@
 package com.dev.thecodecup.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +12,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.dev.thecodecup.R;
+import com.dev.thecodecup.model.network.ApiService;
+import com.dev.thecodecup.model.network.dto.ApiResponse;
 import com.dev.thecodecup.model.network.dto.AdminOrderItemDto;
+import com.dev.thecodecup.model.network.dto.ProductByIdDto;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrderDetailItemAdapter.OrderItemViewHolder> {
 
+    private static final String TAG = "AdminOrderDetailAdapter";
+    private final ApiService apiService;
     private final List<AdminOrderItemDto> items = new ArrayList<>();
+
+    public AdminOrderDetailItemAdapter(ApiService apiService) {
+        this.apiService = apiService;
+    }
 
     public void setItems(List<AdminOrderItemDto> newItems) {
         items.clear();
@@ -33,7 +47,7 @@ public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrder
     @Override
     public OrderItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_admin_order_detail_product, parent, false);
+            .inflate(R.layout.item_admin_order_detail_product, parent, false);
         return new OrderItemViewHolder(view);
     }
 
@@ -47,7 +61,7 @@ public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrder
         return items.size();
     }
 
-    static class OrderItemViewHolder extends RecyclerView.ViewHolder {
+    class OrderItemViewHolder extends RecyclerView.ViewHolder {
         ImageView imgProduct;
         TextView tvProductName;
         TextView tvVariant;
@@ -94,9 +108,66 @@ public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrder
                 tvNote.setVisibility(View.GONE);
             }
 
-            // Load image
+            // Load image with logging - try multiple possible field names
+            String imageUrl = item.getImage();
+            if (imageUrl == null || imageUrl.isEmpty()) {
+                imageUrl = item.getProductImage();
+            }
+            if (imageUrl == null || imageUrl.isEmpty()) {
+                imageUrl = item.getImageUrl();
+            }
+            
+            Log.d(TAG, "Product: " + item.getProductName() + ", Image URL: " + imageUrl + ", ProductId: " + item.getProductId());
+            
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                loadImage(imageUrl);
+            } else if (item.getProductId() != null && !item.getProductId().isEmpty()) {
+                fetchProductImage(item.getProductId());
+            } else {
+                Log.w(TAG, "No image URL or productId available for: " + item.getProductName());
+                imgProduct.setImageResource(R.drawable.placeholder_image);
+            }
+        }
+
+        private void fetchProductImage(String productId) {
+            if (apiService == null) {
+                Log.e(TAG, "ApiService is null");
+                imgProduct.setImageResource(R.drawable.placeholder_image);
+                return;
+            }
+            
+            Log.d(TAG, "Fetching product image for productId: " + productId);
+            apiService.getAdminProductById(productId).enqueue(new Callback<ApiResponse<ProductByIdDto>>() {
+                @Override
+                public void onResponse(@NonNull Call<ApiResponse<ProductByIdDto>> call,
+                                       @NonNull Response<ApiResponse<ProductByIdDto>> response) {
+                    String fetchedUrl = null;
+                    if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                        fetchedUrl = response.body().getData().getImageUrl();
+                        Log.d(TAG, "Fetched image URL: " + fetchedUrl);
+                    } else {
+                        Log.w(TAG, "Failed to fetch product image. Response code: " + response.code());
+                    }
+                    
+                    if (fetchedUrl != null && !fetchedUrl.isEmpty()) {
+                        loadImage(fetchedUrl);
+                    } else {
+                        imgProduct.setImageResource(R.drawable.placeholder_image);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ApiResponse<ProductByIdDto>> call, @NonNull Throwable t) {
+                    Log.e(TAG, "Error fetching product image: " + t.getMessage(), t);
+                    imgProduct.setImageResource(R.drawable.placeholder_image);
+                }
+            });
+        }
+
+        private void loadImage(String url) {
+            Log.d(TAG, "Loading image with Glide: " + url);
             Glide.with(itemView.getContext())
-                    .load(item.getImage())
+                    .load(url)
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_image)
                     .into(imgProduct);

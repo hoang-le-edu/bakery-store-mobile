@@ -3,6 +3,7 @@ package com.dev.thecodecup.model.network
 import com.dev.thecodecup.model.network.api.SuccessResponse
 import com.dev.thecodecup.model.network.dto.AdminOrderDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto
+import com.dev.thecodecup.model.network.dto.AdminCustomerDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto
 import com.dev.thecodecup.model.network.dto.ApiResponse
 import com.dev.thecodecup.model.network.dto.LoginResponseDto
@@ -76,6 +77,15 @@ interface ApiService {
     ): Call<AdminProductsResponseDto>
 
     /**
+     * Get admin product by id
+     * Example: /api/admin/products/{id}
+     */
+    @GET("admin/products/{id}")
+    fun getAdminProductById(
+        @Path("id") productId: String
+    ): Call<ApiResponse<ProductByIdDto>>
+
+    /**
      * Get all orders
      * Example: /api/admin/orders/all
      */
@@ -100,6 +110,15 @@ interface ApiService {
         @Path("id") orderId: String,
         @Body body: Map<String, String>
     ): Call<SuccessResponse>
+
+    /**
+     * Get customer detail with orders
+     * Example: /api/admin/orders/customerInfo/{id}
+     */
+    @GET("admin/orders/customerInfo/{id}")
+    fun getAdminCustomerDetail(
+        @Path("id") customerId: String
+    ): Call<AdminCustomerDetailResponseDto>
 
 }
 

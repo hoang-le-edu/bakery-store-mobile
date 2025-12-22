@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -13,7 +14,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dev.thecodecup.R;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -32,7 +32,7 @@ public class PaymentActivity extends AppCompatActivity {
     private static final String TAG = "PaymentActivity";
     private static final String SOCKET_URL = "https://socket.dotb.cloud/";
 
-    private MaterialToolbar toolbar;
+    private ImageButton toolbar;
     private ImageView imgQRCode;
     private ProgressBar progressBar;
     private TextView txtPaymentStatus;
@@ -88,8 +88,8 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        toolbar.setNavigationOnClickListener(v -> {
-            // Show confirmation dialog
+        // Back button listener
+        toolbar.setOnClickListener(v -> {
             new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Cancel Payment")
                     .setMessage("Are you sure you want to cancel payment? Your order will not be confirmed.")

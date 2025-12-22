@@ -82,18 +82,35 @@
         android:textSize="@dimen/text_subsubtitle"
         android:textStyle="bold" />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingStart="@dimen/space_lg"
-        android:paddingEnd="@dimen/space_lg"
-        app:tabIndicatorColor="#DB5560"
-        app:tabMode="scrollable"
-        app:tabSelectedTextColor="#DB5560"
-        app:tabTextColor="#777777"
-        />
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/tabContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg">
+
+            <TextView
+                android:id="@+id/tabAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp"
+                android:text="All"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_md"
+                android:layout_marginEnd="8dp" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <View
         android:id="@+id/tabShadow"

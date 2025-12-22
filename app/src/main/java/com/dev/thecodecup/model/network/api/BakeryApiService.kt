@@ -488,7 +488,7 @@ data class ReviewSummary(
     val rating_distribution: RatingDistribution
 )
 
-// Ð? thay @SerializedName (Gson) b?ng @Json(name = ...) (Moshi)
+// ï¿½? thay @SerializedName (Gson) b?ng @Json(name = ...) (Moshi)
 data class RatingDistribution(
     @Json(name = "1") val one: Int = 0,
     @Json(name = "2") val two: Int = 0,
@@ -498,11 +498,11 @@ data class RatingDistribution(
 )
 
 data class CheckoutResponse(
-    val success: Boolean,
-    val message: String,
+    val success: Boolean = false,
+    val message: String = "",
     val data: CheckoutData? = null
 )
 
 data class CheckoutData(
-    val order_id: String
+    val order_id: String? = null
 )

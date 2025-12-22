@@ -1,42 +1,32 @@
 package com.dev.thecodecup.activity;
 
-import com.dev.thecodecup.model.auth.AuthManager;
-import com.dev.thecodecup.auth.GoogleAuthManager;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.util.TypedValue;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.widget.Toast;
-
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.ProductAdapter;
-//import com.dev.thecodecup.model.network.dto.CategoryDto;
 import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
-//import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
-import com.google.android.material.tabs.TabLayout;
-import android.widget.PopupMenu;
-
-import org.jetbrains.annotations.NotNull;
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 
 public class ProductListActivity extends BaseBottomNavActivity {
 
-    private TabLayout tabLayout;
+    private TextView tabAll;
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
-    private ImageButton btnProfile;
+    private String currentCategoryId = "all";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,105 +34,139 @@ public class ProductListActivity extends BaseBottomNavActivity {
         setContentView(R.layout.activity_product_list);
         setupBottomNav();
 
-        // 1) View binding
-        tabLayout = findViewById(R.id.tabLayout);
+        tabAll = findViewById(R.id.tabAll);
         rvProducts = findViewById(R.id.rvProducts);
         bottomNav = findViewById(R.id.bottomNav);
 
-        // 2) RecyclerView + Adapter (2 cột)
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(this);
         adapter.setOnItemClickListener(product -> {
-            // Navigate to ProductDetailActivity
             Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
             intent.putExtra("productId", product.getProductId());
             startActivity(intent);
         });
         rvProducts.setAdapter(adapter);
 
-        // 3) ViewModel
         viewModel = new ViewModelProvider(this).get(ProductViewModel.class);
 
-        // 4) Quan sát Products -> cập nhật adapter để lên hình
         viewModel.getProductsLiveData().observe(this, products -> {
-            android.util.Log.d("ProductActivity",
-                    "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
             if (products != null && !products.isEmpty()) {
                 adapter.setItems(products);
                 rvProducts.post(() -> adapter.notifyDataSetChanged());
             } else if (products != null && products.isEmpty()) {
-                adapter.setItems(products); // Cần đảm bảo adapter có thể xử lý list rỗng (nên đã làm)
+                adapter.setItems(products);
             }
         });
 
-        // 5) Quan sát Categories -> đổ TabLayout và load category đầu tiên
         viewModel.getCategoriesLiveData().observe(this, categories -> {
             buildTabs(categories);
-            // Chọn tab đầu tiên (tab All) để load sản phẩm ban đầu
-            if (tabLayout.getTabCount() > 0) {
-                TabLayout.Tab first = tabLayout.getTabAt(0);
-                if (first != null) {
-                    first.select();
-                    String categoryId = (String) first.getTag();
-                    // searchText = null, limit = 20 (tuỳ chỉnh), categoryId = id tab
-                    viewModel.loadProducts(null, null, categoryId);
-                }
-            }
+            selectTab(tabAll, "all");
+            viewModel.loadProducts(null, null, "all");
         });
 
-        // 6) Sự kiện đổi tab -> load sản phẩm theo category đã chọn
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull TabLayout.Tab tab) {
-                String categoryId = (String) tab.getTag();
-                viewModel.loadProducts(null, null, categoryId);
-            }
-
-            @Override
-            public void onTabUnselected(@NonNull TabLayout.Tab tab) { }
-
-            @Override
-            public void onTabReselected(@NonNull TabLayout.Tab tab) {
-                // Có thể refresh lại nếu muốn
-                String categoryId = (String) tab.getTag();
-                viewModel.loadProducts(null, null, categoryId);
-            }
-        });
-
-
-
-        // 7) Gọi load categories ban đầu
+        setupTabListeners();
         viewModel.loadCategories();
     }
-
 
     @Override
     protected int getBottomNavMenuItemId() {
         return R.id.navigation_product;
     }
 
+    private void setupTabListeners() {
+        View.OnClickListener listener = v -> {
+            if (v.getId() == R.id.tabAll) {
+                selectTab(tabAll, "all");
+                viewModel.loadProducts(null, null, "all");
+            } else {
+                Object tag = v.getTag();
+                if (tag != null) {
+                    String categoryId = (String) tag;
+                    selectTab((TextView) v, categoryId);
+                    viewModel.loadProducts(null, null, categoryId);
+                }
+            }
+        };
 
-    /** Đổ danh sách Tab từ categories */
+        tabAll.setOnClickListener(listener);
+        updateTabUI();
+    }
+
+    private void selectTab(TextView tab, String categoryId) {
+        currentCategoryId = categoryId;
+        updateTabUI();
+    }
+
+    private void updateTabUI() {
+        resetTab(tabAll);
+
+        LinearLayout tabContainer = findViewById(R.id.tabContainer);
+        if (tabContainer != null) {
+            for (int i = 0; i < tabContainer.getChildCount(); i++) {
+                View child = tabContainer.getChildAt(i);
+                if (child instanceof TextView && child.getId() != R.id.tabAll) {
+                    resetTab((TextView) child);
+                }
+            }
+        }
+
+        if (currentCategoryId.equals("all")) {
+            setTabSelected(tabAll);
+        } else {
+            if (tabContainer != null) {
+                for (int i = 0; i < tabContainer.getChildCount(); i++) {
+                    View child = tabContainer.getChildAt(i);
+                    if (child instanceof TextView) {
+                        Object tag = child.getTag();
+                        if (tag != null && tag.equals(currentCategoryId)) {
+                            setTabSelected((TextView) child);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void resetTab(TextView tab) {
+        tab.setBackground(null);
+        tab.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+    }
+
+    private void setTabSelected(TextView tab) {
+        tab.setBackgroundResource(R.drawable.bg_order_tab_selected);
+        tab.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+    }
+
     private void buildTabs(List<CategoryWithProductsDto> categories) {
-        tabLayout.removeAllTabs();
-
-        // 1) Tab "All" đứng đầu
-        TabLayout.Tab allTab = tabLayout.newTab().setText("All");
-        allTab.setTag("all");  // <-- QUAN TRỌNG: dùng đúng với default trong ViewModel
-        tabLayout.addTab(allTab);
-
-        // 2) Nếu không có category nào thì thôi, chỉ có tab All
         if (categories == null || categories.isEmpty()) {
             return;
         }
 
-        // 3) Các tab category phía sau
+        LinearLayout tabContainer = findViewById(R.id.tabContainer);
+        if (tabContainer == null) {
+            return;
+        }
+
+        while (tabContainer.getChildCount() > 1) {
+            tabContainer.removeViewAt(1);
+        }
+
         for (CategoryWithProductsDto c : categories) {
             String title = c.getCategoryName() != null ? c.getCategoryName() : "Category";
-            TabLayout.Tab tab = tabLayout.newTab().setText(title);
-            tab.setTag(c.getCategoryId());  // tag = ID category thực tế
-            tabLayout.addTab(tab);
+            TextView tabView = new TextView(this);
+            tabView.setText(title);
+            tabView.setTag(c.getCategoryId());
+            tabView.setPadding(16, 8, 16, 8);
+            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            tabView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+
+            tabView.setOnClickListener(v -> {
+                selectTab(tabView, c.getCategoryId());
+                viewModel.loadProducts(null, null, c.getCategoryId());
+            });
+
+            tabContainer.addView(tabView);
         }
     }
-
 }
