@@ -55,6 +55,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     private TextView tvPaymentStatus;
     private TextView tvShippingFee;
     private TextView tvDiscount;
+    private TextView tvItemsTotal;
+    private TextView tvGrandTotal;
     private TextView tvLastStatusChange;
     private RecyclerView rvItems;
     private MaterialButton btnPrimary;
@@ -62,7 +64,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     private ImageButton btnStatusHistory;
     private ImageButton btnCustomerDetail;
 
-    private final AdminOrderDetailItemAdapter itemAdapter = new AdminOrderDetailItemAdapter();
+    private AdminOrderDetailItemAdapter itemAdapter;
     private final AdminStatusHistoryAdapter historyAdapter = new AdminStatusHistoryAdapter();
 
     private AdminOrderDetailDto currentOrder;
@@ -73,6 +75,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_order_detail);
 
         apiService = NetworkModule.INSTANCE.getApiService();
+        itemAdapter = new AdminOrderDetailItemAdapter(apiService);
         orderId = getIntent().getStringExtra(EXTRA_ORDER_ID);
         if (orderId == null) {
             Toast.makeText(this, "Order ID not found", Toast.LENGTH_SHORT).show();
@@ -101,6 +104,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         tvPaymentStatus = findViewById(R.id.tvPaymentStatus);
         tvShippingFee = findViewById(R.id.tvShippingFee);
         tvDiscount = findViewById(R.id.tvDiscount);
+        tvItemsTotal = findViewById(R.id.tvItemsTotal);
+        tvGrandTotal = findViewById(R.id.tvGrandTotal);
         tvLastStatusChange = findViewById(R.id.tvLastStatusChange);
         rvItems = findViewById(R.id.rvItems);
         btnPrimary = findViewById(R.id.btnPrimary);
@@ -153,10 +158,17 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         tvOrderNumber.setText(data.getOrderNumber() != null ? data.getOrderNumber() : "#");
         tvOrderDate.setText(data.getDateCreated() != null ? data.getDateCreated() : "--");
         tvStatus.setText(data.getStatus() != null ? data.getStatus() : "--");
-        tvStatus.setBackgroundResource(resolveStatusBackground(data.getStatus()));
+        applyStatusColor(data.getStatus());
 
-        String total = data.getTotalPrice() != null ? data.getTotalPrice() : data.getOrderTotal();
-        tvTotal.setText(formatCurrency(total));
+        double totalValue = getOrderTotalValue(data);
+        String formattedTotal;
+        if (data.getOrderTotal() != null && !data.getOrderTotal().isEmpty()) {
+            formattedTotal = formatCurrency(data.getOrderTotal());
+        } else {
+            // Fallback only when order_total is missing
+            formattedTotal = formatCurrency(String.valueOf(Math.round(totalValue)));
+        }
+        tvTotal.setText(formattedTotal);
 
         if (data.getCustomerInfo() != null) {
             tvCustomerName.setText(data.getCustomerInfo().getCustomerName());
@@ -177,7 +189,23 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             tvPaymentStatus.setText(data.getPaymentInfo().getPaymentStatus());
         }
 
-        tvDiscount.setText(formatCurrency(data.getDiscount() != null ? String.valueOf(data.getDiscount()) : "0"));
+        double itemsTotalVal = calculateItemsTotal(data);
+        tvItemsTotal.setText(formatCurrency(String.valueOf(Math.round(itemsTotalVal))));
+        double shippingVal = data.getShippingInfo() != null ? safeParse(data.getShippingInfo().getShippingFee()) : 0;
+        // Derive discount from items + shipping - order_total when order_total is present
+        double discountAmount;
+        if (totalValue > 0) {
+            discountAmount = Math.max(0, itemsTotalVal + shippingVal - totalValue);
+        } else {
+            discountAmount = computeDiscountAmount(data, itemsTotalVal);
+        }
+        // Avoid showing discount larger than subtotal + shipping
+        double ceiling = itemsTotalVal + shippingVal;
+        if (discountAmount > ceiling) {
+            discountAmount = ceiling;
+        }
+        tvDiscount.setText(formatCurrency(String.valueOf(Math.round(discountAmount))));
+        tvGrandTotal.setText(formattedTotal);
 
         itemAdapter.setItems(data.getOrderDetail());
 
@@ -197,13 +225,13 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
 
         if ("Wait For Approval".equalsIgnoreCase(status)) {
             configurePrimary("Mark In Progress", "In Progress");
-            configureSecondary("Hủy đơn", "Cancelled");
+            configureSecondary("Cancel Order", "Cancelled");
         } else if ("In Progress".equalsIgnoreCase(status)) {
             configurePrimary("Mark Delivering", "Delivering");
-            configureSecondary("Hủy đơn", "Cancelled");
+            configureSecondary("Cancel Order", "Cancelled");
         } else if ("Delivering".equalsIgnoreCase(status)) {
             configurePrimary("Mark Completed", "Completed");
-            configureSecondary("Hủy đơn", "Cancelled");
+            configureSecondary("Cancel Order", "Cancelled");
         }
     }
 
@@ -278,7 +306,12 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     private String formatCurrency(String value) {
         if (value == null || value.isEmpty()) return "0đ";
         try {
-            double num = Double.parseDouble(value);
+            // Normalize input: remove currency symbol and thousand separators
+            String normalized = value.trim()
+                    .replace("đ", "")
+                    .replace(",", "");
+            // Allow decimal point for API values like "94000.00"
+            double num = Double.parseDouble(normalized);
             DecimalFormat formatter = new DecimalFormat("###,###,###");
             return formatter.format(num) + "đ";
         } catch (Exception e) {
@@ -286,20 +319,97 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         }
     }
 
-    private int resolveStatusBackground(String status) {
-        if (status == null) return R.drawable.bg_order_status;
-        switch (status) {
-            case "Wait For Approval":
-                return R.drawable.bg_status_pending;
-            case "In Progress":
-            case "Delivering":
-                return R.drawable.bg_status_progress;
-            case "Completed":
-                return R.drawable.bg_status_completed;
-            case "Cancelled":
-                return R.drawable.bg_status_cancelled;
-            default:
-                return R.drawable.bg_order_status;
+    private String calculateGrandTotal(AdminOrderDetailDto data) {
+        // Prefer API-provided final total when present (includes vouchers and shipping)
+        if (data.getOrderTotal() != null && !data.getOrderTotal().isEmpty()) {
+            return data.getOrderTotal();
         }
+        if (data.getTotalPrice() != null && !data.getTotalPrice().isEmpty()) {
+            return data.getTotalPrice();
+        }
+
+        double itemsTotal = calculateItemsTotal(data);
+
+        double shipping = 0;
+        if (data.getShippingInfo() != null) {
+            shipping = safeParse(data.getShippingInfo().getShippingFee());
+        }
+
+        double discountAmount = computeDiscountAmount(data, itemsTotal);
+
+        double grand = itemsTotal - discountAmount + shipping;
+        if (grand < 0) grand = 0;
+        return String.valueOf(Math.round(grand));
+    }
+
+    private double getOrderTotalValue(AdminOrderDetailDto data) {
+        if (data.getOrderTotal() != null && !data.getOrderTotal().isEmpty()) {
+            return safeParse(data.getOrderTotal());
+        }
+        if (data.getTotalPrice() != null && !data.getTotalPrice().isEmpty()) {
+            return safeParse(data.getTotalPrice());
+        }
+        double itemsTotal = calculateItemsTotal(data);
+        double shipping = data.getShippingInfo() != null ? safeParse(data.getShippingInfo().getShippingFee()) : 0;
+        double discount = computeDiscountAmount(data, itemsTotal);
+        double total = itemsTotal - discount + shipping;
+        return Math.max(0, total);
+    }
+
+    private double calculateItemsTotal(AdminOrderDetailDto data) {
+        double itemsTotal = 0;
+        if (data.getOrderDetail() != null) {
+            for (com.dev.thecodecup.model.network.dto.AdminOrderItemDto item : data.getOrderDetail()) {
+                double itemTotal = safeParse(item.getTotalPrice());
+                if (itemTotal <= 0) {
+                    double price = safeParse(item.getProductPrice());
+                    int qty = item.getQuantity() != null ? item.getQuantity() : 1;
+                    itemTotal = price * qty;
+                }
+                itemsTotal += itemTotal;
+            }
+        }
+        return itemsTotal;
+    }
+
+    private double computeDiscountAmount(AdminOrderDetailDto data, double itemsTotal) {
+        double discountValue = data.getDiscount() != null ? data.getDiscount() : 0;
+        if (discountValue > 0 && discountValue <= 100) {
+            return itemsTotal * (discountValue / 100.0);
+        }
+        return discountValue;
+    }
+
+    private double safeParse(String value) {
+        if (value == null) return 0;
+        // Strip currency symbols and spaces; keep digits and decimal point
+        String sanitized = value.replaceAll("[^0-9.]", "");
+        if (sanitized.isEmpty()) return 0;
+        try {
+            return Double.parseDouble(sanitized);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private void applyStatusColor(String status) {
+        int color;
+        if (status == null) {
+            color = getResources().getColor(android.R.color.darker_gray);
+        } else if ("Wait For Approval".equalsIgnoreCase(status)) {
+            color = getResources().getColor(R.color.status_pending);
+        } else if ("In Progress".equalsIgnoreCase(status) || "Delivering".equalsIgnoreCase(status)) {
+            color = getResources().getColor(R.color.status_ongoing);
+        } else if ("Completed".equalsIgnoreCase(status)) {
+            color = getResources().getColor(R.color.status_completed);
+        } else if ("Cancelled".equalsIgnoreCase(status)) {
+            color = getResources().getColor(R.color.status_cancelled);
+        } else {
+            color = getResources().getColor(android.R.color.darker_gray);
+        }
+
+        tvStatus.setBackgroundResource(R.drawable.bg_order_status);
+        android.graphics.drawable.GradientDrawable bg = (android.graphics.drawable.GradientDrawable) tvStatus.getBackground().mutate();
+        bg.setColor(color);
     }
 }

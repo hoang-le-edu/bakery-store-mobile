@@ -76,6 +76,15 @@ interface ApiService {
     ): Call<AdminProductsResponseDto>
 
     /**
+     * Get admin product by id
+     * Example: /api/admin/products/{id}
+     */
+    @GET("admin/products/{id}")
+    fun getAdminProductById(
+        @Path("id") productId: String
+    ): Call<ApiResponse<ProductByIdDto>>
+
+    /**
      * Get all orders
      * Example: /api/admin/orders/all
      */
