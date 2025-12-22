@@ -137,14 +137,14 @@ public class PaymentActivity extends AppCompatActivity {
             // Try to use QR code from PayOS first
             if (qrCodeData != null && !qrCodeData.isEmpty()) {
                 Log.d(TAG, "QR code data received (length: " + qrCodeData.length() + ")");
-                Log.d(TAG, "QR code data (first 100 chars): " + 
+                Log.d(TAG, "QR code data (first 100 chars): " +
                     qrCodeData.substring(0, Math.min(100, qrCodeData.length())));
-                
+
                 // Check if this is a base64 image or EMVCo QR string
-                boolean isBase64Image = qrCodeData.startsWith("data:image") || 
-                                       qrCodeData.startsWith("iVBOR") || 
+                boolean isBase64Image = qrCodeData.startsWith("data:image") ||
+                                       qrCodeData.startsWith("iVBOR") ||
                                        qrCodeData.startsWith("/9j/");
-                
+
                 if (isBase64Image) {
                     // Handle base64 image
                     Log.d(TAG, "Detected base64 image format");
@@ -156,15 +156,15 @@ public class PaymentActivity extends AppCompatActivity {
                             Log.d(TAG, "Removed data URI prefix: " + parts[0]);
                         }
                     }
-                    
+
                     try {
                         byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
                         qrCodeBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                        
+
                         if (qrCodeBitmap != null) {
                             imgQRCode.setImageBitmap(qrCodeBitmap);
                             progressBar.setVisibility(View.GONE);
-                            Log.d(TAG, "QR code loaded from base64 successfully - Size: " + 
+                            Log.d(TAG, "QR code loaded from base64 successfully - Size: " +
                                 qrCodeBitmap.getWidth() + "x" + qrCodeBitmap.getHeight());
                             return;
                         }
@@ -179,14 +179,14 @@ public class PaymentActivity extends AppCompatActivity {
                         qrCodeBitmap = barcodeEncoder.encodeBitmap(qrCodeData, BarcodeFormat.QR_CODE, 512, 512);
                         imgQRCode.setImageBitmap(qrCodeBitmap);
                         progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "QR code generated from EMVCo string successfully - Size: " + 
+                        Log.d(TAG, "QR code generated from EMVCo string successfully - Size: " +
                             qrCodeBitmap.getWidth() + "x" + qrCodeBitmap.getHeight());
                         return;
                     } catch (WriterException e) {
                         Log.e(TAG, "Error generating QR code from EMVCo string", e);
                     }
                 }
-                
+
                 Log.w(TAG, "Failed to process QR code from PayOS, falling back to URL generation");
             } else {
                 Log.d(TAG, "No QR code data provided, will generate from URL");

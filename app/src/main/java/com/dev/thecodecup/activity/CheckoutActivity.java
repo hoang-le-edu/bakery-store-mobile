@@ -2,9 +2,15 @@ package com.dev.thecodecup.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,7 +25,6 @@ import com.dev.thecodecup.model.network.api.CheckoutRequest;
 import com.dev.thecodecup.model.network.api.CheckoutResponse;
 import com.dev.thecodecup.model.network.api.PaymentLinkCallback;
 import com.dev.thecodecup.model.network.api.PaymentLinkResponse;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -27,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +40,7 @@ import retrofit2.Response;
 
 public class CheckoutActivity extends AppCompatActivity {
 
-    private MaterialToolbar toolbar;
+    private ImageButton toolbar;
     private TextInputEditText edtReceiverName;
     private TextInputEditText edtReceiverPhone;
     private TextInputEditText edtStreetAddress;
@@ -51,11 +57,19 @@ public class CheckoutActivity extends AppCompatActivity {
     private ArrayList<String> selectedOrderDetailIds;
     private int orderTotal = 0;
     private int shippingFee = 30000;
+    private int appliedDiscount = 0;
+
+    // Saved info (from prefs) to prefill
+    private String savedProvinceId = "";
+    private String savedDistrictId = "";
+    private String savedWardCode = "";
+    private String savedStreet = "";
+    private boolean applyingSavedSelection = false;
 
     // Address data
-    private List<Province> provinces = new ArrayList<>();
-    private List<District> districts = new ArrayList<>();
-    private List<Ward> wards = new ArrayList<>();
+    private final List<Province> provinces = new ArrayList<>();
+    private final List<District> districts = new ArrayList<>();
+    private final List<Ward> wards = new ArrayList<>();
 
     private String selectedProvinceId = "";
     private String selectedDistrictId = "";
@@ -77,6 +91,7 @@ public class CheckoutActivity extends AppCompatActivity {
         }
 
         initViews();
+        prefillFromPrefs();
         setupListeners();
         loadAddressData();
         updatePrices();
@@ -99,14 +114,12 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        toolbar.setNavigationOnClickListener(v -> finish());
-
+        toolbar.setOnClickListener(v -> finish());
         btnPlaceOrder.setOnClickListener(v -> placeOrder());
 
-        spinnerProvince.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+        spinnerProvince.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position,
-                    long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && position <= provinces.size()) {
                     Province province = provinces.get(position - 1);
                     selectedProvinceId = province.id;
@@ -115,14 +128,13 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
-        spinnerDistrict.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+        spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position,
-                    long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && position <= districts.size()) {
                     District district = districts.get(position - 1);
                     selectedDistrictId = district.id;
@@ -131,14 +143,13 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
-        spinnerWard.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+        spinnerWard.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position,
-                    long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0 && position <= wards.size()) {
                     Ward ward = wards.get(position - 1);
                     selectedWardCode = ward.code;
@@ -146,16 +157,59 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        // Recompute discount when voucher changes
+        edtVoucherCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                applyVoucherAndUpdateTotals(s != null ? s.toString().trim() : "");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void prefillFromPrefs() {
+        SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
+        String name = prefs.getString("USER_NAME", "");
+        String phone = prefs.getString("USER_PHONE", "");
+        savedStreet = prefs.getString("ADDRESS_STREET", "");
+        savedProvinceId = prefs.getString("ADDRESS_PROVINCE_ID", "");
+        savedDistrictId = prefs.getString("ADDRESS_DISTRICT_ID", "");
+        savedWardCode = prefs.getString("ADDRESS_WARD_CODE", "");
+        applyingSavedSelection = !savedProvinceId.isEmpty();
+
+        if (!name.isEmpty()) {
+            edtReceiverName.setText(name);
+        }
+        if (!phone.isEmpty()) {
+            edtReceiverPhone.setText(phone);
+        }
+        if (!savedStreet.isEmpty()) {
+            edtStreetAddress.setText(savedStreet);
+        }
     }
 
     private void updatePrices() {
         txtOrderTotal.setText(formatPrice(orderTotal) + "₫");
         txtShippingFee.setText(formatPrice(shippingFee) + "₫");
-        int finalTotal = orderTotal + shippingFee;
+        int finalTotal = Math.max(0, orderTotal + shippingFee - appliedDiscount);
         txtFinalTotal.setText(formatPrice(finalTotal) + "₫");
+    }
+
+    private void applyVoucherAndUpdateTotals(String code) {
+        int total = orderTotal + shippingFee;
+        appliedDiscount = computeDiscountForCode(code, total);
+        updatePrices();
     }
 
     private void loadAddressData() {
@@ -164,15 +218,13 @@ public class CheckoutActivity extends AppCompatActivity {
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
-            String json = new String(buffer, "UTF-8");
+            String json = new String(buffer, StandardCharsets.UTF_8);
             JSONArray jsonArray = new JSONArray(json);
 
             provinces.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
-                provinces.add(new Province(
-                        obj.getString("code"),
-                        obj.getString("name")));
+                provinces.add(new Province(obj.getString("code"), obj.getString("name")));
             }
 
             List<String> provinceNames = new ArrayList<>();
@@ -181,10 +233,16 @@ public class CheckoutActivity extends AppCompatActivity {
                 provinceNames.add(p.name);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, provinceNames);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item_light, provinceNames);
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_light);
             spinnerProvince.setAdapter(adapter);
+
+            if (applyingSavedSelection && !savedProvinceId.isEmpty()) {
+                int index = findProvinceIndex(savedProvinceId);
+                if (index >= 0) {
+                    spinnerProvince.setSelection(index + 1); // +1 because of placeholder
+                }
+            }
 
         } catch (Exception e) {
             Log.e("CheckoutActivity", "Error loading provinces", e);
@@ -198,17 +256,14 @@ public class CheckoutActivity extends AppCompatActivity {
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
-            String json = new String(buffer, "UTF-8");
+            String json = new String(buffer, StandardCharsets.UTF_8);
             JSONArray jsonArray = new JSONArray(json);
 
             districts.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
                 if (obj.getString("parent_code").equals(provinceId)) {
-                    districts.add(new District(
-                            obj.getString("code"),
-                            obj.getString("name"),
-                            obj.getString("parent_code")));
+                    districts.add(new District(obj.getString("code"), obj.getString("name"), obj.getString("parent_code")));
                 }
             }
 
@@ -218,9 +273,8 @@ public class CheckoutActivity extends AppCompatActivity {
                 districtNames.add(d.name);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, districtNames);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item_light, districtNames);
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_light);
             spinnerDistrict.setAdapter(adapter);
             spinnerDistrict.setSelection(0);
 
@@ -228,10 +282,16 @@ public class CheckoutActivity extends AppCompatActivity {
             wards.clear();
             List<String> emptyWards = new ArrayList<>();
             emptyWards.add("-- Select Ward --");
-            ArrayAdapter<String> wardAdapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, emptyWards);
+            ArrayAdapter<String> wardAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, emptyWards);
             wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerWard.setAdapter(wardAdapter);
+
+            if (applyingSavedSelection && provinceId.equals(savedProvinceId) && !savedDistrictId.isEmpty()) {
+                int index = findDistrictIndex(savedDistrictId);
+                if (index >= 0) {
+                    spinnerDistrict.setSelection(index + 1);
+                }
+            }
 
         } catch (Exception e) {
             Log.e("CheckoutActivity", "Error loading districts", e);
@@ -244,17 +304,14 @@ public class CheckoutActivity extends AppCompatActivity {
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
-            String json = new String(buffer, "UTF-8");
+            String json = new String(buffer, StandardCharsets.UTF_8);
             JSONArray jsonArray = new JSONArray(json);
 
             wards.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
                 if (obj.getString("parent_code").equals(districtId)) {
-                    wards.add(new Ward(
-                            obj.getString("code"),
-                            obj.getString("name"),
-                            obj.getString("parent_code")));
+                    wards.add(new Ward(obj.getString("code"), obj.getString("name"), obj.getString("parent_code")));
                 }
             }
 
@@ -264,11 +321,18 @@ public class CheckoutActivity extends AppCompatActivity {
                 wardNames.add(w.name);
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, wardNames);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item_light, wardNames);
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_light);
             spinnerWard.setAdapter(adapter);
             spinnerWard.setSelection(0);
+
+            if (applyingSavedSelection && districtId.equals(savedDistrictId) && !savedWardCode.isEmpty()) {
+                int index = findWardIndex(savedWardCode);
+                if (index >= 0) {
+                    spinnerWard.setSelection(index + 1);
+                    applyingSavedSelection = false; // finished applying saved address
+                }
+            }
 
         } catch (Exception e) {
             Log.e("CheckoutActivity", "Error loading wards", e);
@@ -276,7 +340,6 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void placeOrder() {
-        // Validate inputs
         String receiverName = edtReceiverName.getText().toString().trim();
         String receiverPhone = edtReceiverPhone.getText().toString().trim();
         String streetAddress = edtStreetAddress.getText().toString().trim();
@@ -291,9 +354,13 @@ public class CheckoutActivity extends AppCompatActivity {
             return;
         }
 
-        // Province and District are required, Ward is optional
+        // Province, District and Ward are required to avoid server validation 422
         if (selectedProvinceId.isEmpty() || selectedDistrictId.isEmpty()) {
             Toast.makeText(this, "Please select Province and District", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (selectedWardCode.isEmpty()) {
+            Toast.makeText(this, "Please select Ward", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -302,39 +369,33 @@ public class CheckoutActivity extends AppCompatActivity {
             return;
         }
 
-        // Get payment method
         int checkedId = radioGroupPayment.getCheckedRadioButtonId();
-        String paymentMethod = (checkedId == R.id.radioCOD) ? "Cash" : "Banking";
+        String paymentMethod = (checkedId == R.id.radioOnline) ? "Banking" : "COD";
 
-        // Get voucher code
         String voucherCode = edtVoucherCode.getText() != null ? edtVoucherCode.getText().toString().trim() : "";
 
-        // Build full address (Ward is optional)
         String wardName = getSelectedWardName();
         String fullAddress = streetAddress;
-        
         if (!wardName.isEmpty()) {
             fullAddress += ", " + wardName;
         }
-        
         fullAddress += ", " + getSelectedDistrictName() + ", " + getSelectedProvinceName();
 
-        // Create checkout request (ward_code can be empty if not selected)
         CheckoutRequest request = new CheckoutRequest(
                 selectedOrderDetailIds,
                 receiverName,
                 fullAddress,
                 paymentMethod,
-                voucherCode, // voucher_code
+                voucherCode,
                 "", // voucher_shipping
                 "", // note
                 selectedProvinceId,
                 selectedDistrictId,
-                selectedWardCode.isEmpty() ? "" : selectedWardCode, // ward_code (optional)
+                selectedWardCode,
                 streetAddress,
                 receiverPhone,
                 shippingFee,
-                0 // discount_number
+                appliedDiscount
         );
 
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Placing order...", true, false);
@@ -346,45 +407,45 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 if (error != null) {
                     Log.e("CheckoutActivity", "Checkout error", error);
-                    Toast.makeText(CheckoutActivity.this,
-                            "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(CheckoutActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     CheckoutResponse checkoutResponse = response.body();
-                    Toast.makeText(CheckoutActivity.this,
-                            checkoutResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CheckoutActivity.this, checkoutResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
                     if ("Banking".equals(paymentMethod) && checkoutResponse.getData() != null) {
-                        // Get real order_id from response
                         String orderId = checkoutResponse.getData().getOrder_id();
-                        
                         if (orderId != null && !orderId.isEmpty()) {
                             createPaymentLink(orderId);
                         } else {
-                            Toast.makeText(CheckoutActivity.this,
-                                    "Order created but order ID is missing", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CheckoutActivity.this, "Order created but order ID is missing", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     } else {
-                        // Cash payment - go to success screen
-                        Toast.makeText(CheckoutActivity.this,
-                                "Order placed successfully!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CheckoutActivity.this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 } else {
-                    Toast.makeText(CheckoutActivity.this,
-                            "Order failed: " + (response != null ? response.code() : "Unknown"),
-                            Toast.LENGTH_SHORT).show();
+                    String code = response != null ? String.valueOf(response.code()) : "Unknown";
+                    String serverMsg = "";
+                    try {
+                        if (response != null && response.errorBody() != null) {
+                            serverMsg = response.errorBody().string();
+                            Log.e("CheckoutActivity", "Checkout failed [" + code + "]: " + serverMsg);
+                        }
+                    } catch (Exception e) {
+                        Log.e("CheckoutActivity", "Error reading error body", e);
+                    }
+                    Toast.makeText(CheckoutActivity.this, "Order failed (" + code + ")" + (serverMsg.isEmpty() ? "" : ": " + serverMsg), Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
     private void createPaymentLink(String orderId) {
-        final ProgressDialog dialog = ProgressDialog.show(this, null,
-                "Creating payment link...", true, false);
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Creating payment link...", true, false);
 
         BakeryJavaBridge.INSTANCE.createPaymentLink(this, orderId, new PaymentLinkCallback() {
             @Override
@@ -393,15 +454,13 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 if (error != null) {
                     Log.e("CheckoutActivity", "Payment link error", error);
-                    Toast.makeText(CheckoutActivity.this,
-                            "Payment link error: " + error.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(CheckoutActivity.this, "Payment link error: " + error.getMessage(), Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     PaymentLinkResponse paymentResponse = response.body();
-                    
+
                     // Debug: Log raw response
                     Log.d("CheckoutActivity", "=== Payment Link Response ===");
                     Log.d("CheckoutActivity", "Error: " + paymentResponse.getError());
@@ -410,7 +469,7 @@ public class CheckoutActivity extends AppCompatActivity {
                     Log.d("CheckoutActivity", "QR Code null? " + (paymentResponse.getQrCode() == null));
                     if (paymentResponse.getQrCode() != null) {
                         Log.d("CheckoutActivity", "QR Code length: " + paymentResponse.getQrCode().length());
-                        Log.d("CheckoutActivity", "QR Code first 50 chars: " + 
+                        Log.d("CheckoutActivity", "QR Code first 50 chars: " +
                             paymentResponse.getQrCode().substring(0, Math.min(50, paymentResponse.getQrCode().length())));
                     }
 
@@ -420,7 +479,7 @@ public class CheckoutActivity extends AppCompatActivity {
                         if (paymentResponse.getQrCode() != null) {
                             Log.d("CheckoutActivity", "QR Code length: " + paymentResponse.getQrCode().length());
                         }
-                        
+
                         // Open payment screen
                         Intent intent = new Intent(CheckoutActivity.this, PaymentActivity.class);
                         intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
@@ -429,16 +488,40 @@ public class CheckoutActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(CheckoutActivity.this,
-                                "Payment error: " + paymentResponse.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CheckoutActivity.this, "Payment error: " + paymentResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(CheckoutActivity.this,
-                            "Failed to create payment link", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CheckoutActivity.this, "Failed to create payment link", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private int findProvinceIndex(String provinceId) {
+        for (int i = 0; i < provinces.size(); i++) {
+            if (provinces.get(i).id.equals(provinceId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findDistrictIndex(String districtId) {
+        for (int i = 0; i < districts.size(); i++) {
+            if (districts.get(i).id.equals(districtId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int findWardIndex(String wardCode) {
+        for (int i = 0; i < wards.size(); i++) {
+            if (wards.get(i).code.equals(wardCode)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private String getSelectedProvinceName() {
@@ -470,6 +553,20 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private String formatPrice(int price) {
         return String.format("%,d", price).replace(",", ".");
+    }
+
+    private int computeDiscountForCode(String code, int total) {
+        if (code == null || code.isEmpty()) return 0;
+        switch (code.toUpperCase()) {
+            case "SALE10K":
+                return total >= 100000 ? 10000 : 0;
+            case "SALE30K":
+                return total >= 300000 ? 30000 : 0;
+            case "SALE50K":
+                return total >= 500000 ? 50000 : 0;
+            default:
+                return 0;
+        }
     }
 
     // Inner classes for address data

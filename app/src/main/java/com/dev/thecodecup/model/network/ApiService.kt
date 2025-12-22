@@ -120,5 +120,17 @@ interface ApiService {
         @Path("id") customerId: String
     ): Call<AdminCustomerDetailResponseDto>
 
+    /**
+     * Search admin orders with filters
+     * Example: /api/admin/orders/search?order_id=123&customer_name=John&date_from=2024-01-01&date_to=2024-12-31
+     */
+    @GET("admin/orders/search")
+    fun searchAdminOrders(
+        @Query("order_id") orderId: String? = null,
+        @Query("customer_name") customerName: String? = null,
+        @Query("date_from") dateFrom: String? = null,
+        @Query("date_to") dateTo: String? = null
+    ): Call<AdminOrdersResponseDto>
+
 }
 

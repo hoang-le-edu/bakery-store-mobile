@@ -11,15 +11,37 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Toolbar -->
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <!-- Header (match admin order header style) -->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/pink_primary"
-            app:title="Checkout"
-            app:titleTextColor="@android:color/white"
-            app:navigationIcon="@drawable/ic_arrowback"/>
+            android:layout_height="@dimen/space_xxl"
+            android:layout_marginTop="@dimen/space_xxl"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
+            android:background="@android:color/white">
+
+            <ImageButton
+                android:id="@+id/toolbar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:minHeight="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="@dimen/space_sm"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrowback"
+                android:contentDescription="@string/back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Checkout"
+                android:textColor="#324A59"
+                android:textSize="@dimen/text_xl"
+                android:textStyle="bold" />
+        </RelativeLayout>
 
         <!-- Delivery Address Section -->
         <androidx.cardview.widget.CardView
@@ -78,7 +100,8 @@
                         android:id="@+id/edtReceiverName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,7 +122,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="phone"
-                        android:maxLength="11" />
+                        android:maxLength="11"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -170,7 +194,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPostalAddress"
-                        android:maxLines="2" />
+                        android:maxLines="2"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -231,6 +256,7 @@
                         android:text="Cash On Delivery (COD)"
                         android:textSize="14sp"
                         android:padding="12dp"
+                        android:textColor="@color/colorGrayText"
                         android:checked="true" />
 
                     <RadioButton
@@ -239,6 +265,7 @@
                         android:layout_height="wrap_content"
                         android:text="Online Payment"
                         android:textSize="14sp"
+                        android:textColor="@color/colorGrayText"
                         android:padding="12dp" />
 
                 </RadioGroup>
@@ -303,7 +330,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textCapCharacters"
-                        android:maxLines="1" />
+                        android:maxLines="1"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
