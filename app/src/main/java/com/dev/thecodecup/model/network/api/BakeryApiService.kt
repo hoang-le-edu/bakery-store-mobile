@@ -43,7 +43,7 @@ interface BakeryApiService {
     ): Response<ProductDetailResponse>
 
     /**
-     * Get product reviews
+     * Get product reviews (Public list)
      */
     @GET("products/{productId}/reviews")
     suspend fun getProductReviews(
@@ -51,6 +51,15 @@ interface BakeryApiService {
         @Query("page") page: Int = 1
     ): Response<ReviewResponse>
     
+    /**
+     * Create a review for a product in an order
+     */
+    @POST("products/{productId}/reviews")
+    suspend fun createReview(
+        @Path("productId") productId: String,
+        @Body request: CreateReviewRequest
+    ): Response<SuccessResponse>
+
     // ==================== Cart APIs ====================
 
     /**
@@ -136,6 +145,31 @@ interface BakeryApiService {
         @Body request: CancelOrderRequest
     ): Response<SuccessResponse>
     
+    /**
+     * Get user's existing review for a specific order
+     */
+    @GET("orders/{orderId}/my-review")
+    suspend fun getMyReview(
+        @Path("orderId") orderId: String
+    ): Response<MyReviewResponse>
+
+    /**
+     * Update an existing review
+     */
+    @PUT("orders/{orderId}/reviews")
+    suspend fun updateReview(
+        @Path("orderId") orderId: String,
+        @Body request: UpdateReviewRequest
+    ): Response<SuccessResponse>
+
+    /**
+     * Delete a review
+     */
+    @DELETE("orders/{orderId}/reviews")
+    suspend fun deleteReview(
+        @Path("orderId") orderId: String
+    ): Response<SuccessResponse>
+
     // ==================== Payment APIs ====================
     
     /**
@@ -245,6 +279,18 @@ data class CreatePaymentLinkRequest(
 data class UpdateOrderStatusRequest(
     val order_id: String,
     val status: String  // "Wait For Approval", "In Progress", "Completed", "Cancelled"
+)
+
+// New DTOs for Review features
+data class CreateReviewRequest(
+    val order_id: String,
+    val rating: Int,
+    val review_text: String
+)
+
+data class UpdateReviewRequest(
+    val rating: Int,
+    val review_text: String
 )
 
 // ==================== Response DTOs ====================
@@ -488,7 +534,7 @@ data class ReviewSummary(
     val rating_distribution: RatingDistribution
 )
 
-// �? thay @SerializedName (Gson) b?ng @Json(name = ...) (Moshi)
+// Đã thay @SerializedName (Gson) bằng @Json(name = ...) (Moshi)
 data class RatingDistribution(
     @Json(name = "1") val one: Int = 0,
     @Json(name = "2") val two: Int = 0,
@@ -505,4 +551,32 @@ data class CheckoutResponse(
 
 data class CheckoutData(
     val order_id: String? = null
+)
+
+// New DTO for "My Review"
+data class MyReviewResponse(
+    val success: Boolean,
+    val message: String,
+    val data: MyReviewData?
+)
+
+data class MyReviewData(
+    val id: String,
+    val rating: Int,
+    val review_text: String?,
+    val reviewed_at: String,
+    val product: ReviewProductInfo?,
+    val order: ReviewOrderInfo?
+)
+
+data class ReviewProductInfo(
+    val id: String,
+    val name: String,
+    val image: String?
+)
+
+data class ReviewOrderInfo(
+    val id: String,
+    val order_number: String,
+    val status: String
 )

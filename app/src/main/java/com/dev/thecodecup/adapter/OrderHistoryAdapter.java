@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +27,8 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
     private final Context context;
     private final List<Order> orders = new ArrayList<>();
-    private OnOrderClickListener listener;
+    private OnOrderClickListener clickListener;
+    private OnReviewClickListener reviewClickListener;
 
     public interface OnOrderClickListener {
         void onOrderClick(Order order);
@@ -34,9 +36,14 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         void onPayNowClick(Order order);
     }
 
-    public OrderHistoryAdapter(Context context, OnOrderClickListener listener) {
+    public interface OnReviewClickListener {
+        void onReviewClick(Order order, int position);
+    }
+
+    public OrderHistoryAdapter(Context context, OnOrderClickListener clickListener, OnReviewClickListener reviewClickListener) {
         this.context = context;
-        this.listener = listener;
+        this.clickListener = clickListener;
+        this.reviewClickListener = reviewClickListener;
     }
 
     public void setOrders(List<Order> newOrders) {
@@ -66,9 +73,9 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     }
 
     class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvOrderNumber, tvOrderDate, tvOrderStatus, tvItemCount, tvPaymentMethod, tvTotalPrice, tvProductName,
-                tvProductVariant;
+        TextView tvOrderNumber, tvOrderDate, tvOrderStatus, tvItemCount, tvPaymentMethod, tvTotalPrice, tvProductName, tvProductVariant;
         ImageView ivProductImage;
+        Button btnReview;
         MaterialButton btnPayNow;
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -82,23 +89,25 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             tvProductName = itemView.findViewById(R.id.tv_product_name);
             tvProductVariant = itemView.findViewById(R.id.tv_product_variant); // New TextView
             ivProductImage = itemView.findViewById(R.id.iv_product_image);
+            btnReview = itemView.findViewById(R.id.btn_review);
             btnPayNow = itemView.findViewById(R.id.btn_pay_now);
 
             itemView.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    listener.onOrderClick(orders.get(getAdapterPosition()));
+                if (clickListener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    clickListener.onOrderClick(orders.get(getAdapterPosition()));
                 }
             });
-            
+
             btnPayNow.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    listener.onPayNowClick(orders.get(getAdapterPosition()));
+                if (clickListener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    clickListener.onPayNowClick(orders.get(getAdapterPosition()));
                 }
             });
         }
 
         public void bind(Order order) {
             tvOrderNumber.setText(order.getOrder_number());
+
 
             // Format date if needed, currently using raw string
             // Extract just the date part if it's ISO format
@@ -108,34 +117,18 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             }
             tvOrderDate.setText(dateStr);
 
-            // Ưu tiên lấy status từ trường 'status' (API trả về), nếu null thì lấy
-            // 'order_status'
-            String status = order.getStatus();
-            if (status == null) {
-                status = order.getOrder_status();
-            }
-            if (status == null) {
-                status = "Unknown";
-            }
-
+            String status = order.getStatus() != null ? order.getStatus() : order.getOrder_status();
+            if (status == null) status = "Unknown";
+            
             tvOrderStatus.setText(status);
-
+            
             int color;
             switch (status) {
-                case "Completed":
-                    color = ContextCompat.getColor(context, R.color.status_completed);
-                    break;
-                case "Cancelled":
-                    color = ContextCompat.getColor(context, R.color.status_cancelled);
-                    break;
-                case "Wait For Approval":
-                    color = ContextCompat.getColor(context, R.color.status_pending);
-                    break;
-                case "In Progress":
-                    color = ContextCompat.getColor(context, R.color.status_ongoing);
-                    break;
-                default:
-                    color = Color.BLACK;
+                case "Completed": color = Color.parseColor("#4CAF50"); break;
+                case "Cancelled": color = Color.parseColor("#F44336"); break;
+                case "Wait For Approval": color = Color.parseColor("#FF9800"); break;
+                case "In Progress": color = Color.parseColor("#2196F3"); break;
+                default: color = Color.BLACK;
             }
             tvOrderStatus.setTextColor(color);
 
@@ -151,7 +144,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             if (priceStr == null && order.getTotal_price() != null) {
                 priceStr = order.getTotal_price();
             }
-
+            
             if (priceStr != null) {
                 try {
                     double price = Double.parseDouble(priceStr);
@@ -174,9 +167,9 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                 if (firstItem.getSize() != null && !firstItem.getSize().isEmpty()) {
                     variantBuilder.append("Size: ").append(firstItem.getSize());
                 }
-
+                
                 variantBuilder.append(" • x").append(firstItem.getQuantity());
-
+                
                 if (firstItem.getCount_topping() > 0) {
                     variantBuilder.append(" • ").append(firstItem.getCount_topping()).append(" Topping");
                 } else if (firstItem.getToppings() != null && !firstItem.getToppings().isEmpty()) {
@@ -195,6 +188,23 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
                 tvProductName.setText("Order Details");
                 tvProductVariant.setVisibility(View.GONE);
                 ivProductImage.setImageResource(R.drawable.placeholder_image);
+            }
+
+            // Review Button Logic
+            if ("Completed".equals(status)) {
+                btnReview.setVisibility(View.VISIBLE);
+                if (order.getRate() != null && order.getRate() > 0) {
+                    btnReview.setText("View My Review");
+                } else {
+                    btnReview.setText("Review");
+                }
+                btnReview.setOnClickListener(v -> {
+                    if (reviewClickListener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        reviewClickListener.onReviewClick(orders.get(getAdapterPosition()), getAdapterPosition());
+                    }
+                });
+            } else {
+                btnReview.setVisibility(View.GONE);
             }
 
             // Show Pay Now button for Banking orders with pending payment
