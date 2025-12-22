@@ -29,7 +29,8 @@ import java.util.List;
 
 import retrofit2.Response;
 
-public class OrderListFragment extends Fragment implements OrderHistoryAdapter.OnOrderClickListener {
+// Add OrderHistoryAdapter.OnReviewClickListener to the implements list
+public class OrderListFragment extends Fragment implements OrderHistoryAdapter.OnOrderClickListener, OrderHistoryAdapter.OnReviewClickListener {
 
     private static final String TAG = "OrderListFragment";
     private RecyclerView recyclerView;
@@ -37,7 +38,7 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
     private ProgressBar progressBar;
     private OrderHistoryAdapter adapter;
     private List<Order> orderList = new ArrayList<>();
-
+    
     // Key để truyền data qua Bundle
     private static final String ARG_ORDERS = "orders";
 
@@ -60,7 +61,7 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
         if (getArguments() != null) {
             // Lấy danh sách order từ arguments
             // Cần cast về ArrayList<Order>
-            // noinspection unchecked
+            //noinspection unchecked
             ArrayList<Order> receivedOrders = (ArrayList<Order>) getArguments().getSerializable(ARG_ORDERS);
             if (receivedOrders != null) {
                 this.orderList = receivedOrders;
@@ -70,7 +71,7 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_order_list, container, false);
     }
 
@@ -83,14 +84,15 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
         progressBar = view.findViewById(R.id.progressBar);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new OrderHistoryAdapter(getContext(), this);
+
+        // Fix: Pass 'this' as the third argument for the review listener
+        adapter = new OrderHistoryAdapter(getContext(), this, this);
         recyclerView.setAdapter(adapter);
 
         updateUI();
     }
-
-    // Hàm này có thể dùng để update data runtime nếu cần (ví dụ pull-to-refresh từ
-    // Activity)
+    
+    // Hàm này có thể dùng để update data runtime nếu cần (ví dụ pull-to-refresh từ Activity)
     public void setOrders(List<Order> orders) {
         this.orderList = orders;
         if (adapter != null) {
@@ -171,5 +173,13 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
                 }
             }
         });
+    }
+
+    @Override
+    public void onReviewClick(Order order, int position) {
+        // Delegate review click to the hosting activity if it implements the listener
+        if (getActivity() instanceof OrderHistoryAdapter.OnReviewClickListener) {
+            ((OrderHistoryAdapter.OnReviewClickListener) getActivity()).onReviewClick(order, position);
+        }
     }
 }
