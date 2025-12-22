@@ -88,16 +88,6 @@
         </androidx.cardview.widget.CardView>
 
         <!-- Product Info Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,32 +116,48 @@
                     android:textSize="@dimen/text_xl"
                     android:textStyle="bold"
                     />
+                
+                <!-- NEW: View Reviews Button -->
+                <LinearLayout
+                    android:id="@+id/btnViewReviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:paddingVertical="4dp"
+                    android:background="?attr/selectableItemBackground">
+                    
+                    <RatingBar
+                        android:id="@+id/productRatingBar"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:rating="0"
+                        android:numStars="5"
+                        android:progressTint="#FFC107"
+                        android:secondaryProgressTint="#FFC107"
+                        android:isIndicator="true"/>
+                    
+                    <TextView
+                        android:id="@+id/tvReviewCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See Reviews"
+                        android:textColor="@color/purple_500"
+                        android:textSize="14sp"
+                        android:layout_marginStart="8dp"
+                        android:textStyle="bold"/>
+                        
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_arrow_right"
+                        android:layout_marginStart="4dp"
+                        app:tint="@color/purple_500"/>
+                </LinearLayout>
+
             </LinearLayout>
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Size Selection Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
-
-        <!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Topping Selection Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginEnd="16dp"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -203,18 +209,6 @@
                     android:layout_marginTop="@dimen/space_md"
                     app:chipSpacing="@dimen/space_sm" />
             </LinearLayout>
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Quantity Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="20dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -266,18 +260,6 @@
                         android:src="@drawable/ic_add" />
                 </LinearLayout>
             </LinearLayout>
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- Note Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/space_lg"-->
-<!--            android:layout_marginEnd="@dimen/space_lg"-->
-<!--            android:layout_marginBottom="@dimen/space_lg"-->
-<!--            app:cardCornerRadius="12dp"-->
-<!--            app:cardElevation="2dp"-->
-<!--            android:backgroundTint="@android:color/white">-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -308,8 +290,6 @@
                 android:textColor="@color/black"
                 android:textColorHint="@color/colorGrayText" />
         </LinearLayout>
-
-        <!--        </androidx.cardview.widget.CardView>-->
 
         <!-- Bottom spacer for fixed button -->
         <View

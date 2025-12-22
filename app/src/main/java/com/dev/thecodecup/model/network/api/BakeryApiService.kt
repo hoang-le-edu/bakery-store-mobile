@@ -1,6 +1,7 @@
 package com.dev.thecodecup.model.network.api
 
 import com.dev.thecodecup.model.network.dto.*
+import com.squareup.moshi.Json
 import retrofit2.Response
 import retrofit2.http.*
 import java.io.Serializable
@@ -40,6 +41,15 @@ interface BakeryApiService {
     suspend fun getProductDetail(
         @Path("productId") productId: String
     ): Response<ProductDetailResponse>
+
+    /**
+     * Get product reviews
+     */
+    @GET("products/{productId}/reviews")
+    suspend fun getProductReviews(
+        @Path("productId") productId: String,
+        @Query("page") page: Int = 1
+    ): Response<ReviewResponse>
     
     // ==================== Cart APIs ====================
 
@@ -108,7 +118,7 @@ interface BakeryApiService {
     @POST("orders/proceed")
     suspend fun proceedOrder(
         @Body request: CheckoutRequest
-    ): Response<SuccessResponse>
+    ): Response<CheckoutResponse>
     
     /**
      * Load customer's orders grouped by status
@@ -255,6 +265,9 @@ data class ProductDetail(
     val description: String?,
     val price: String,  // e.g. "6000.00"
     val image_url: String,
+    // Add new fields for rating
+    val avg_rating: Double? = 0.0,
+    val review_count: Int? = 0,
     val productDetailImages: List<ProductImage>,
     val size_list: List<Size>,
     val topping_list: List<Topping>
@@ -376,14 +389,9 @@ data class OrderTopping(
 ) : Serializable
 
 data class PaymentLinkResponse(
+    val error: Int,
     val message: String,
-    val data: PaymentLinkData
-)
-
-data class PaymentLinkData(
-    val checkoutUrl: String,  // QR code payment URL
-    val qrCode: String,  // QR code image URL
-    val order_id: String
+    val checkoutUrl: String  // URL to display as QR code for payment
 )
 
 data class AdminProductsResponse(
@@ -436,4 +444,65 @@ data class AdminOrdersResponse(
 data class SuccessResponse(
     val success: Boolean? = null,
     val message: String
+)
+
+// ==================== Review DTOs ====================
+
+data class ReviewResponse(
+    val success: Boolean,
+    val message: String,
+    val data: ReviewDataWrapper
+)
+
+data class ReviewDataWrapper(
+    val reviews: ReviewPagination,
+    val summary: ReviewSummary
+)
+
+data class ReviewPagination(
+    val current_page: Int,
+    val data: List<ReviewItem>,
+    val last_page: Int,
+    val total: Int
+)
+
+data class ReviewItem(
+    val id: String,
+    val rating: Int,
+    val review_text: String?,
+    val reviewed_at: String,
+    val is_verified_purchase: Boolean,
+    val user: ReviewUser,
+    val helpful_count: Int
+) : Serializable
+
+data class ReviewUser(
+    val id: String,
+    val name: String,
+    val avatar: String?
+) : Serializable
+
+data class ReviewSummary(
+    val average_rating: Double,
+    val total_reviews: Int,
+    val rating_distribution: RatingDistribution
+)
+
+// Ð? thay @SerializedName (Gson) b?ng @Json(name = ...) (Moshi)
+data class RatingDistribution(
+    @Json(name = "1") val one: Int = 0,
+    @Json(name = "2") val two: Int = 0,
+    @Json(name = "3") val three: Int = 0,
+    @Json(name = "4") val four: Int = 0,
+    @Json(name = "5") val five: Int = 0
+)
+
+data class CheckoutResponse(
+    val success: Boolean,
+    val message: String,
+    val data: CheckoutData? = null
+)
+
+data class CheckoutData(
+    val order_id: String
 )
