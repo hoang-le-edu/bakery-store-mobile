@@ -69,6 +69,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         TextView tvOrderNumber, tvOrderDate, tvOrderStatus, tvItemCount, tvPaymentMethod, tvTotalPrice, tvProductName,
                 tvProductVariant;
         ImageView ivProductImage;
+        MaterialButton btnPayNow;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,10 +82,17 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             tvProductName = itemView.findViewById(R.id.tv_product_name);
             tvProductVariant = itemView.findViewById(R.id.tv_product_variant); // New TextView
             ivProductImage = itemView.findViewById(R.id.iv_product_image);
+            btnPayNow = itemView.findViewById(R.id.btn_pay_now);
 
             itemView.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
                     listener.onOrderClick(orders.get(getAdapterPosition()));
+                }
+            });
+            
+            btnPayNow.setOnClickListener(v -> {
+                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    listener.onPayNowClick(orders.get(getAdapterPosition()));
                 }
             });
         }

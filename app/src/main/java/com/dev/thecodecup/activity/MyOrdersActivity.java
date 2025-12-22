@@ -1,7 +1,9 @@
 package com.dev.thecodecup.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -17,10 +19,14 @@ import com.dev.thecodecup.adapter.OrderHistoryAdapter;
 import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
 import com.dev.thecodecup.model.network.api.CustomerOrdersResponse;
 import com.dev.thecodecup.model.network.api.Order;
+import com.dev.thecodecup.model.network.api.PaymentLinkCallback;
+import com.dev.thecodecup.model.network.api.PaymentLinkResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import retrofit2.Response;
 
 public class MyOrdersActivity extends AppCompatActivity implements OrderHistoryAdapter.OnOrderClickListener {
 
@@ -204,5 +210,55 @@ public class MyOrdersActivity extends AppCompatActivity implements OrderHistoryA
     public void onOrderClick(Order order) {
         // Handle order click if needed
         // Can navigate to order detail screen
+    }
+
+    @Override
+    public void onPayNowClick(Order order) {
+        // Handle pay now button click - create payment link and open payment screen
+        if (order == null || order.getOrder_id() == null) {
+            Toast.makeText(this, "Invalid order", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        createPaymentLink(order.getOrder_id());
+    }
+
+    private void createPaymentLink(String orderId) {
+        final ProgressDialog dialog = ProgressDialog.show(this, null,
+                "Creating payment link...", true, false);
+
+        BakeryJavaBridge.INSTANCE.createPaymentLink(this, orderId, new PaymentLinkCallback() {
+            @Override
+            public void onResult(Response<PaymentLinkResponse> response, Throwable error) {
+                dialog.dismiss();
+
+                if (error != null) {
+                    Log.e("MyOrdersActivity", "Payment link error", error);
+                    Toast.makeText(MyOrdersActivity.this,
+                            "Payment link error: " + error.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (response != null && response.isSuccessful() && response.body() != null) {
+                    PaymentLinkResponse paymentResponse = response.body();
+
+                    if (paymentResponse.getError() == 0) {
+                        // Open payment screen
+                        Intent intent = new Intent(MyOrdersActivity.this, PaymentActivity.class);
+                        intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
+                        intent.putExtra("ORDER_ID", orderId);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(MyOrdersActivity.this,
+                                "Payment error: " + paymentResponse.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MyOrdersActivity.this,
+                            "Failed to create payment link", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

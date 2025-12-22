@@ -291,8 +291,9 @@ public class CheckoutActivity extends AppCompatActivity {
             return;
         }
 
-        if (selectedProvinceId.isEmpty() || selectedDistrictId.isEmpty() || selectedWardCode.isEmpty()) {
-            Toast.makeText(this, "Please select complete address", Toast.LENGTH_SHORT).show();
+        // Province and District are required, Ward is optional
+        if (selectedProvinceId.isEmpty() || selectedDistrictId.isEmpty()) {
+            Toast.makeText(this, "Please select Province and District", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -308,11 +309,17 @@ public class CheckoutActivity extends AppCompatActivity {
         // Get voucher code
         String voucherCode = edtVoucherCode.getText() != null ? edtVoucherCode.getText().toString().trim() : "";
 
-        // Build full address
-        String fullAddress = streetAddress + ", " + getSelectedWardName() + ", " +
-                getSelectedDistrictName() + ", " + getSelectedProvinceName();
+        // Build full address (Ward is optional)
+        String wardName = getSelectedWardName();
+        String fullAddress = streetAddress;
+        
+        if (!wardName.isEmpty()) {
+            fullAddress += ", " + wardName;
+        }
+        
+        fullAddress += ", " + getSelectedDistrictName() + ", " + getSelectedProvinceName();
 
-        // Create checkout request
+        // Create checkout request (ward_code can be empty if not selected)
         CheckoutRequest request = new CheckoutRequest(
                 selectedOrderDetailIds,
                 receiverName,
@@ -323,7 +330,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 "", // note
                 selectedProvinceId,
                 selectedDistrictId,
-                selectedWardCode,
+                selectedWardCode.isEmpty() ? "" : selectedWardCode, // ward_code (optional)
                 streetAddress,
                 receiverPhone,
                 shippingFee,
@@ -352,7 +359,14 @@ public class CheckoutActivity extends AppCompatActivity {
                     if ("Banking".equals(paymentMethod) && checkoutResponse.getData() != null) {
                         // Get real order_id from response
                         String orderId = checkoutResponse.getData().getOrder_id();
-                        createPaymentLink(orderId);
+                        
+                        if (orderId != null && !orderId.isEmpty()) {
+                            createPaymentLink(orderId);
+                        } else {
+                            Toast.makeText(CheckoutActivity.this,
+                                    "Order created but order ID is missing", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
                     } else {
                         // Cash payment - go to success screen
                         Toast.makeText(CheckoutActivity.this,

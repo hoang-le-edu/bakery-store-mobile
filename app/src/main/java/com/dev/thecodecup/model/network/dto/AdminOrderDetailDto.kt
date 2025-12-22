@@ -43,6 +43,8 @@ data class AdminOrderItemDto(
     @Json(name = "size") val size: String? = null,
     @Json(name = "quantity") val quantity: Int? = null,
     @Json(name = "image") val image: String? = null,
+    @Json(name = "product_image") val productImage: String? = null,
+    @Json(name = "image_url") val imageUrl: String? = null,
     @Json(name = "note") val note: String? = null,
     @Json(name = "total_price") val totalPrice: String? = null,
     @Json(name = "count_topping") val countTopping: Int? = null,

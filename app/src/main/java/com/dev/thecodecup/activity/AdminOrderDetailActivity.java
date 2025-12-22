@@ -126,8 +126,18 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
 
     private void setupActions() {
         btnStatusHistory.setOnClickListener(v -> showStatusHistoryDialog());
-        btnCustomerDetail.setOnClickListener(v ->
-                Toast.makeText(this, "Customer detail page coming soon", Toast.LENGTH_SHORT).show());
+        btnCustomerDetail.setOnClickListener(v -> {
+            // API expects orderId to return customer info + order history
+            String orderIdForLookup = currentOrder != null ? currentOrder.getOrderId() : null;
+            if (orderIdForLookup != null) {
+                android.util.Log.d("AdminOrderDetail", "Opening customer detail for order ID: " + orderIdForLookup);
+                android.content.Intent intent = new android.content.Intent(AdminOrderDetailActivity.this, AdminCustomerDetailActivity.class);
+                intent.putExtra(AdminCustomerDetailActivity.EXTRA_ORDER_ID, orderIdForLookup);
+                startActivity(intent);
+            } else {
+                Toast.makeText(AdminOrderDetailActivity.this, "Order ID not found", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void fetchDetail() {
@@ -259,7 +269,8 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
     private void updateStatus(String status) {
         showLoading(true);
         HashMap<String, String> body = new HashMap<>();
-        body.put("status", status);
+        // API expects "order_status" key (422 was returned when using "status")
+        body.put("order_status", status);
         apiService.updateOrderStatus(orderId, body).enqueue(new Callback<SuccessResponse>() {
             @Override
             public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {

@@ -6,13 +6,15 @@
     android:layout_marginVertical="@dimen/space_sm"
     android:layout_marginHorizontal="@dimen/space_xs"
     app:cardCornerRadius="12dp"
-    app:cardElevation="2dp">
+    app:cardElevation="2dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/space_md">
+        android:padding="@dimen/space_lg"
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/imgProduct"

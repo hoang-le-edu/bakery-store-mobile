@@ -60,6 +60,13 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh list when returning from detail to reflect updated statuses
+        loadOrdersFromApi();
+    }
+
+    @Override
     protected int getAdminMenuItemId() {
         return R.id.navigation_admin_orders;
     }
@@ -182,7 +189,13 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
                     AdminOrdersResponseDto body = response.body();
                     if (body.getData() != null) {
                         allOrders.clear();
-                        allOrders.addAll(body.getData());
+                        for (AdminOrderDto o : body.getData()) {
+                            String status = o.getOrderStatus();
+                            if (status != null && status.equalsIgnoreCase("draft")) {
+                                continue; // skip draft orders
+                            }
+                            allOrders.add(o);
+                        }
                         applyFilter();
                     }
                 } else {
