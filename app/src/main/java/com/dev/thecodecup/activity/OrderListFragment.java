@@ -148,9 +148,16 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
                     PaymentLinkResponse paymentResponse = response.body();
 
                     if (paymentResponse.getError() == 0) {
+                        Log.d(TAG, "Payment link created - URL: " + paymentResponse.getCheckoutUrl());
+                        Log.d(TAG, "QR Code present: " + (paymentResponse.getQrCode() != null));
+                        if (paymentResponse.getQrCode() != null) {
+                            Log.d(TAG, "QR Code length: " + paymentResponse.getQrCode().length());
+                        }
+                        
                         // Open payment screen
                         Intent intent = new Intent(getContext(), PaymentActivity.class);
                         intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
+                        intent.putExtra("QR_CODE", paymentResponse.getQrCode());
                         intent.putExtra("ORDER_ID", orderId);
                         startActivity(intent);
                     } else {

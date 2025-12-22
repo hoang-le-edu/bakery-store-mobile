@@ -401,11 +401,30 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     PaymentLinkResponse paymentResponse = response.body();
+                    
+                    // Debug: Log raw response
+                    Log.d("CheckoutActivity", "=== Payment Link Response ===");
+                    Log.d("CheckoutActivity", "Error: " + paymentResponse.getError());
+                    Log.d("CheckoutActivity", "Message: " + paymentResponse.getMessage());
+                    Log.d("CheckoutActivity", "Checkout URL: " + paymentResponse.getCheckoutUrl());
+                    Log.d("CheckoutActivity", "QR Code null? " + (paymentResponse.getQrCode() == null));
+                    if (paymentResponse.getQrCode() != null) {
+                        Log.d("CheckoutActivity", "QR Code length: " + paymentResponse.getQrCode().length());
+                        Log.d("CheckoutActivity", "QR Code first 50 chars: " + 
+                            paymentResponse.getQrCode().substring(0, Math.min(50, paymentResponse.getQrCode().length())));
+                    }
 
                     if (paymentResponse.getError() == 0) {
+                        Log.d("CheckoutActivity", "Payment link created - URL: " + paymentResponse.getCheckoutUrl());
+                        Log.d("CheckoutActivity", "QR Code present: " + (paymentResponse.getQrCode() != null));
+                        if (paymentResponse.getQrCode() != null) {
+                            Log.d("CheckoutActivity", "QR Code length: " + paymentResponse.getQrCode().length());
+                        }
+                        
                         // Open payment screen
                         Intent intent = new Intent(CheckoutActivity.this, PaymentActivity.class);
                         intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
+                        intent.putExtra("QR_CODE", paymentResponse.getQrCode());
                         intent.putExtra("ORDER_ID", orderId);
                         startActivity(intent);
                         finish();
