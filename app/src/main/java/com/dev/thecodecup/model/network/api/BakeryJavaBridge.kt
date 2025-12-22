@@ -54,8 +54,26 @@ interface CustomerOrdersCallback {
     fun onResult(response: Response<CustomerOrdersResponse>?, error: Throwable?)
 }
 
+// ==== REVIEW CALLBACKS ====
+
 interface ProductReviewsCallback {
     fun onResult(response: Response<ReviewResponse>?, error: Throwable?)
+}
+
+interface CreateReviewCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface MyReviewCallback {
+    fun onResult(response: Response<MyReviewResponse>?, error: Throwable?)
+}
+
+interface UpdateReviewCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface DeleteReviewCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
 }
 
 object BakeryJavaBridge {
@@ -94,6 +112,8 @@ object BakeryJavaBridge {
         }
     }
 
+    // ---------- REVIEWS ----------
+    
     fun getProductReviews(
         owner: LifecycleOwner,
         productId: String,
@@ -103,6 +123,68 @@ object BakeryJavaBridge {
         owner.lifecycleScope.launch {
             try {
                 val response = apiService.getProductReviews(productId, page)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun createReview(
+        owner: LifecycleOwner,
+        productId: String,
+        request: CreateReviewRequest,
+        callback: CreateReviewCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.createReview(productId, request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun getMyReview(
+        owner: LifecycleOwner,
+        orderId: String,
+        callback: MyReviewCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.getMyReview(orderId)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun updateReview(
+        owner: LifecycleOwner,
+        orderId: String,
+        request: UpdateReviewRequest,
+        callback: UpdateReviewCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.updateReview(orderId, request)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun deleteReview(
+        owner: LifecycleOwner,
+        orderId: String,
+        callback: DeleteReviewCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.deleteReview(orderId)
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)
