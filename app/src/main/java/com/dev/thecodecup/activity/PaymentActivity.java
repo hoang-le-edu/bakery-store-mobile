@@ -1,15 +1,17 @@
 package com.dev.thecodecup.activity;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -18,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -30,10 +33,10 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
-import java.net.URISyntaxException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -41,15 +44,12 @@ import java.util.Locale;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import android.text.TextUtils;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.provider.MediaStore;
 
 public class PaymentActivity extends AppCompatActivity {
 
     private static final String TAG = "PaymentActivity";
     private static final String SOCKET_URL = "https://socket.dotb.cloud/";
+    private static final int REQUEST_STORAGE_PERMISSION = 1001;
 
     private ImageButton toolbar;
     private ImageView imgQRCode;
@@ -58,14 +58,14 @@ public class PaymentActivity extends AppCompatActivity {
     private TextView txtCheckoutUrl;
     private MaterialButton btnCancel;
     private MaterialButton btnCheckStatus;
-    private MaterialButton btnSaveQR;
+    private MaterialButton btnDownloadQR;
 
     private String checkoutUrl;
+    private String qrCodeData;
     private String orderId;
-    private String paymentQrContent; // Direct payment QR data/content (e.g., VietQR string)
+    private Bitmap qrCodeBitmap;
 
     private Socket socket;
-    private static final int REQ_WRITE_STORAGE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,20 +74,8 @@ public class PaymentActivity extends AppCompatActivity {
 
         // Get data from intent
         checkoutUrl = getIntent().getStringExtra("CHECKOUT_URL");
-        // Accept direct QR content if available (prefer this over URL QR)
-        paymentQrContent = getIntent().getStringExtra("PAYMENT_QR_CONTENT");
-        if (TextUtils.isEmpty(paymentQrContent)) {
-            // Also allow an alternate key if caller uses a different name
-            paymentQrContent = getIntent().getStringExtra("QR_CONTENT");
-        }
+        qrCodeData = getIntent().getStringExtra("QR_CODE");
         orderId = getIntent().getStringExtra("ORDER_ID");
-
-        // Require at least one of: direct QR content OR checkout URL
-        if ((checkoutUrl == null || checkoutUrl.isEmpty()) && (paymentQrContent == null || paymentQrContent.isEmpty())) {
-            Toast.makeText(this, "No payment information", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
 
         if (orderId == null || orderId.isEmpty()) {
             Toast.makeText(this, "No order ID", Toast.LENGTH_SHORT).show();
@@ -109,16 +97,11 @@ public class PaymentActivity extends AppCompatActivity {
         txtCheckoutUrl = findViewById(R.id.txtCheckoutUrl);
         btnCancel = findViewById(R.id.btnCancel);
         btnCheckStatus = findViewById(R.id.btnCheckStatus);
-        btnSaveQR = findViewById(R.id.btnSaveQR);
+        btnDownloadQR = findViewById(R.id.btnDownloadQR);
 
-        // Display checkout URL
+        // Hide checkout URL by default
         if (txtCheckoutUrl != null) {
-            if (!TextUtils.isEmpty(checkoutUrl)) {
-                txtCheckoutUrl.setText(checkoutUrl);
-                txtCheckoutUrl.setVisibility(View.VISIBLE);
-            } else {
-                txtCheckoutUrl.setVisibility(View.GONE);
-            }
+            txtCheckoutUrl.setVisibility(View.GONE);
         }
     }
 
@@ -144,139 +127,86 @@ public class PaymentActivity extends AppCompatActivity {
 
         btnCheckStatus.setOnClickListener(v -> checkPaymentStatus());
 
-        if (btnSaveQR != null) {
-            btnSaveQR.setOnClickListener(v -> saveQrToGallery());
-        }
+        btnDownloadQR.setOnClickListener(v -> downloadQRCode());
     }
 
     private void generateQRCode() {
         progressBar.setVisibility(View.VISIBLE);
 
         try {
-            // Prefer direct payment QR content if provided; otherwise, fall back to checkout URL
-            String qrSource = !TextUtils.isEmpty(paymentQrContent) ? paymentQrContent : checkoutUrl;
+            // Try to use QR code from PayOS first
+            if (qrCodeData != null && !qrCodeData.isEmpty()) {
+                Log.d(TAG, "QR code data received (length: " + qrCodeData.length() + ")");
+                Log.d(TAG, "QR code data (first 100 chars): " +
+                    qrCodeData.substring(0, Math.min(100, qrCodeData.length())));
 
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(qrSource, BarcodeFormat.QR_CODE, 512, 512);
-            imgQRCode.setImageBitmap(bitmap);
-            progressBar.setVisibility(View.GONE);
+                // Check if this is a base64 image or EMVCo QR string
+                boolean isBase64Image = qrCodeData.startsWith("data:image") ||
+                                       qrCodeData.startsWith("iVBOR") ||
+                                       qrCodeData.startsWith("/9j/");
 
-            if (!TextUtils.isEmpty(paymentQrContent)) {
-                txtPaymentStatus.setText("Scan to pay");
-                Log.d(TAG, "QR code generated from direct payment content");
+                if (isBase64Image) {
+                    // Handle base64 image
+                    Log.d(TAG, "Detected base64 image format");
+                    String base64String = qrCodeData;
+                    if (qrCodeData.contains(",")) {
+                        String[] parts = qrCodeData.split(",");
+                        if (parts.length > 1) {
+                            base64String = parts[1];
+                            Log.d(TAG, "Removed data URI prefix: " + parts[0]);
+                        }
+                    }
+
+                    try {
+                        byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
+                        qrCodeBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+
+                        if (qrCodeBitmap != null) {
+                            imgQRCode.setImageBitmap(qrCodeBitmap);
+                            progressBar.setVisibility(View.GONE);
+                            Log.d(TAG, "QR code loaded from base64 successfully - Size: " +
+                                qrCodeBitmap.getWidth() + "x" + qrCodeBitmap.getHeight());
+                            return;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        Log.e(TAG, "Invalid base64 string", e);
+                    }
+                } else {
+                    // Handle EMVCo QR string (VietQR format)
+                    Log.d(TAG, "Detected EMVCo/VietQR string format");
+                    try {
+                        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                        qrCodeBitmap = barcodeEncoder.encodeBitmap(qrCodeData, BarcodeFormat.QR_CODE, 512, 512);
+                        imgQRCode.setImageBitmap(qrCodeBitmap);
+                        progressBar.setVisibility(View.GONE);
+                        Log.d(TAG, "QR code generated from EMVCo string successfully - Size: " +
+                            qrCodeBitmap.getWidth() + "x" + qrCodeBitmap.getHeight());
+                        return;
+                    } catch (WriterException e) {
+                        Log.e(TAG, "Error generating QR code from EMVCo string", e);
+                    }
+                }
+
+                Log.w(TAG, "Failed to process QR code from PayOS, falling back to URL generation");
             } else {
-                txtPaymentStatus.setText("Scan to open payment page");
-                Log.d(TAG, "QR code generated from checkout URL: " + checkoutUrl);
+                Log.d(TAG, "No QR code data provided, will generate from URL");
             }
-        } catch (WriterException e) {
+
+            // Fallback: Generate QR code from checkout URL if available
+            if (checkoutUrl != null && !checkoutUrl.isEmpty()) {
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                qrCodeBitmap = barcodeEncoder.encodeBitmap(checkoutUrl, BarcodeFormat.QR_CODE, 512, 512);
+                imgQRCode.setImageBitmap(qrCodeBitmap);
+                progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "QR code generated from URL");
+            } else {
+                throw new Exception("No QR code data or checkout URL available");
+            }
+
+        } catch (Exception e) {
             Log.e(TAG, "Error generating QR code", e);
             progressBar.setVisibility(View.GONE);
             Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private Bitmap getQrBitmapFromView() {
-        if (imgQRCode == null) return null;
-        Drawable drawable = imgQRCode.getDrawable();
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-        if (drawable != null) {
-            int w = drawable.getIntrinsicWidth() > 0 ? drawable.getIntrinsicWidth() : imgQRCode.getWidth();
-            int h = drawable.getIntrinsicHeight() > 0 ? drawable.getIntrinsicHeight() : imgQRCode.getHeight();
-            if (w <= 0 || h <= 0) return null;
-            Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bmp);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-            return bmp;
-        }
-        return null;
-    }
-
-    private void saveQrToGallery() {
-        Bitmap bitmap = getQrBitmapFromView();
-        if (bitmap == null) {
-            Toast.makeText(this, "QR not ready yet", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveImageQPlus(bitmap);
-        } else {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_WRITE_STORAGE);
-                return;
-            }
-            saveImageLegacy(bitmap);
-        }
-    }
-
-    private String generateFileName() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        return "PaymentQR_" + timeStamp + ".png";
-    }
-
-    private void saveImageQPlus(Bitmap bitmap) {
-        try {
-            ContentValues values = new ContentValues();
-            String fileName = generateFileName();
-            values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/BakeryStore");
-            values.put(MediaStore.Images.Media.IS_PENDING, 1);
-
-            Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            if (uri == null) throw new Exception("Failed to create MediaStore record");
-
-            try (OutputStream os = getContentResolver().openOutputStream(uri)) {
-                if (os == null) throw new Exception("Failed to open output stream");
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-            }
-
-            values.clear();
-            values.put(MediaStore.Images.Media.IS_PENDING, 0);
-            getContentResolver().update(uri, values, null, null);
-
-            Toast.makeText(this, "Saved to Pictures/BakeryStore", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Log.e(TAG, "Save image failed (Q+)", e);
-            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void saveImageLegacy(Bitmap bitmap) {
-        try {
-            File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File appDir = new File(picturesDir, "BakeryStore");
-            if (!appDir.exists() && !appDir.mkdirs()) {
-                throw new Exception("Failed to create directory");
-            }
-            File file = new File(appDir, generateFileName());
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            }
-            // Make it visible in gallery
-            Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            scanIntent.setData(Uri.fromFile(file));
-            sendBroadcast(scanIntent);
-
-            Toast.makeText(this, "Saved to Pictures/BakeryStore", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Log.e(TAG, "Save image failed (legacy)", e);
-            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQ_WRITE_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveQrToGallery();
-            } else {
-                Toast.makeText(this, "Storage permission denied", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -384,5 +314,90 @@ public class PaymentActivity extends AppCompatActivity {
                 .setPositiveButton("Cancel Payment", (dialog, which) -> super.onBackPressed())
                 .setNegativeButton("Continue", null)
                 .show();
+    }
+
+    private void downloadQRCode() {
+        if (qrCodeBitmap == null) {
+            Toast.makeText(this, "QR code not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check permission for Android 9 and below
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_STORAGE_PERMISSION);
+                return;
+            }
+        }
+
+        saveQRCodeToGallery();
+    }
+
+    private void saveQRCodeToGallery() {
+        try {
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String fileName = "QR_Payment_" + orderId + "_" + timestamp + ".png";
+
+            OutputStream fos;
+            Uri imageUri;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10 and above - use MediaStore
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/BakeryPayments");
+
+                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                if (imageUri == null) {
+                    throw new Exception("Failed to create MediaStore entry");
+                }
+                fos = getContentResolver().openOutputStream(imageUri);
+            } else {
+                // Android 9 and below - use legacy storage
+                File imagesDir = new File(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_PICTURES), "BakeryPayments");
+                if (!imagesDir.exists()) {
+                    imagesDir.mkdirs();
+                }
+
+                File image = new File(imagesDir, fileName);
+                fos = new FileOutputStream(image);
+                imageUri = Uri.fromFile(image);
+            }
+
+            // Save bitmap to output stream
+            qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            if (fos != null) {
+                fos.close();
+            }
+
+            // Notify gallery for Android 9 and below
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imageUri));
+            }
+
+            Toast.makeText(this, "QR code saved to Gallery", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "QR code saved successfully: " + fileName);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving QR code", e);
+            Toast.makeText(this, "Failed to save QR code: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveQRCodeToGallery();
+            } else {
+                Toast.makeText(this, "Permission denied. Cannot save QR code.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
