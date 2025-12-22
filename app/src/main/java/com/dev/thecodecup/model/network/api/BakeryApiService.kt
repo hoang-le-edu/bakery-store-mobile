@@ -391,7 +391,10 @@ data class OrderTopping(
 data class PaymentLinkResponse(
     val error: Int,
     val message: String,
-    val checkoutUrl: String  // URL to display as QR code for payment
+    val checkoutUrl: String,  // URL to display as QR code for payment
+    // Optional fields if backend provides direct bank QR content/image
+    val qrContent: String? = null,
+    val qrImageUrl: String? = null
 )
 
 data class AdminProductsResponse(

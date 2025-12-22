@@ -200,8 +200,9 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             // Show Pay Now button for Banking orders with pending payment
             boolean isBanking = "Banking".equalsIgnoreCase(order.getPayment_method());
             boolean isPending = "pending".equalsIgnoreCase(order.getPayment_status());
+            boolean isCancelled = "Cancelled".equalsIgnoreCase(status);
 
-            if (isBanking && isPending) {
+            if (isBanking && isPending && !isCancelled) {
                 btnPayNow.setVisibility(View.VISIBLE);
             } else {
                 btnPayNow.setVisibility(View.GONE);

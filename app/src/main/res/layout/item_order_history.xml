@@ -184,6 +184,7 @@
             android:text="Pay Now"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:textColor="@android:color/white"
             android:backgroundTint="@color/pink_primary"
             app:cornerRadius="12dp"
             android:visibility="gone" />
