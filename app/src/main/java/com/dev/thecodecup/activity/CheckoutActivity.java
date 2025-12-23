@@ -17,9 +17,10 @@ import com.dev.thecodecup.model.network.api.CheckoutRequest;
 import com.dev.thecodecup.model.network.api.CheckoutResponse;
 import com.dev.thecodecup.model.network.api.PaymentLinkCallback;
 import com.dev.thecodecup.model.network.api.PaymentLinkResponse;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import android.widget.ImageButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,7 +33,7 @@ import retrofit2.Response;
 
 public class CheckoutActivity extends BaseAuthActivity {
 
-    private MaterialToolbar toolbar;
+    private ImageButton toolbar;
     private TextInputEditText edtReceiverName;
     private TextInputEditText edtReceiverPhone;
     private TextInputEditText edtStreetAddress;
@@ -97,7 +98,7 @@ public class CheckoutActivity extends BaseAuthActivity {
     }
 
     private void setupListeners() {
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setOnClickListener(v -> finish());
 
         btnPlaceOrder.setOnClickListener(v -> placeOrder());
 
