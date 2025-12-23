@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- Toolbar -->
+    <!-- Toolbar with Search -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,6 +15,35 @@
         android:padding="@dimen/space_lg"
         android:layout_marginTop="@dimen/space_md">
 
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_search_rounded"
+            android:drawableStart="@drawable/ic_search_category"
+            android:drawableEnd="@drawable/ic_clear"
+            android:drawablePadding="@dimen/space_sm"
+            android:gravity="center_vertical"
+            android:hint="@string/search"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:paddingStart="@dimen/space_md"
+            android:paddingEnd="@dimen/space_md"
+            android:textColor="#333333"
+            android:textColorHint="@color/colorGrayText"
+            android:textSize="@dimen/text_md" />
+
+        <ImageButton
+            android:id="@+id/btnFilter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="@dimen/space_lg"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/filter"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_filter" />
 
     </LinearLayout>
 
@@ -131,6 +160,18 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+
+    <!-- Empty state -->
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_lg"
+        android:text="@string/khong_tim_thay"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="#666666"
+        android:visibility="gone" />
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView

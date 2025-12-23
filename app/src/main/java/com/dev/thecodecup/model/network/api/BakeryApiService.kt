@@ -43,7 +43,7 @@ interface BakeryApiService {
     ): Response<ProductDetailResponse>
 
     /**
-     * Get product reviews (Public list)
+     * Get product reviews
      */
     @GET("products/{productId}/reviews")
     suspend fun getProductReviews(
@@ -545,7 +545,7 @@ data class ReviewSummary(
     val rating_distribution: RatingDistribution
 )
 
-// Đã thay @SerializedName (Gson) bằng @Json(name = ...) (Moshi)
+// �? thay @SerializedName (Gson) b?ng @Json(name = ...) (Moshi)
 data class RatingDistribution(
     @Json(name = "1") val one: Int = 0,
     @Json(name = "2") val two: Int = 0,

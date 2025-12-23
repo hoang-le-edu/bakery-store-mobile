@@ -18,6 +18,7 @@
             android:orientation="vertical"
             android:padding="@dimen/space_lg">
 
+            <!-- Header -->
             <TextView
                 android:id="@+id/tvAdminWelcome"
                 android:layout_width="wrap_content"
@@ -27,27 +28,260 @@
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvProductCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:textColor="@color/black"
-                android:text="Total products: 0" />
-
-            <TextView
-                android:id="@+id/tvOrderCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:textColor="@color/black"
-                android:text="Total orders: 0" />
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/barChartSummary"
+            <!-- Stats Section -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_marginTop="@dimen/space_lg" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/space_md"
+                android:spacing="@dimen/space_md">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_md"
+                    android:background="@android:color/white"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tvProductCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_md"
+                        android:text="Total products: 0" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:padding="@dimen/space_md"
+                    android:background="@android:color/white"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tvOrderCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_md"
+                        android:text="Total orders: 0" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Order Status Stats -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/space_md"
+                android:spacing="@dimen/space_md">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_md"
+                    android:background="@android:color/white"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tvOrderPendingCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_sm"
+                        android:text="Pending: 0" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:padding="@dimen/space_md"
+                    android:background="@android:color/white"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/tvOrderCompletedCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_sm"
+                        android:text="Completed: 0" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Filter Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/space_lg"
+                android:padding="@dimen/space_md"
+                android:background="@android:color/white"
+                android:elevation="2dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Filter Orders"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_md"
+                    android:layout_marginBottom="@dimen/space_md" />
+
+                <EditText
+                    android:id="@+id/etFilterOrderId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Order ID"
+                    android:padding="@dimen/space_sm"
+                    android:textSize="@dimen/text_md"
+                    android:layout_marginBottom="@dimen/space_sm"
+                    android:background="@drawable/bg_edittext"
+                    android:textColorHint="@color/colorGrayText" />
+
+                <EditText
+                    android:id="@+id/etFilterCustomerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Customer Name"
+                    android:padding="@dimen/space_sm"
+                    android:textSize="@dimen/text_md"
+                    android:layout_marginBottom="@dimen/space_sm"
+                    android:background="@drawable/bg_edittext"
+                    android:textColorHint="@color/colorGrayText" />
+
+                <EditText
+                    android:id="@+id/etFilterDateFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="From Date (YYYY-MM-DD)"
+                    android:padding="@dimen/space_sm"
+                    android:textSize="@dimen/text_md"
+                    android:layout_marginBottom="@dimen/space_sm"
+                    android:background="@drawable/bg_edittext"
+                    android:textColorHint="@color/colorGrayText"
+                    android:inputType="date"
+                    android:focusable="false" />
+
+                <EditText
+                    android:id="@+id/etFilterDateTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="To Date (YYYY-MM-DD)"
+                    android:padding="@dimen/space_sm"
+                    android:textSize="@dimen/text_md"
+                    android:layout_marginBottom="@dimen/space_md"
+                    android:background="@drawable/bg_edittext"
+                    android:textColorHint="@color/colorGrayText"
+                    android:inputType="date"
+                    android:focusable="false" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:spacing="@dimen/space_sm">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFilterSearch"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Search"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="@color/colorRedButton"
+                        app:cornerRadius="12dp"
+                        app:rippleColor="@android:color/transparent" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFilterClear"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/space_sm"
+                        android:text="Clear"
+                        android:textColor="@color/pink_primary"
+                        app:backgroundTint="@android:color/white"
+                        app:strokeColor="@color/pink_primary"
+                        app:strokeWidth="2dp"
+                        app:cornerRadius="12dp"
+                        app:rippleColor="@android:color/transparent" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Charts -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/space_lg">
+
+                <!-- Summary Chart -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Summary"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_md" />
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barChartSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_marginTop="@dimen/space_md" />
+
+                <!-- Order Status Chart -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Order Status Distribution"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_md"
+                    android:layout_marginTop="@dimen/space_lg" />
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pieChartOrderStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    android:layout_marginTop="@dimen/space_md" />
+
+                <!-- Revenue Chart -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Daily Revenue Trend"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_sm"
+                    android:layout_marginTop="@dimen/space_lg" />
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barChartRevenue"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:layout_marginBottom="@dimen/space_lg" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

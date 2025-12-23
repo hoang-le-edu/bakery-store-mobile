@@ -25,6 +25,9 @@ data class AdminOrderDto(
     @Json(name = "id")
     val id: String? = null,
 
+    @Json(name = "order_id")
+    val orderId: String? = null,
+
     @Json(name = "order_number")
     val orderNumber: String? = null,
 
@@ -47,5 +50,28 @@ data class AdminOrderDto(
     val paymentStatus: String? = null,
 
     @Json(name = "payment_method")
-    val paymentMethod: String? = null
+    val paymentMethod: String? = null,
+
+    @Json(name = "customer_info")
+    val customerInfo: CustomerInfoDto? = null
+) {
+    val customerName: String? get() = customerInfo?.customerName
+}
+
+@JsonClass(generateAdapter = true)
+data class CustomerInfoDto(
+    @Json(name = "customer_name")
+    val customerName: String? = null,
+
+    @Json(name = "customer_id")
+    val customerId: String? = null,
+
+    @Json(name = "customer_phone")
+    val customerPhone: String? = null,
+
+    @Json(name = "customer_email")
+    val customerEmail: String? = null,
+
+    @Json(name = "customer_level")
+    val customerLevel: String? = null
 )
