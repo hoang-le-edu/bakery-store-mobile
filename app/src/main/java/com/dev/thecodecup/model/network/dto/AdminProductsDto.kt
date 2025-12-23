@@ -53,5 +53,9 @@ data class AdminProductDto(
     val productDescription: String? = null,
 
     @Json(name = "product_price")
-    val productPrice: String? = null
+    val productPrice: String? = null,
+
+    // Optional image url (if backend returns it, we can show thumbnails in the admin list)
+    @Json(name = "product_image")
+    val productImage: String? = null
 )

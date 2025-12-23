@@ -52,13 +52,13 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
 
         // Order Number
         holder.tvOrderId.setText(order.getOrderNumber() != null ? order.getOrderNumber() : "N/A");
-        
+
         // Receiver Name
         holder.tvReceiverName.setText(order.getReceiverName() != null ? order.getReceiverName() : "N/A");
-        
+
         // Created At
         holder.tvOrderTime.setText(order.getCreatedAt() != null ? order.getCreatedAt() : "N/A");
-        
+
         // Order Total
         if (order.getOrderTotal() != null) {
             try {
@@ -70,19 +70,19 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
         } else {
             holder.tvOrderTotal.setText("0đ");
         }
-        
+
         // Receiver Address
-        holder.tvReceiverAddress.setText(order.getReceiverAddress() != null && !order.getReceiverAddress().isEmpty() 
-            ? order.getReceiverAddress() 
-            : "No address provided");
-        
+        holder.tvReceiverAddress.setText(order.getReceiverAddress() != null && !order.getReceiverAddress().isEmpty()
+                ? order.getReceiverAddress()
+                : "No address provided");
+
         // Payment Method
         holder.tvPaymentMethod.setText(order.getPaymentMethod() != null ? order.getPaymentMethod() : "N/A");
-        
+
         // Payment Status
         String paymentStatus = order.getPaymentStatus() != null ? order.getPaymentStatus() : "pending";
         holder.tvPaymentStatus.setText(paymentStatus);
-        
+
         // Set payment status color
         GradientDrawable paymentBg = (GradientDrawable) holder.tvPaymentStatus.getBackground().mutate();
         int paymentColor;
