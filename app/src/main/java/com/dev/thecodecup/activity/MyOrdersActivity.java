@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,7 +38,7 @@ import java.util.Map;
 
 import retrofit2.Response;
 
-public class MyOrdersActivity extends AppCompatActivity implements OrderHistoryAdapter.OnOrderClickListener, OrderHistoryAdapter.OnReviewClickListener {
+public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAdapter.OnOrderClickListener, OrderHistoryAdapter.OnReviewClickListener {
 
     private ImageButton btnBack;
     private TextView tabAll, tabWaitForApproval, tabInProgress, tabDelivered, tabCancelled;
@@ -218,7 +217,17 @@ public class MyOrdersActivity extends AppCompatActivity implements OrderHistoryA
     }
 
     @Override
-    public void onOrderClick(Order order) {}
+    public void onOrderClick(Order order) {
+        // Open OrderDetailActivity when user clicks on an order
+        if (order == null || order.getOrder_id() == null || order.getOrder_id().isEmpty()) {
+            Toast.makeText(this, "Order ID not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(this, OrderDetailActivity.class);
+        intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.getOrder_id());
+        startActivity(intent);
+    }
 
     @Override
     public void onReviewClick(Order order, int position) {

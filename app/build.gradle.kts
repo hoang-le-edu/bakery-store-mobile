@@ -117,6 +117,9 @@ dependencies {
 
     // DataStore for storing auth token
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    
+    // LocalBroadcastManager for token expiration events
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

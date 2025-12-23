@@ -18,6 +18,15 @@
         android:padding="@dimen/space_md"
         android:background="@color/white">
 
+        <!-- Checkbox -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkboxSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            app:buttonTint="@color/pink_primary" />
+
         <!-- Product Image -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="80dp"

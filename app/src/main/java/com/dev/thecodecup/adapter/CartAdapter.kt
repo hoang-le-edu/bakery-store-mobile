@@ -1,6 +1,7 @@
 package com.dev.thecodecup.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,18 +11,48 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dev.thecodecup.R
 import com.dev.thecodecup.model.network.api.CartOrderDetail
+import com.google.android.material.checkbox.MaterialCheckBox
 
 class CartAdapter(
     private val context: Context,
-    private val onItemClick: (CartOrderDetail) -> Unit
+    private val onItemClick: (CartOrderDetail) -> Unit,
+    private val onSelectionChanged: () -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
     private val items = mutableListOf<CartOrderDetail>()
+    private val selectedItems = mutableSetOf<String>()
 
     fun setItems(newItems: List<CartOrderDetail>) {
         items.clear()
         items.addAll(newItems)
+        // Auto-select all items by default
+        selectedItems.clear()
+        items.forEach { selectedItems.add(it.id) }
         notifyDataSetChanged()
+        onSelectionChanged()
+    }
+
+    fun getSelectedItems(): List<CartOrderDetail> {
+        val selected = items.filter { selectedItems.contains(it.id) }
+        Log.d("CartAdapter", "getSelectedItems called: ${selected.size} items selected out of ${items.size}")
+        return selected
+    }
+
+    fun selectAll() {
+        selectedItems.clear()
+        items.forEach { selectedItems.add(it.id) }
+        notifyDataSetChanged()
+        onSelectionChanged()
+    }
+
+    fun deselectAll() {
+        selectedItems.clear()
+        notifyDataSetChanged()
+        onSelectionChanged()
+    }
+
+    fun isAllSelected(): Boolean {
+        return items.isNotEmpty() && selectedItems.size == items.size
     }
 
     fun getItem(position: Int): CartOrderDetail? {
@@ -45,6 +76,7 @@ class CartAdapter(
     override fun getItemCount() = items.size
 
     inner class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val checkboxSelect: MaterialCheckBox = itemView.findViewById(R.id.checkboxSelect)
         private val imgProduct: ImageView = itemView.findViewById(R.id.imgProduct)
         private val txtProductName: TextView = itemView.findViewById(R.id.txtProductName)
         private val txtQuantity: TextView = itemView.findViewById(R.id.txtQuantity)
@@ -57,6 +89,26 @@ class CartAdapter(
         private val txtNote: TextView = itemView.findViewById(R.id.txtNote)
 
         fun bind(item: CartOrderDetail) {
+            // Remove listener first to avoid triggering during setup
+            checkboxSelect.setOnCheckedChangeListener(null)
+            
+            // Set checkbox state
+            checkboxSelect.isChecked = selectedItems.contains(item.id)
+            
+            // Set listener after state is set
+            checkboxSelect.setOnCheckedChangeListener { _, isChecked ->
+                Log.d("CartAdapter", "Checkbox changed for ${item.product_name}: $isChecked")
+                if (isChecked) {
+                    selectedItems.add(item.id)
+                    Log.d("CartAdapter", "Added ${item.id}, total selected: ${selectedItems.size}")
+                } else {
+                    selectedItems.remove(item.id)
+                    Log.d("CartAdapter", "Removed ${item.id}, total selected: ${selectedItems.size}")
+                }
+                Log.d("CartAdapter", "Calling onSelectionChanged callback")
+                onSelectionChanged()
+            }
+            
             txtProductName.text = item.product_name
             txtQuantity.text = item.quantity.toString()
 

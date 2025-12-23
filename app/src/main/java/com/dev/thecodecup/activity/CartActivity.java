@@ -26,6 +26,7 @@ import com.dev.thecodecup.model.network.api.CartCallback;
 import com.dev.thecodecup.model.network.api.CartOrderDetail;
 import com.dev.thecodecup.model.network.api.RemoveProductFromCartRequest;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class CartActivity extends BaseBottomNavActivity {
     // Content
     private RecyclerView recyclerViewCartItems;
     private View emptyCartLayout;
+    private MaterialCheckBox checkboxSelectAll;
 
     // Summary
     private TextView txtTotalQuantity;
@@ -90,6 +92,7 @@ public class CartActivity extends BaseBottomNavActivity {
 
         recyclerViewCartItems = findViewById(R.id.recyclerViewCartItems);
         emptyCartLayout = findViewById(R.id.emptyCartLayout);
+        checkboxSelectAll = findViewById(R.id.checkboxSelectAll);
 
         txtTotalQuantity = findViewById(R.id.txtTotalQuantity);
         txtTotalPrice = findViewById(R.id.txtTotalPrice);
@@ -103,11 +106,8 @@ public class CartActivity extends BaseBottomNavActivity {
 
         cartAdapter = new CartAdapter(
                 this,
-                cartOrderDetail -> {
-                    // Handle click item - open product detail for editing
-                    editCartItem(cartOrderDetail);
-                    return Unit.INSTANCE;
-                });
+                this::editCartItem,
+                this::onSelectionChanged);
         recyclerViewCartItems.setAdapter(cartAdapter);
 
         // Setup swipe-to-delete
@@ -124,6 +124,16 @@ public class CartActivity extends BaseBottomNavActivity {
             btnDeleteCart.setOnClickListener(v -> deleteCurrentCart());
         }
 
+        if (checkboxSelectAll != null) {
+            checkboxSelectAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    cartAdapter.selectAll();
+                } else {
+                    cartAdapter.deselectAll();
+                }
+            });
+        }
+
         if (btnProceedToCheckout != null) {
             btnProceedToCheckout.setOnClickListener(v -> {
                 android.util.Log.d("CartActivity", "Checkout button clicked");
@@ -134,9 +144,29 @@ public class CartActivity extends BaseBottomNavActivity {
         }
     }
 
-    private void editCartItem(CartOrderDetail item) {
+    private Unit onSelectionChanged() {
+        updateSummary();
+        updateSelectAllCheckbox();
+        return Unit.INSTANCE;
+    }
+
+    private void updateSelectAllCheckbox() {
+        if (checkboxSelectAll != null) {
+            checkboxSelectAll.setOnCheckedChangeListener(null);
+            checkboxSelectAll.setChecked(cartAdapter.isAllSelected());
+            checkboxSelectAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    cartAdapter.selectAll();
+                } else {
+                    cartAdapter.deselectAll();
+                }
+            });
+        }
+    }
+
+    private Unit editCartItem(CartOrderDetail item) {
         if (currentCart == null)
-            return;
+            return Unit.INSTANCE;
 
         // Open ProductDetailActivity in edit mode
         Intent intent = new Intent(this, ProductDetailActivity.class);
@@ -158,26 +188,40 @@ public class CartActivity extends BaseBottomNavActivity {
         intent.putStringArrayListExtra("CURRENT_TOPPING_IDS", toppingIds);
 
         startActivity(intent);
+        return Unit.INSTANCE;
     }
 
     private void proceedToCheckout() {
         if (currentCart == null ||
                 currentCart.getOrder_detail() == null ||
                 currentCart.getOrder_detail().isEmpty()) {
-            Toast.makeText(this, "Cart is empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // For now, select all items for checkout
-        // In future, can add checkboxes for selective checkout
+        // Get only selected items
+        List<CartOrderDetail> selectedItems = cartAdapter.getSelectedItems();
+        
+        if (selectedItems.isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         ArrayList<String> selectedIds = new ArrayList<>();
-        for (CartOrderDetail item : currentCart.getOrder_detail()) {
+        int totalPrice = 0;
+        
+        for (CartOrderDetail item : selectedItems) {
             selectedIds.add(item.getId());
+            try {
+                totalPrice += (int) Double.parseDouble(item.getTotal_price());
+            } catch (NumberFormatException e) {
+                android.util.Log.e("CartActivity", "Invalid price: " + item.getTotal_price());
+            }
         }
 
         Intent intent = new Intent(this, CheckoutActivity.class);
         intent.putStringArrayListExtra("ORDER_DETAIL_IDS", selectedIds);
-        intent.putExtra("ORDER_TOTAL", currentCart.getTotal_price());
+        intent.putExtra("ORDER_TOTAL", totalPrice);
         startActivity(intent);
     }
 
@@ -272,17 +316,67 @@ public class CartActivity extends BaseBottomNavActivity {
         }
 
         cartAdapter.setItems(currentCart.getOrder_detail());
+        updateSummary();
+        updateSelectAllCheckbox();
+    }
 
-        int totalPrice = currentCart.getTotal_price();
+    private void updateSummary() {
+        android.util.Log.d("CartActivity", "=== updateSummary called ===");
+        
+        if (cartAdapter == null) {
+            android.util.Log.d("CartActivity", "CartAdapter is null");
+            return;
+        }
+        
+        if (currentCart == null || currentCart.getOrder_detail() == null) {
+            android.util.Log.d("CartActivity", "Cart is null, resetting summary");
+            txtTotalQuantity.setText("0");
+            txtTotalPrice.setText("0₫");
+            txtBottomTotalPrice.setText("0₫");
+            if (btnProceedToCheckout != null) {
+                btnProceedToCheckout.setEnabled(false);
+            }
+            return;
+        }
+
+        List<CartOrderDetail> selectedItems = cartAdapter.getSelectedItems();
+        android.util.Log.d("CartActivity", "Selected items count: " + selectedItems.size());
+        
+        if (selectedItems.isEmpty()) {
+            android.util.Log.d("CartActivity", "No items selected, resetting summary");
+            txtTotalQuantity.setText("0");
+            txtTotalPrice.setText("0₫");
+            txtBottomTotalPrice.setText("0₫");
+            if (btnProceedToCheckout != null) {
+                btnProceedToCheckout.setEnabled(false);
+            }
+            return;
+        }
+
+        int totalPrice = 0;
+        int totalQty = 0;
+        for (CartOrderDetail item : selectedItems) {
+            totalQty += item.getQuantity();
+            android.util.Log.d("CartActivity", "Item: " + item.getProduct_name() + 
+                ", Qty: " + item.getQuantity() + 
+                ", Price: " + item.getTotal_price());
+            try {
+                totalPrice += (int) Double.parseDouble(item.getTotal_price());
+            } catch (NumberFormatException e) {
+                android.util.Log.e("CartActivity", "Invalid price: " + item.getTotal_price(), e);
+            }
+        }
+
+        android.util.Log.d("CartActivity", "Total Qty: " + totalQty + ", Total Price: " + totalPrice);
+        
         String formatted = formatPrice(totalPrice) + "₫";
+        txtTotalQuantity.setText(String.valueOf(totalQty));
         txtTotalPrice.setText(formatted);
         txtBottomTotalPrice.setText(formatted);
 
-        int totalQty = 0;
-        for (CartOrderDetail d : currentCart.getOrder_detail()) {
-            totalQty += d.getQuantity();
+        if (btnProceedToCheckout != null) {
+            btnProceedToCheckout.setEnabled(true);
         }
-        txtTotalQuantity.setText(String.valueOf(totalQty));
     }
 
     private void showEmptyCart() {

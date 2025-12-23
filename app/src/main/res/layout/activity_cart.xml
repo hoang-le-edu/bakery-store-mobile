@@ -116,15 +116,33 @@
                     android:orientation="vertical"
                     android:background="@color/white">
 
-                    <TextView
+                    <!-- Header with Select All -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Products in cart"
-                        android:textSize="@dimen/text_xl"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         android:padding="@dimen/space_lg"
-                        android:paddingBottom="@dimen/space_sm" />
+                        android:paddingBottom="@dimen/space_sm">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Products in cart"
+                            android:textSize="@dimen/text_xl"
+                            android:textStyle="bold"
+                            android:textColor="@color/black" />
+
+                        <com.google.android.material.checkbox.MaterialCheckBox
+                            android:id="@+id/checkboxSelectAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn tất cả"
+                            android:textSize="@dimen/text_sm"
+                            app:buttonTint="@color/pink_primary" />
+
+                    </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewCartItems"
