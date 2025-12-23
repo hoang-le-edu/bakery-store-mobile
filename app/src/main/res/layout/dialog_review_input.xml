@@ -11,10 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Write a Review"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_xl"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="@dimen/space_lg"/>
 
     <RatingBar
         android:id="@+id/ratingBar_dialog"
@@ -30,7 +30,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/space_lg"
         android:hint="Share your experience...">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -46,11 +46,11 @@
         android:id="@+id/tvReadOnlyReview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/space_lg"
         android:visibility="gone"
         android:text="This is the review text."
         android:lineSpacingExtra="4dp"
-        android:textSize="16sp"/>
+        android:textSize="@dimen/text_md"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,7 +60,7 @@
         android:gravity="end">
 
         <!-- Delete Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteReview"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
@@ -70,17 +70,19 @@
             android:visibility="gone"/>
 
         <!-- Edit/Submit Buttons -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditReview"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Edit"
             android:visibility="gone"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="@dimen/space_md"/>
             
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitReview"
+            android:backgroundTint="@color/red_add_button"
+            app:cornerRadius="@dimen/space_sm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Submit"/>

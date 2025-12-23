@@ -1,4 +1,8 @@
 <resources>
+    <string-array name="product_status">
+        <item>active</item>
+        <item>inactive</item>
+    </string-array>
     <string name="app_name">Bepmetay</string>
     <string name="splash_screen_name">Bepmetay</string>
     <string name="get_your_cakes_with_bepmetay" />
@@ -39,9 +43,15 @@
     <string name="enter_your_email">Enter your email</string>
     <string name="password">Password</string>
     <string name="explore_categories">Explore Categories</string>
-    <string name="_2025_01_01">2025-01-01</string>
+    <string name="_2025_01_01" translatable="false">2025–01-01</string>
     <string name="filter">Filter</string>
     <string name="khong_tim_thay">Không tìm thấy đơn hàng</string>
     <string name="search">Search...</string>
-
+    <string name="product_name">Product Name</string>
+    <string name="description">Description</string>
+    <string name="sale_price">Sale Price</string>
+    <string name="cost_price">Cost Price</string>
+    <string name="priority">Priority</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

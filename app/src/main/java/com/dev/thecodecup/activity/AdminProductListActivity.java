@@ -1,0 +1,437 @@
+package com.dev.thecodecup.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.util.TypedValue;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.dev.thecodecup.R;
+import com.dev.thecodecup.adapter.AdminProductAdapter;
+import com.dev.thecodecup.activity.AdminUpdateProductDialog;
+import com.dev.thecodecup.adapter.AdminToppingAdapter;
+import com.dev.thecodecup.model.network.ApiService;
+import com.dev.thecodecup.model.network.NetworkModule;
+import com.dev.thecodecup.model.network.dto.AdminProductCategoryDto;
+import com.dev.thecodecup.model.network.dto.AdminProductDto;
+import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.util.TypedValue;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.dev.thecodecup.R;
+import com.dev.thecodecup.adapter.AdminProductAdapter;
+import com.dev.thecodecup.model.network.ApiService;
+import com.dev.thecodecup.model.network.NetworkModule;
+import com.dev.thecodecup.model.network.dto.AdminProductCategoryDto;
+import com.dev.thecodecup.model.network.dto.AdminProductDto;
+import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+/**
+ * Admin product list screen
+ * - Layout mirrors customer list but uses admin APIs (/api/admin/products/all)
+ * - Supports category tabs + searchText filter (server side)
+ */
+
+public class AdminProductListActivity extends AdminBottomNavActivity {
+    // Xóa rvToppings, toppingAdapter
+
+    private EditText etSearch;
+    private TextView tabAll;
+    private LinearLayout tabContainer;
+    private RecyclerView rvProducts;
+
+    private AdminProductAdapter adapter;
+    private ApiService apiService;
+
+    private static final String TAB_ALL = "all";
+    private static final String TAB_TOPPING = "topping";
+    private String currentCategoryId = TAB_ALL;
+    private List<AdminProductCategoryDto> categories = new ArrayList<>();
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_admin_product_list);
+
+        setupAdminBottomNav();
+        apiService = NetworkModule.INSTANCE.getApiService();
+
+        initViews();
+        setupRecycler();
+        setupSearch();
+        setupTabAll();
+        setupTabTopping();
+
+        // Initial load: all categories + all products
+        loadProductsFromApi(null, currentCategoryId);
+    }
+
+    @Override
+    protected int getAdminMenuItemId() {
+        return R.id.navigation_admin_product;
+    }
+
+    private void initViews() {
+        etSearch = findViewById(R.id.etSearch);
+        tabAll = findViewById(R.id.tabAll);
+        tabContainer = findViewById(R.id.tabContainer);
+        rvProducts = findViewById(R.id.rvProducts);
+    }
+
+    private void setupRecycler() {
+        adapter = new AdminProductAdapter(this);
+        adapter.setOnItemClickListener(product -> {
+            // Nếu là callback update từ dialog thì gọi API update
+            if (product != null && product.getProductId() != null && product.getProductName() != null) {
+                showUpdateProductConfirm(product);
+            } else {
+                // Mặc định: mở chi tiết sản phẩm
+                Intent intent = new Intent(AdminProductListActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productId", product.getProductId());
+                startActivity(intent);
+            }
+        });
+        rvProducts.setLayoutManager(new GridLayoutManager(this, 1));
+        rvProducts.setAdapter(adapter);
+    }
+
+    private void showUpdateProductConfirm(AdminProductDto updatedProduct) {
+        // Gọi API update sản phẩm
+        String id = updatedProduct.getProductId();
+        // Tìm sản phẩm gốc trong danh sách hiện tại
+        AdminProductDto oldProduct = null;
+        for (AdminProductCategoryDto cat : categories) {
+            if (cat == null || cat.getProductList() == null) continue;
+            for (AdminProductDto p : cat.getProductList()) {
+                if (p != null && id != null && id.equals(p.getProductId())) {
+                    oldProduct = p;
+                    break;
+                }
+            }
+            if (oldProduct != null) break;
+        }
+
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        if (oldProduct != null) {
+            if (!safeEquals(updatedProduct.getProductName(), oldProduct.getProductName())) {
+                body.put("name", updatedProduct.getProductName());
+            }
+            if (!safeEquals(updatedProduct.getProductDescription(), oldProduct.getProductDescription())) {
+                body.put("description", updatedProduct.getProductDescription());
+            }
+            if (!safeEquals(updatedProduct.getProductPrice(), oldProduct.getProductPrice())) {
+                body.put("price", updatedProduct.getProductPrice());
+            }
+            if (!safeEquals(updatedProduct.getProductImageUrl(), oldProduct.getProductImageUrl())) {
+                body.put("product_image_url", updatedProduct.getProductImageUrl());
+            }
+            if (!safeEquals(updatedProduct.getAvgRating(), oldProduct.getAvgRating())) {
+                body.put("avg_rating", updatedProduct.getAvgRating());
+            }
+            if (!safeEquals(updatedProduct.getReviewCount(), oldProduct.getReviewCount())) {
+                body.put("review_count", updatedProduct.getReviewCount());
+            }
+            // Thêm các trường khác nếu có
+        } else {
+            // Nếu không tìm thấy sản phẩm gốc, gửi tất cả các trường
+            body.put("name", updatedProduct.getProductName());
+            body.put("description", updatedProduct.getProductDescription());
+            body.put("price", updatedProduct.getProductPrice());
+            body.put("product_image_url", updatedProduct.getProductImageUrl());
+            body.put("avg_rating", updatedProduct.getAvgRating());
+            body.put("review_count", updatedProduct.getReviewCount());
+        }
+
+        if (body.isEmpty()) {
+            Toast.makeText(AdminProductListActivity.this, "Không có thay đổi nào để cập nhật", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        apiService.updateAdminProduct(id, body).enqueue(new Callback<AdminProductDto>() {
+            @Override
+            public void onResponse(Call<AdminProductDto> call, Response<AdminProductDto> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(AdminProductListActivity.this, "Update successful", Toast.LENGTH_SHORT).show();
+                    performSearch(); // reload list
+                } else {
+                    Toast.makeText(AdminProductListActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AdminProductDto> call, Throwable t) {
+                Toast.makeText(AdminProductListActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // So sánh an toàn cho cả null
+    private boolean safeEquals(Object a, Object b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        return a.equals(b);
+    }
+
+    private void setupSearch() {
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                performSearch();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setupTabAll() {
+        tabAll.setOnClickListener(v -> selectTabAndReload(TAB_ALL));
+    }
+
+    private void setupTabTopping() {
+        // Thêm tab topping vào tabContainer nếu chưa có
+        if (tabContainer == null) return;
+        boolean hasToppingTab = false;
+        for (int i = 0; i < tabContainer.getChildCount(); i++) {
+            View child = tabContainer.getChildAt(i);
+            if (child.getTag() != null && TAB_TOPPING.equals(child.getTag())) {
+                hasToppingTab = true;
+                break;
+            }
+        }
+        if (!hasToppingTab) {
+            TextView tabTopping = new TextView(this);
+            tabTopping.setText("Topping");
+            tabTopping.setTag(TAB_TOPPING);
+            tabTopping.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), dpToPx(8));
+            tabTopping.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            tabTopping.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMarginEnd(dpToPx(16));
+            tabTopping.setLayoutParams(params);
+            tabTopping.setOnClickListener(v -> selectTabAndReload(TAB_TOPPING));
+            tabContainer.addView(tabTopping);
+        }
+    }
+
+    private void performSearch() {
+        String search = etSearch.getText().toString().trim();
+        loadProductsFromApi(search.isEmpty() ? null : search, currentCategoryId);
+    }
+
+    private void loadProductsFromApi(@Nullable String searchText, @Nullable String categoryId) {
+        String categoryFilter = categoryId != null && !"all".equals(categoryId) ? categoryId : null;
+
+        apiService.getAdminProducts(null, searchText, categoryFilter)
+                .enqueue(new Callback<AdminProductsResponseDto>() {
+                    @Override
+                    public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            categories = response.body().getData() != null
+                                    ? response.body().getData()
+                                    : Collections.emptyList();
+
+                            buildTabs(categories);
+                            bindProducts(response.body());
+                        } else {
+                                Toast.makeText(AdminProductListActivity.this,
+                                    "Failed to load products",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AdminProductsResponseDto> call, Throwable t) {
+                        Toast.makeText(AdminProductListActivity.this,
+                            "Error: " + t.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void buildTabs(List<AdminProductCategoryDto> data) {
+        if (tabContainer == null) return;
+
+        // Keep the first child (tabAll), remove the rest before rebuilding (giữ tabAll, xóa các tab khác, trừ tabTopping nếu có)
+        while (tabContainer.getChildCount() > 1) {
+            View child = tabContainer.getChildAt(1);
+            if (child.getTag() != null && TAB_TOPPING.equals(child.getTag())) {
+                // giữ lại tab topping
+                break;
+            }
+            tabContainer.removeViewAt(1);
+        }
+
+        if (data == null || data.isEmpty()) {
+            updateTabUI();
+            return;
+        }
+
+        for (AdminProductCategoryDto c : data) {
+            if (c == null) continue;
+            TextView tabView = new TextView(this);
+            tabView.setText(c.getCategoryName() != null ? c.getCategoryName() : "Category");
+            tabView.setTag(c.getCategoryId());
+            tabView.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), dpToPx(8));
+            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            tabView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMarginEnd(dpToPx(16));
+            tabView.setLayoutParams(params);
+            tabView.setOnClickListener(v -> selectTabAndReload(c.getCategoryId()));
+            tabContainer.addView(tabView);
+        }
+
+        setupTabTopping(); // Đảm bảo tab topping luôn có
+        updateTabUI();
+    }
+
+    private void selectTabAndReload(String categoryId) {
+        currentCategoryId = categoryId != null ? categoryId : TAB_ALL;
+        updateTabUI();
+        if (TAB_TOPPING.equals(currentCategoryId)) {
+            adapter.setToppingMode(true);
+            loadToppingList();
+        } else {
+            adapter.setToppingMode(false);
+            performSearch();
+        }
+    }
+
+    private void loadToppingList() {
+        // Gọi API để lấy topping list (không filter theo category)
+        apiService.getAdminProducts(null, null, null)
+                .enqueue(new Callback<AdminProductsResponseDto>() {
+                    @Override
+                    public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
+                        List<AdminProductDto> toppings = new ArrayList<>();
+                        if (response.isSuccessful() && response.body() != null && response.body().getToppingData() != null) {
+                            for (var toppingCat : response.body().getToppingData()) {
+                                if (toppingCat.getToppingList() != null) {
+                                    toppings.addAll(toppingCat.getToppingList());
+                                }
+                            }
+                        }
+                        adapter.setItems(toppings);
+                    }
+
+                    @Override
+                    public void onFailure(Call<AdminProductsResponseDto> call, Throwable t) {
+                        adapter.setItems(new ArrayList<>());
+                        Toast.makeText(AdminProductListActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void updateTabUI() {
+        resetTab(tabAll);
+        if (tabContainer != null) {
+            for (int i = 0; i < tabContainer.getChildCount(); i++) {
+                View child = tabContainer.getChildAt(i);
+                if (child instanceof TextView && child.getId() != R.id.tabAll) {
+                    resetTab((TextView) child);
+                }
+            }
+        }
+
+        if (TAB_ALL.equals(currentCategoryId)) {
+            setTabSelected(tabAll);
+        } else if (tabContainer != null) {
+            for (int i = 0; i < tabContainer.getChildCount(); i++) {
+                View child = tabContainer.getChildAt(i);
+                if (child instanceof TextView) {
+                    Object tag = child.getTag();
+                    if (tag != null && tag.equals(currentCategoryId)) {
+                        setTabSelected((TextView) child);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void resetTab(TextView tab) {
+        tab.setBackgroundResource(0);
+        // Set màu đen trực tiếp để không bị hệ thống đổi thành xám
+        tab.setTextColor(0xFF000000); // #000000
+        tab.setTypeface(null, android.graphics.Typeface.NORMAL);
+    }
+
+    private void setTabSelected(TextView tab) {
+        tab.setBackgroundResource(R.drawable.bg_order_tab_selected);
+        tab.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+        tab.setTypeface(null, android.graphics.Typeface.BOLD);
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void bindProducts(AdminProductsResponseDto response) {
+        adapter.setToppingMode(false);
+        List<AdminProductDto> flatList = new ArrayList<>();
+        if (response != null && response.getData() != null) {
+            for (AdminProductCategoryDto cat : response.getData()) {
+                if (cat == null || cat.getProductList() == null) continue;
+
+                // If a category filter is active, skip others (defensive in case backend ignores filter)
+                if (!TAB_ALL.equals(currentCategoryId)) {
+                    if (cat.getCategoryId() == null || !cat.getCategoryId().equals(currentCategoryId)) {
+                        continue;
+                    }
+                }
+
+                for (AdminProductDto p : cat.getProductList()) {
+                    if (p == null) continue;
+                    flatList.add(p);
+                }
+            }
+        }
+        adapter.setItems(flatList);
+    }
+
+    // Không cần mapToProductDto nữa, dùng trực tiếp AdminProductDto
+}

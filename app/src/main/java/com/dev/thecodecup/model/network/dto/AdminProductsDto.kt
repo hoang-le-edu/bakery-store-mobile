@@ -12,7 +12,22 @@ data class AdminProductsResponseDto(
     val message: String? = null,
 
     @Json(name = "data")
-    val data: List<AdminProductCategoryDto>? = null
+    val data: List<AdminProductCategoryDto>? = null,
+
+    @Json(name = "topping_data")
+    val toppingData: List<AdminToppingCategoryDto>? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class AdminToppingCategoryDto(
+    @Json(name = "category_name")
+    val categoryName: String? = null,
+
+    @Json(name = "category_id")
+    val categoryId: String? = null,
+
+    @Json(name = "topping_list")
+    val toppingList: List<AdminProductDto>? = null
 )
 
 /**
@@ -53,5 +68,14 @@ data class AdminProductDto(
     val productDescription: String? = null,
 
     @Json(name = "product_price")
-    val productPrice: String? = null
+    val productPrice: String? = null,
+
+    @Json(name = "avg_rating")
+    val avgRating: Int? = null,
+
+    @Json(name = "review_count")
+    val reviewCount: Int? = null,
+
+    @Json(name = "product_image_url")
+    val productImageUrl: String? = null
 )

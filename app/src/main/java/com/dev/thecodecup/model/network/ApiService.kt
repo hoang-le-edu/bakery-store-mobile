@@ -4,6 +4,7 @@ import com.dev.thecodecup.model.network.api.SuccessResponse
 import com.dev.thecodecup.model.network.dto.AdminOrderDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto
 import com.dev.thecodecup.model.network.dto.AdminCustomerDetailResponseDto
+import com.dev.thecodecup.model.network.dto.AdminProductDto
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto
 import com.dev.thecodecup.model.network.dto.ApiResponse
 import com.dev.thecodecup.model.network.dto.LoginResponseDto
@@ -131,6 +132,16 @@ interface ApiService {
         @Query("date_from") dateFrom: String? = null,
         @Query("date_to") dateTo: String? = null
     ): Call<AdminOrdersResponseDto>
+
+    /**
+     * Update admin product
+     * Example: /api/admin/products/update/{id}
+     */
+    @POST("admin/products/update/{id}")
+    fun updateAdminProduct(
+        @Path("id") productId: String,
+        @Body body: Map<String, @JvmSuppressWildcards Any?>
+    ): Call<AdminProductDto>
 
 }
 
