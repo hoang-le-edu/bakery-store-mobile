@@ -36,6 +36,9 @@
     <string name="password">Password</string>
     <string name="explore_categories">Explore Categories</string>
     <string name="_2025_01_01">2025-01-01</string>
+    <string name="filter">Filter</string>
+    <string name="khong_tim_thay">Không tìm thấy đơn hàng</string>
+    <string name="search">Search...</string>
 
     <string name="wait_for_approval">Wait for approval</string>
     <string name="out_for_delivery">Out for delivery</string>
