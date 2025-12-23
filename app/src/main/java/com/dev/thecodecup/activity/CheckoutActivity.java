@@ -10,8 +10,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
 import com.dev.thecodecup.model.network.api.CheckoutCallback;
@@ -32,7 +30,7 @@ import java.util.List;
 
 import retrofit2.Response;
 
-public class CheckoutActivity extends AppCompatActivity {
+public class CheckoutActivity extends BaseAuthActivity {
 
     private MaterialToolbar toolbar;
     private TextInputEditText edtReceiverName;
@@ -353,24 +351,37 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 if (response != null && response.isSuccessful() && response.body() != null) {
                     CheckoutResponse checkoutResponse = response.body();
+                    
+                    Log.d("CheckoutActivity", "=== Checkout Response ===");
+                    Log.d("CheckoutActivity", "Success: " + checkoutResponse.getSuccess());
+                    Log.d("CheckoutActivity", "Message: " + checkoutResponse.getMessage());
+                    Log.d("CheckoutActivity", "Data null? " + (checkoutResponse.getData() == null));
+                    Log.d("CheckoutActivity", "Payment method: " + paymentMethod);
+                    
+                    if (checkoutResponse.getData() != null) {
+                        Log.d("CheckoutActivity", "Order ID: " + checkoutResponse.getData().getOrder_id());
+                    }
+                    
                     Toast.makeText(CheckoutActivity.this,
                             checkoutResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
-                    if ("Banking".equals(paymentMethod) && checkoutResponse.getData() != null) {
-                        // Get real order_id from response
-                        String orderId = checkoutResponse.getData().getOrder_id();
-                        
-                        if (orderId != null && !orderId.isEmpty()) {
+                    // For Banking payment, create payment link
+                    if ("Banking".equals(paymentMethod)) {
+                        if (checkoutResponse.getData() != null && checkoutResponse.getData().getOrder_id() != null) {
+                            String orderId = checkoutResponse.getData().getOrder_id();
+                            Log.d("CheckoutActivity", "Creating payment link for order: " + orderId);
                             createPaymentLink(orderId);
                         } else {
+                            Log.e("CheckoutActivity", "Cannot create payment link - order ID is missing");
                             Toast.makeText(CheckoutActivity.this,
-                                    "Order created but order ID is missing", Toast.LENGTH_SHORT).show();
+                                    "Đơn hàng đã tạo nhưng không thể tạo link thanh toán. Vui lòng thanh toán từ danh sách đơn hàng.",
+                                    Toast.LENGTH_LONG).show();
                             finish();
                         }
                     } else {
-                        // Cash payment - go to success screen
+                        // Cash payment - go back
                         Toast.makeText(CheckoutActivity.this,
-                                "Order placed successfully!", Toast.LENGTH_SHORT).show();
+                                "Đơn hàng đã được tạo thành công!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 } else {
@@ -383,19 +394,27 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void createPaymentLink(String orderId) {
+        Log.d("CheckoutActivity", "=== Creating Payment Link ===");
+        Log.d("CheckoutActivity", "Order ID: " + orderId);
+        
         final ProgressDialog dialog = ProgressDialog.show(this, null,
-                "Creating payment link...", true, false);
+                "Đang tạo mã thanh toán...", true, false);
 
         BakeryJavaBridge.INSTANCE.createPaymentLink(this, orderId, new PaymentLinkCallback() {
             @Override
             public void onResult(Response<PaymentLinkResponse> response, Throwable error) {
                 dialog.dismiss();
 
+                Log.d("CheckoutActivity", "=== Payment Link Callback ===");
+                Log.d("CheckoutActivity", "Error null? " + (error == null));
+                Log.d("CheckoutActivity", "Response null? " + (response == null));
+                
                 if (error != null) {
                     Log.e("CheckoutActivity", "Payment link error", error);
                     Toast.makeText(CheckoutActivity.this,
-                            "Payment link error: " + error.getMessage(),
+                            "Lỗi tạo link thanh toán: " + error.getMessage(),
                             Toast.LENGTH_LONG).show();
+                    finish();
                     return;
                 }
 
@@ -404,10 +423,11 @@ public class CheckoutActivity extends AppCompatActivity {
                     
                     // Debug: Log raw response
                     Log.d("CheckoutActivity", "=== Payment Link Response ===");
-                    Log.d("CheckoutActivity", "Error: " + paymentResponse.getError());
+                    Log.d("CheckoutActivity", "Error code: " + paymentResponse.getError());
                     Log.d("CheckoutActivity", "Message: " + paymentResponse.getMessage());
                     Log.d("CheckoutActivity", "Checkout URL: " + paymentResponse.getCheckoutUrl());
                     Log.d("CheckoutActivity", "QR Code null? " + (paymentResponse.getQrCode() == null));
+                    
                     if (paymentResponse.getQrCode() != null) {
                         Log.d("CheckoutActivity", "QR Code length: " + paymentResponse.getQrCode().length());
                         Log.d("CheckoutActivity", "QR Code first 50 chars: " + 
@@ -415,27 +435,41 @@ public class CheckoutActivity extends AppCompatActivity {
                     }
 
                     if (paymentResponse.getError() == 0) {
-                        Log.d("CheckoutActivity", "Payment link created - URL: " + paymentResponse.getCheckoutUrl());
-                        Log.d("CheckoutActivity", "QR Code present: " + (paymentResponse.getQrCode() != null));
-                        if (paymentResponse.getQrCode() != null) {
-                            Log.d("CheckoutActivity", "QR Code length: " + paymentResponse.getQrCode().length());
-                        }
+                        Log.d("CheckoutActivity", "Opening PaymentActivity");
                         
                         // Open payment screen
                         Intent intent = new Intent(CheckoutActivity.this, PaymentActivity.class);
                         intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
                         intent.putExtra("QR_CODE", paymentResponse.getQrCode());
                         intent.putExtra("ORDER_ID", orderId);
+                        
+                        Log.d("CheckoutActivity", "Intent extras - URL: " + (paymentResponse.getCheckoutUrl() != null));
+                        Log.d("CheckoutActivity", "Intent extras - QR: " + (paymentResponse.getQrCode() != null));
+                        Log.d("CheckoutActivity", "Intent extras - OrderID: " + orderId);
+                        
                         startActivity(intent);
                         finish();
                     } else {
+                        Log.e("CheckoutActivity", "Payment link error code: " + paymentResponse.getError());
                         Toast.makeText(CheckoutActivity.this,
-                                "Payment error: " + paymentResponse.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                                "Lỗi thanh toán: " + paymentResponse.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 } else {
+                    Log.e("CheckoutActivity", "Invalid payment link response");
+                    if (response != null) {
+                        Log.e("CheckoutActivity", "Response code: " + response.code());
+                        try {
+                            String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
+                            Log.e("CheckoutActivity", "Error body: " + errorBody);
+                        } catch (Exception e) {
+                            Log.e("CheckoutActivity", "Cannot read error body", e);
+                        }
+                    }
                     Toast.makeText(CheckoutActivity.this,
-                            "Failed to create payment link", Toast.LENGTH_SHORT).show();
+                            "Không thể tạo link thanh toán", Toast.LENGTH_LONG).show();
+                    finish();
                 }
             }
         });

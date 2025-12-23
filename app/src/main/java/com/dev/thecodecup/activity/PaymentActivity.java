@@ -21,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -45,7 +44,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-public class PaymentActivity extends AppCompatActivity {
+public class PaymentActivity extends BaseAuthActivity {
 
     private static final String TAG = "PaymentActivity";
     private static final String SOCKET_URL = "https://socket.dotb.cloud/";

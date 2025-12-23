@@ -113,9 +113,15 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
 
     @Override
     public void onOrderClick(Order order) {
-        // Xử lý khi click vào order (ví dụ: mở màn hình chi tiết OrderDetailActivity)
-        // Toast.makeText(getContext(), "Clicked order: " + order.getOrder_number(),
-        // Toast.LENGTH_SHORT).show();
+        // Open OrderDetailActivity when user clicks on an order
+        if (order == null || order.getOrder_id() == null || order.getOrder_id().isEmpty()) {
+            Toast.makeText(getContext(), "Order ID not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(getContext(), OrderDetailActivity.class);
+        intent.putExtra(OrderDetailActivity.EXTRA_ORDER_ID, order.getOrder_id());
+        startActivity(intent);
     }
 
     @Override

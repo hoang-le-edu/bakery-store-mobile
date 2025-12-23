@@ -5,12 +5,11 @@ import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.dev.thecodecup.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public abstract class BaseBottomNavActivity extends AppCompatActivity {
+public abstract class BaseBottomNavActivity extends BaseAuthActivity {
 
     protected BottomNavigationView bottomNav;
 

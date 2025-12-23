@@ -3,6 +3,7 @@ package com.dev.thecodecup.model.network.api
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.dev.thecodecup.model.network.NetworkModule
+import com.dev.thecodecup.model.network.dto.OrderDetailResponse
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -54,6 +55,10 @@ interface CustomerOrdersCallback {
     fun onResult(response: Response<CustomerOrdersResponse>?, error: Throwable?)
 }
 
+interface OrderDetailCallback {
+    fun onResult(response: Response<OrderDetailResponse>?, error: Throwable?)
+}
+
 // ==== REVIEW CALLBACKS ====
 
 interface ProductReviewsCallback {
@@ -73,6 +78,10 @@ interface UpdateReviewCallback {
 }
 
 interface DeleteReviewCallback {
+    fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
+}
+
+interface CancelOrderCallback {
     fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
 }
 
@@ -321,6 +330,37 @@ object BakeryJavaBridge {
         owner.lifecycleScope.launch {
             try {
                 val response = apiService.loadCustomerOrders()
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun loadOrderDetail(
+        owner: LifecycleOwner,
+        orderId: String,
+        callback: OrderDetailCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.loadOrderDetail(orderId)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun cancelOrder(
+        owner: LifecycleOwner,
+        orderId: String,
+        callback: CancelOrderCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val request = CancelOrderRequest(order_id = orderId)
+                val response = apiService.cancelOrder(request)
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)

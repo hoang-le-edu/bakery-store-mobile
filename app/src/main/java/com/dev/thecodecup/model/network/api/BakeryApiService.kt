@@ -137,10 +137,21 @@ interface BakeryApiService {
     suspend fun loadCustomerOrders(): Response<CustomerOrdersResponse>
     
     /**
+     * Load order detail by order ID
+     * Used in: OrderDetailActivity -> Display order information
+     * Endpoint: GET /api/loadOrderDetail/{order_id}
+     */
+    @GET("loadOrderDetail/{order_id}")
+    suspend fun loadOrderDetail(
+        @Path("order_id") orderId: String
+    ): Response<OrderDetailResponse>
+    
+    /**
      * Cancel order (only if status == "Wait For Approval")
      * Used in: OrderDetailScreen -> Cancel button
+     * POST /api/customer/cancelOrder
      */
-    @POST("orders/cancel")
+    @POST("customer/cancelOrder")
     suspend fun cancelOrder(
         @Body request: CancelOrderRequest
     ): Response<SuccessResponse>
@@ -268,8 +279,7 @@ data class CheckoutRequest(
 )
 
 data class CancelOrderRequest(
-    val order_id: String,
-    val reason: String = ""
+    val order_id: String
 )
 
 data class CreatePaymentLinkRequest(
