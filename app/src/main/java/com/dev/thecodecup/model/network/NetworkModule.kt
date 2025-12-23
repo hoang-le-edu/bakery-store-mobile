@@ -1,5 +1,6 @@
 package com.dev.thecodecup.model.network
 
+import android.content.Context
 import android.util.Log
 import com.dev.thecodecup.BuildConfig
 import com.dev.thecodecup.model.auth.AuthManager
@@ -15,6 +16,12 @@ import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
 object NetworkModule {
+    
+    /**
+     * Application context - set this in App.onCreate()
+     */
+    @Volatile
+    var appContext: Context? = null
     
     /**
      * Token provider - set this after user login or from stored session
@@ -83,6 +90,16 @@ object NetworkModule {
                     .addHeader("Accept", "application/json")
                     .build()
                 res = chain.proceed(retryReq)
+                
+                // Nếu vẫn 401 sau khi refresh -> token thực sự hết hạn
+                if (res.code == 401) {
+                    if (BuildConfig.DEBUG) Log.d("AuthInt", "Token expired even after refresh - broadcasting event")
+                    broadcastTokenExpired()
+                }
+            } else {
+                // Không thể refresh token -> token hết hạn
+                if (BuildConfig.DEBUG) Log.d("AuthInt", "Failed to refresh token - broadcasting event")
+                broadcastTokenExpired()
             }
         }
         res
@@ -146,6 +163,21 @@ object NetworkModule {
      */
     val bakeryApiService: com.dev.thecodecup.model.network.api.BakeryApiService by lazy {
         retrofit.create(com.dev.thecodecup.model.network.api.BakeryApiService::class.java)
+    }
+    
+    /**
+     * Broadcast token expired event to all activities
+     */
+    private fun broadcastTokenExpired() {
+        appContext?.let { ctx ->
+            try {
+                val clazz = Class.forName("com.dev.thecodecup.activity.BaseAuthActivity")
+                val method = clazz.getMethod("broadcastTokenExpired", Context::class.java)
+                method.invoke(null, ctx)
+            } catch (e: Exception) {
+                Log.e("NetworkModule", "Failed to broadcast token expired", e)
+            }
+        }
     }
 }
 

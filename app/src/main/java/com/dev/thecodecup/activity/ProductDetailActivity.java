@@ -14,7 +14,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -38,7 +37,7 @@ import java.util.Set;
 
 import retrofit2.Response;
 
-public class ProductDetailActivity extends AppCompatActivity {
+public class ProductDetailActivity extends BaseAuthActivity {
 
     private ViewPager2 imageCarousel;
     private TextView tvProductName, tvProductPrice, tvQuantity, tvTotalPrice, tvReviewCount;
@@ -72,26 +71,50 @@ public class ProductDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-        // Check for edit mode extras
-        if (getIntent().hasExtra("order_id") && getIntent().hasExtra("order_detail_id")) {
+        // Check for edit mode extras (support both uppercase and lowercase keys)
+        boolean hasEditModeData = getIntent().hasExtra("ORDER_ID") || getIntent().hasExtra("order_id");
+        boolean hasOrderDetailId = getIntent().hasExtra("ORDER_DETAIL_ID") || getIntent().hasExtra("order_detail_id");
+        
+        if (hasEditModeData && hasOrderDetailId) {
             isEditMode = true;
-            orderId = getIntent().getStringExtra("order_id");
-            orderDetailId = getIntent().getStringExtra("order_detail_id");
-            productId = getIntent().getStringExtra("product_id");
-            quantity = getIntent().getIntExtra("quantity", 1);
             
-            String currentSize = getIntent().getStringExtra("current_size");
+            // Support both uppercase (from CartActivity) and lowercase keys
+            orderId = getIntent().getStringExtra("ORDER_ID");
+            if (orderId == null) orderId = getIntent().getStringExtra("order_id");
+            
+            orderDetailId = getIntent().getStringExtra("ORDER_DETAIL_ID");
+            if (orderDetailId == null) orderDetailId = getIntent().getStringExtra("order_detail_id");
+            
+            productId = getIntent().getStringExtra("PRODUCT_ID");
+            if (productId == null) productId = getIntent().getStringExtra("product_id");
+            
+            quantity = getIntent().getIntExtra("CURRENT_QUANTITY", 1);
+            if (quantity == 1) quantity = getIntent().getIntExtra("quantity", 1);
+            
+            String currentSize = getIntent().getStringExtra("CURRENT_SIZE");
+            if (currentSize == null) currentSize = getIntent().getStringExtra("current_size");
             if (currentSize != null) selectedSize = currentSize;
             
-            ArrayList<String> toppingIds = getIntent().getStringArrayListExtra("current_toppings");
+            ArrayList<String> toppingIds = getIntent().getStringArrayListExtra("CURRENT_TOPPING_IDS");
+            if (toppingIds == null) toppingIds = getIntent().getStringArrayListExtra("current_toppings");
             if (toppingIds != null) currentToppingIds.addAll(toppingIds);
             
-            String currentNote = getIntent().getStringExtra("note");
+            String currentNote = getIntent().getStringExtra("CURRENT_NOTE");
+            if (currentNote == null) currentNote = getIntent().getStringExtra("note");
             
             initViews(); // Call initViews first to find etNote
             if (currentNote != null && etNote != null) etNote.setText(currentNote);
             
-            if (btnAddToCart != null) btnAddToCart.setText("Update Cart");
+            if (btnAddToCart != null) btnAddToCart.setText("Cập nhật giỏ hàng");
+            
+            Log.d("ProductDetailActivity", "=== Edit Mode ===");
+            Log.d("ProductDetailActivity", "Order ID: " + orderId);
+            Log.d("ProductDetailActivity", "Order Detail ID: " + orderDetailId);
+            Log.d("ProductDetailActivity", "Product ID: " + productId);
+            Log.d("ProductDetailActivity", "Quantity: " + quantity);
+            Log.d("ProductDetailActivity", "Size: " + selectedSize);
+            Log.d("ProductDetailActivity", "Note: " + currentNote);
+            Log.d("ProductDetailActivity", "Topping IDs: " + currentToppingIds);
         } else {
             // Try getting ID with standard camelCase key
             productId = getIntent().getStringExtra("productId");
@@ -181,6 +204,12 @@ public class ProductDetailActivity extends AppCompatActivity {
             if (response != null && response.isSuccessful() && response.body() != null) {
                 productDetail = response.body().getData();
                 displayProductDetail();
+                
+                // Ensure quantity and total are updated for edit mode
+                if (isEditMode) {
+                    tvQuantity.setText(String.valueOf(quantity));
+                    updateTotalPrice();
+                }
             } else {
                 Toast.makeText(this, "Failed to load product details", Toast.LENGTH_SHORT).show();
                 Log.e("ProductDetail", "Error: ", error);

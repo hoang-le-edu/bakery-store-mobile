@@ -10,7 +10,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +23,7 @@ import com.dev.thecodecup.model.network.api.ReviewSummary;
 
 import retrofit2.Response;
 
-public class ProductReviewsActivity extends AppCompatActivity {
+public class ProductReviewsActivity extends BaseAuthActivity {
 
     private ImageButton btnBack;
     private TextView tvAverageRating, tvTotalReviews;
