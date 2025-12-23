@@ -1,8 +1,13 @@
 package com.dev.thecodecup.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
+import android.view.MotionEvent;
 import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -28,6 +33,9 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
 
     private TextView tabAll, tabWaitForApproval, tabInProgress, tabOutForDelivery, tabDelivered, tabCancelled;
     private RecyclerView rvOrders;
+    private TextView tvEmpty;
+    private EditText etSearch;
+    private ImageButton btnFilter;
 
     private AdminOrderAdapter adapter;
     private ApiService apiService;
@@ -43,6 +51,11 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
     private static final String FILTER_CANCELLED = "Cancelled";
 
     private String currentFilter = FILTER_ALL;
+    private String dateFrom = null;
+    private String dateTo = null;
+    private String currentQuery = "";
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +68,7 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
         initViews();
         setupTabs();
         setupRecycler();
+        setupSearchAndFilter();
 
         loadOrdersFromApi();
     }
@@ -79,6 +93,9 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
         tabDelivered = findViewById(R.id.tabDelivered);
         tabCancelled = findViewById(R.id.tabCancelled);
         rvOrders = findViewById(R.id.rvOrders);
+        tvEmpty = findViewById(R.id.tvEmpty);
+        etSearch = findViewById(R.id.etSearch);
+        btnFilter = findViewById(R.id.btnFilter);
     }
 
     private void setupRecycler() {
@@ -179,6 +196,9 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
         }
 
         adapter.setItems(filteredOrders);
+        if (tvEmpty != null) {
+            tvEmpty.setVisibility(filteredOrders.isEmpty() ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void loadOrdersFromApi() {
@@ -214,5 +234,218 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
                         android.widget.Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setupSearchAndFilter() {
+        if (etSearch == null) return;
+
+        // Clear button handling on drawableEnd
+        etSearch.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (etSearch.getCompoundDrawables()[2] != null) { // drawableEnd
+                    int leftEdgeOfRightDrawable = etSearch.getRight() - etSearch.getCompoundDrawables()[2].getBounds().width() - etSearch.getPaddingEnd();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable) {
+                        etSearch.setText("");
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+
+        searchRunnable = () -> performSearch(currentQuery);
+
+        etSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                currentQuery = s.toString().trim();
+                handler.removeCallbacks(searchRunnable);
+                handler.postDelayed(searchRunnable, 450); // debounce ~450ms
+            }
+        });
+
+        if (btnFilter != null) {
+            btnFilter.setOnClickListener(v -> openDateRangePicker());
+        }
+    }
+
+    private void performSearch(String query) {
+        // If no query and no date filter -> reload default
+        if ((query == null || query.isEmpty()) && (dateFrom == null && dateTo == null)) {
+            loadOrdersFromApi();
+            return;
+        }
+
+        // Build query: if not empty, search by order_id and customer_name (OR logic)
+        String q = (query != null && !query.isEmpty()) ? query : null;
+
+        if (q == null) {
+            // Only date filter, no text query
+            apiService.searchAdminOrders(null, null, dateFrom, dateTo).enqueue(new Callback<AdminOrdersResponseDto>() {
+                @Override
+                public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
+                    handleSearchResponse(response);
+                }
+
+                @Override
+                public void onFailure(Call<AdminOrdersResponseDto> call, Throwable t) {
+                    allOrders.clear();
+                    applyFilter();
+                }
+            });
+        } else {
+            // Search by order_id and customer_name (OR) + date filter
+            final String finalQuery = q;
+            java.util.Set<String> mergedOrderIds = new java.util.LinkedHashSet<>();
+            final List<AdminOrderDto> mergedOrders = new ArrayList<>();
+            final int[] completedRequests = {0};
+
+            // Search by order_id
+            apiService.searchAdminOrders(finalQuery, null, dateFrom, dateTo).enqueue(new Callback<AdminOrdersResponseDto>() {
+                @Override
+                public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        AdminOrdersResponseDto body = response.body();
+                        if (body.getData() != null) {
+                            for (AdminOrderDto o : body.getData()) {
+                                String status = o.getOrderStatus();
+                                if (status != null && !status.equalsIgnoreCase("draft")) {
+                                    if (!mergedOrderIds.contains(o.getId())) {
+                                        mergedOrderIds.add(o.getId());
+                                        mergedOrders.add(o);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    completedRequests[0]++;
+                    if (completedRequests[0] == 2) {
+                        finalizeMergedSearch(mergedOrders);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AdminOrdersResponseDto> call, Throwable t) {
+                    completedRequests[0]++;
+                    if (completedRequests[0] == 2) {
+                        finalizeMergedSearch(mergedOrders);
+                    }
+                }
+            });
+
+            // Search by customer_name
+            apiService.searchAdminOrders(null, finalQuery, dateFrom, dateTo).enqueue(new Callback<AdminOrdersResponseDto>() {
+                @Override
+                public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        AdminOrdersResponseDto body = response.body();
+                        if (body.getData() != null) {
+                            for (AdminOrderDto o : body.getData()) {
+                                String status = o.getOrderStatus();
+                                if (status != null && !status.equalsIgnoreCase("draft")) {
+                                    if (!mergedOrderIds.contains(o.getId())) {
+                                        mergedOrderIds.add(o.getId());
+                                        mergedOrders.add(o);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    completedRequests[0]++;
+                    if (completedRequests[0] == 2) {
+                        finalizeMergedSearch(mergedOrders);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AdminOrdersResponseDto> call, Throwable t) {
+                    completedRequests[0]++;
+                    if (completedRequests[0] == 2) {
+                        finalizeMergedSearch(mergedOrders);
+                    }
+                }
+            });
+        }
+    }
+
+    private void finalizeMergedSearch(List<AdminOrderDto> mergedOrders) {
+        allOrders.clear();
+        // Filter results by substring match (case-insensitive)
+        String queryLower = currentQuery.toLowerCase();
+        for (AdminOrderDto order : mergedOrders) {
+            boolean matchesOrderNumber = order.getOrderNumber() != null && 
+                    order.getOrderNumber().toLowerCase().contains(queryLower);
+            boolean matchesOrderId = order.getOrderId() != null && 
+                    order.getOrderId().toLowerCase().contains(queryLower);
+            boolean matchesCustomerName = order.getCustomerName() != null && 
+                    order.getCustomerName().toLowerCase().contains(queryLower);
+            if (matchesOrderNumber || matchesOrderId || matchesCustomerName) {
+                allOrders.add(order);
+            }
+        }
+        applyFilter();
+    }
+
+    private void handleSearchResponse(Response<AdminOrdersResponseDto> response) {
+        if (response.isSuccessful() && response.body() != null) {
+            AdminOrdersResponseDto body = response.body();
+            allOrders.clear();
+            if (body.getData() != null) {
+                for (AdminOrderDto o : body.getData()) {
+                    String status = o.getOrderStatus();
+                    if (status != null && !status.equalsIgnoreCase("draft")) {
+                        allOrders.add(o);
+                    }
+                }
+            }
+            applyFilter();
+        } else {
+            allOrders.clear();
+            applyFilter();
+        }
+    }
+
+    private void openDateRangePicker() {
+        try {
+            com.google.android.material.datepicker.MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder =
+                    com.google.android.material.datepicker.MaterialDatePicker.Builder.dateRangePicker();
+            builder.setTitleText("Chọn khoảng ngày");
+
+            com.google.android.material.datepicker.MaterialDatePicker<androidx.core.util.Pair<Long, Long>> picker = builder.build();
+
+            picker.addOnPositiveButtonClickListener(selection -> {
+                if (selection != null) {
+                    Long start = selection.first;
+                    Long end = selection.second;
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+                    if (start != null) {
+                        dateFrom = sdf.format(new java.util.Date(start));
+                    }
+                    if (end != null) {
+                        dateTo = sdf.format(new java.util.Date(end));
+                    }
+                    performSearch(currentQuery);
+                }
+            });
+
+            picker.addOnNegativeButtonClickListener(v -> {
+                // do nothing on cancel
+            });
+
+            picker.addOnDismissListener(dialog -> {
+                // optional
+            });
+
+            picker.show(getSupportFragmentManager(), "admin_orders_date_range");
+        } catch (Exception e) {
+            // Fallback: if MaterialDatePicker not available
+            android.widget.Toast.makeText(this, "Date picker not available", android.widget.Toast.LENGTH_SHORT).show();
+        }
     }
 }
