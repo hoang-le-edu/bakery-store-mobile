@@ -43,8 +43,7 @@ public abstract class AdminBottomNavActivity extends BaseAuthActivity {
                 intent = new Intent(this, AdminHomeActivity.class);
 
             } else if (id == R.id.navigation_admin_product) {
-                // TODO: nếu bạn có màn Product riêng thì mở ở đây
-                // intent = new Intent(this, AdminProductActivity.class);
+                intent = new Intent(this, AdminProductListActivity.class);
 
             } else if (id == R.id.navigation_admin_orders) {
                 intent = new Intent(this, AdminOrdersActivity.class);
