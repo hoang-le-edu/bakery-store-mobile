@@ -11,16 +11,37 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Toolbar -->
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <!-- Header (match admin order header style) -->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/pink_primary"
-            app:title="Checkout"
-            app:titleTextColor="@android:color/white"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white" />
+            android:layout_height="@dimen/space_xxl"
+            android:layout_marginTop="@dimen/space_xxl"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
+            android:background="@android:color/white">
+
+            <ImageButton
+                android:id="@+id/toolbar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:minHeight="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="@dimen/space_sm"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrowback"
+                android:contentDescription="@string/back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Checkout"
+                android:textColor="#324A59"
+                android:textSize="@dimen/text_xl"
+                android:textStyle="bold" />
+        </RelativeLayout>
 
         <!-- Delivery Address Section -->
         <androidx.cardview.widget.CardView
@@ -28,13 +49,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            app:navigationIconTint="@android:color/white" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:background="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -77,7 +100,8 @@
                         android:id="@+id/edtReceiverName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,7 +122,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="phone"
-                        android:maxLength="11" />
+                        android:maxLength="11"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -169,7 +194,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPostalAddress"
-                        android:maxLines="2" />
+                        android:maxLines="2"
+                        android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -190,7 +216,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:background="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -229,6 +256,7 @@
                         android:text="Cash On Delivery (COD)"
                         android:textSize="14sp"
                         android:padding="12dp"
+                        android:textColor="@color/colorGrayText"
                         android:checked="true" />
 
                     <RadioButton
@@ -237,6 +265,7 @@
                         android:layout_height="wrap_content"
                         android:text="Online Payment"
                         android:textSize="14sp"
+                        android:textColor="@color/colorGrayText"
                         android:padding="12dp" />
 
                 </RadioGroup>
@@ -245,7 +274,7 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Order Summary Section -->
+        <!-- Voucher Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -258,7 +287,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:background="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_receipt"
+                        android:contentDescription="Voucher"
+                        app:tint="@color/pink_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Voucher Code"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121"
+                        android:layout_marginStart="8dp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter voucher code (optional)"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtVoucherCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1"
+                        android:textColor="@color/black" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Order Summary Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -383,6 +479,7 @@
             android:text="Place Order"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="@color/white"
             android:backgroundTint="@color/pink_primary"
             app:cornerRadius="28dp" />
 

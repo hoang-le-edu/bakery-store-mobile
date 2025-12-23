@@ -1,6 +1,9 @@
 package com.dev.thecodecup.model.network
 
+import com.dev.thecodecup.model.network.api.SuccessResponse
+import com.dev.thecodecup.model.network.dto.AdminOrderDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto
+import com.dev.thecodecup.model.network.dto.AdminCustomerDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto
 import com.dev.thecodecup.model.network.dto.ApiResponse
 import com.dev.thecodecup.model.network.dto.LoginResponseDto
@@ -10,8 +13,8 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -74,11 +77,60 @@ interface ApiService {
     ): Call<AdminProductsResponseDto>
 
     /**
+     * Get admin product by id
+     * Example: /api/admin/products/{id}
+     */
+    @GET("admin/products/{id}")
+    fun getAdminProductById(
+        @Path("id") productId: String
+    ): Call<ApiResponse<ProductByIdDto>>
+
+    /**
      * Get all orders
      * Example: /api/admin/orders/all
      */
     @GET("admin/orders/all")
     fun getAdminOrders(): Call<AdminOrdersResponseDto>
+
+    /**
+     * Get order detail (admin)
+     * Example: /api/admin/orders/detail/{id}
+     */
+    @GET("admin/orders/detail/{id}")
+    fun getAdminOrderDetail(
+        @Path("id") orderId: String
+    ): Call<AdminOrderDetailResponseDto>
+
+    /**
+     * Update order status and record history
+     * Example: /api/orders/status/{id} with body {"status":"In Progress"}
+     */
+    @POST("orders/status/{id}")
+    fun updateOrderStatus(
+        @Path("id") orderId: String,
+        @Body body: Map<String, String>
+    ): Call<SuccessResponse>
+
+    /**
+     * Get customer detail with orders
+     * Example: /api/admin/orders/customerInfo/{id}
+     */
+    @GET("admin/orders/customerInfo/{id}")
+    fun getAdminCustomerDetail(
+        @Path("id") customerId: String
+    ): Call<AdminCustomerDetailResponseDto>
+
+    /**
+     * Search admin orders with filters
+     * Example: /api/admin/orders/search?order_id=123&customer_name=John&date_from=2024-01-01&date_to=2024-12-31
+     */
+    @GET("admin/orders/search")
+    fun searchAdminOrders(
+        @Query("order_id") orderId: String? = null,
+        @Query("customer_name") customerName: String? = null,
+        @Query("date_from") dateFrom: String? = null,
+        @Query("date_to") dateTo: String? = null
+    ): Call<AdminOrdersResponseDto>
 
 }
 

@@ -100,6 +100,13 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
     
+    // Socket.IO for real-time payment status
+    implementation("io.socket:socket.io-client:2.1.0")
+    
+    // QR Code generation
+    implementation("com.google.zxing:core:3.5.2")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    
     // Firebase & Google Sign-In
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-auth-ktx")

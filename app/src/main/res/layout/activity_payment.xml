@@ -6,16 +6,37 @@
     android:orientation="vertical"
     android:background="@android:color/white">
 
-    <!-- Toolbar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <!-- Header -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/pink_primary"
-        app:title="Online Payment"
-        app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="@android:color/white" />
+        android:layout_height="@dimen/space_xxl"
+        android:layout_marginTop="@dimen/space_lg"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg"
+        android:background="@android:color/white">
+
+        <ImageButton
+            android:id="@+id/toolbar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:minHeight="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="@dimen/space_sm"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrowback"
+            android:contentDescription="@string/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Online Payment"
+            android:textColor="#324A59"
+            android:textSize="@dimen/text_xl"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp"
+            android:padding="@dimen/space_xl"
             android:gravity="center_horizontal">
 
             <!-- Title -->
@@ -34,10 +55,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Scan QR Code to Pay"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_md"
                 android:textStyle="bold"
                 android:textColor="#212121"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="@dimen/space_lg" />
 
             <!-- QR Code Image -->
             <androidx.cardview.widget.CardView
@@ -45,7 +66,7 @@
                 android:layout_height="300dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="@dimen/space_xl">
 
                 <ImageView
                     android:id="@+id/imgQRCode"
@@ -69,47 +90,47 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_rounded"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp">
+                android:padding="@dimen/space_lg"
+                android:layout_marginBottom="@dimen/space_lg">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Payment Instructions:"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_md"
                     android:textStyle="bold"
                     android:textColor="#212121"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="@dimen/space_md" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1. Open your Banking app"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_sm"
                     android:textColor="#616161"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="@dimen/space_sm" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2. Scan the QR code above"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_sm"
                     android:textColor="#616161"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="@dimen/space_sm" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3. Confirm payment"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_sm"
                     android:textColor="#616161"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="@dimen/space_sm" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4. Wait for system confirmation"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_sm"
                     android:textColor="#616161" />
 
             </LinearLayout>
@@ -123,7 +144,21 @@
                 android:textSize="14sp"
                 android:textColor="#FF9800"
                 android:textStyle="italic"
+                android:layout_marginBottom="12dp"
                 android:visibility="visible" />
+
+            <!-- Checkout URL (optional display) -->
+            <TextView
+                android:id="@+id/txtCheckoutUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="11sp"
+                android:textColor="#9E9E9E"
+                android:textAlignment="center"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -133,34 +168,57 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg"
         android:background="@android:color/white"
         android:elevation="4dp">
 
+        <!-- Download QR Button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancel"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_weight="1"
-            android:text="Cancel"
-            android:textSize="16sp"
+            android:id="@+id/btnDownloadQR"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Download QR Code"
+            android:textSize="14sp"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:strokeColor="@color/pink_primary"
             android:textColor="@color/pink_primary"
-            app:cornerRadius="28dp"
-            android:layout_marginEnd="8dp" />
+            app:cornerRadius="24dp"
+            app:icon="@android:drawable/stat_sys_download"
+            app:iconGravity="textStart"
+            android:layout_marginBottom="12dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCheckStatus"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_weight="1"
-            android:text="Check Status"
-            android:textSize="16sp"
-            android:backgroundTint="@color/pink_primary"
-            app:cornerRadius="28dp"
-            android:layout_marginStart="8dp" />
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:textSize="@dimen/text_sm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:strokeColor="@color/pink_primary"
+                android:textColor="@color/pink_primary"
+                app:cornerRadius="28dp"
+                android:layout_marginEnd="@dimen/space_sm" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCheckStatus"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Check Status"
+                android:textSize="@dimen/text_sm"
+                android:backgroundTint="@color/pink_primary"
+                app:cornerRadius="28dp"
+                android:layout_marginStart="@dimen/space_sm" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

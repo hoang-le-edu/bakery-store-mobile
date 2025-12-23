@@ -1,11 +1,15 @@
 package com.dev.thecodecup.activity;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,13 +19,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.OrderHistoryAdapter;
+import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
 import com.dev.thecodecup.model.network.api.Order;
+import com.dev.thecodecup.model.network.api.PaymentLinkCallback;
+import com.dev.thecodecup.model.network.api.PaymentLinkResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderListFragment extends Fragment implements OrderHistoryAdapter.OnOrderClickListener {
+import retrofit2.Response;
 
+// Add OrderHistoryAdapter.OnReviewClickListener to the implements list
+public class OrderListFragment extends Fragment implements OrderHistoryAdapter.OnOrderClickListener, OrderHistoryAdapter.OnReviewClickListener {
+
+    private static final String TAG = "OrderListFragment";
     private RecyclerView recyclerView;
     private TextView tvEmpty;
     private ProgressBar progressBar;
@@ -73,9 +84,11 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
         progressBar = view.findViewById(R.id.progressBar);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new OrderHistoryAdapter(getContext(), this);
+
+        // Fix: Pass 'this' as the third argument for the review listener
+        adapter = new OrderHistoryAdapter(getContext(), this, this);
         recyclerView.setAdapter(adapter);
-        
+
         updateUI();
     }
     
@@ -101,6 +114,72 @@ public class OrderListFragment extends Fragment implements OrderHistoryAdapter.O
     @Override
     public void onOrderClick(Order order) {
         // Xử lý khi click vào order (ví dụ: mở màn hình chi tiết OrderDetailActivity)
-        // Toast.makeText(getContext(), "Clicked order: " + order.getOrder_number(), Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getContext(), "Clicked order: " + order.getOrder_number(),
+        // Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPayNowClick(Order order) {
+        // Handle Pay Now button click
+        if (order.getOrder_id() == null || order.getOrder_id().isEmpty()) {
+            Toast.makeText(getContext(), "Order ID not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        createPaymentLink(order.getOrder_id());
+    }
+
+    private void createPaymentLink(String orderId) {
+        final ProgressDialog dialog = ProgressDialog.show(getContext(), null,
+                "Creating payment link...", true, false);
+
+        BakeryJavaBridge.INSTANCE.createPaymentLink(requireActivity(), orderId, new PaymentLinkCallback() {
+            @Override
+            public void onResult(Response<PaymentLinkResponse> response, Throwable error) {
+                dialog.dismiss();
+
+                if (error != null) {
+                    Log.e(TAG, "Payment link error", error);
+                    Toast.makeText(getContext(),
+                            "Payment link error: " + error.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (response != null && response.isSuccessful() && response.body() != null) {
+                    PaymentLinkResponse paymentResponse = response.body();
+
+                    if (paymentResponse.getError() == 0) {
+                        Log.d(TAG, "Payment link created - URL: " + paymentResponse.getCheckoutUrl());
+                        Log.d(TAG, "QR Code present: " + (paymentResponse.getQrCode() != null));
+                        if (paymentResponse.getQrCode() != null) {
+                            Log.d(TAG, "QR Code length: " + paymentResponse.getQrCode().length());
+                        }
+                        
+                        // Open payment screen
+                        Intent intent = new Intent(getContext(), PaymentActivity.class);
+                        intent.putExtra("CHECKOUT_URL", paymentResponse.getCheckoutUrl());
+                        intent.putExtra("QR_CODE", paymentResponse.getQrCode());
+                        intent.putExtra("ORDER_ID", orderId);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(getContext(),
+                                "Payment error: " + paymentResponse.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(),
+                            "Failed to create payment link", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onReviewClick(Order order, int position) {
+        // Delegate review click to the hosting activity if it implements the listener
+        if (getActivity() instanceof OrderHistoryAdapter.OnReviewClickListener) {
+            ((OrderHistoryAdapter.OnReviewClickListener) getActivity()).onReviewClick(order, position);
+        }
     }
 }

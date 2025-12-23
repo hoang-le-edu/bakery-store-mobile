@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Write a Review"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <RatingBar
+        android:id="@+id/ratingBar_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:numStars="5"
+        android:stepSize="1"
+        android:rating="0" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/reviewTextInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Share your experience...">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etReviewText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="4"
+            android:gravity="top"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    
+    <!-- Read-only TextView for viewing existing review -->
+    <TextView
+        android:id="@+id/tvReadOnlyReview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        android:text="This is the review text."
+        android:lineSpacingExtra="4dp"
+        android:textSize="16sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+        android:gravity="end">
+
+        <!-- Delete Button -->
+        <Button
+            android:id="@+id/btnDeleteReview"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:textColor="@color/colorRedButton"
+            android:visibility="gone"/>
+
+        <!-- Edit/Submit Buttons -->
+        <Button
+            android:id="@+id/btnEditReview"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:visibility="gone"
+            android:layout_marginEnd="8dp"/>
+            
+        <Button
+            android:id="@+id/btnSubmitReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"/>
+            
+    </LinearLayout>
+</LinearLayout>

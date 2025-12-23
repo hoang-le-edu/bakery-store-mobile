@@ -12,7 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.AdminOrderAdapter;
+<<<<<<< HEAD
 import com.dev.thecodecup.model.network.dto.OrderDto;
+=======
+import com.dev.thecodecup.model.network.ApiService;
+import com.dev.thecodecup.model.network.NetworkModule;
+import com.dev.thecodecup.model.network.dto.AdminOrderDto;
+import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto;
+import com.dev.thecodecup.activity.AdminOrderDetailActivity;
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +52,24 @@ public class AdminOrdersActivity extends AppCompatActivity {
         setupTabs();
         setupRecycler();
 
+<<<<<<< HEAD
         loadMockData();
         applyFilter();
+=======
+        loadOrdersFromApi();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh list when returning from detail to reflect updated statuses
+        loadOrdersFromApi();
+    }
+
+    @Override
+    protected int getAdminMenuItemId() {
+        return R.id.navigation_admin_orders;
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
     }
 
     private void initViews() {
@@ -61,6 +85,12 @@ public class AdminOrdersActivity extends AppCompatActivity {
         adapter = new AdminOrderAdapter();
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
         rvOrders.setAdapter(adapter);
+        adapter.setListener(order -> {
+            if (order.getId() == null) return;
+            android.content.Intent intent = new android.content.Intent(this, AdminOrderDetailActivity.class);
+            intent.putExtra(AdminOrderDetailActivity.EXTRA_ORDER_ID, order.getId());
+            startActivity(intent);
+        });
     }
 
     private void setupTabs() {
@@ -144,8 +174,35 @@ public class AdminOrdersActivity extends AppCompatActivity {
         adapter.setItems(filteredOrders);
     }
 
+<<<<<<< HEAD
     private void loadMockData() {
         allOrders.clear();
+=======
+    private void loadOrdersFromApi() {
+        apiService.getAdminOrders().enqueue(new Callback<AdminOrdersResponseDto>() {
+            @Override
+            public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AdminOrdersResponseDto body = response.body();
+                    if (body.getData() != null) {
+                        allOrders.clear();
+                        for (AdminOrderDto o : body.getData()) {
+                            String status = o.getOrderStatus();
+                            if (status != null && status.equalsIgnoreCase("draft")) {
+                                continue; // skip draft orders
+                            }
+                            allOrders.add(o);
+                        }
+                        applyFilter();
+                    }
+                } else {
+                    // Handle error
+                    android.widget.Toast.makeText(AdminOrdersActivity.this, 
+                            "Failed to load orders", 
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+            }
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
 
         allOrders.add(new OrderDto(
                 "1 - A1",

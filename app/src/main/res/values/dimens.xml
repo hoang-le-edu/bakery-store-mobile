@@ -18,4 +18,5 @@
     <dimen name="space_lg">16dp</dimen>
     <dimen name="space_xl">24dp</dimen>
     <dimen name="space_xxl">32dp</dimen>
+    <dimen name="space_action_bar_offset">80dp</dimen>
 </resources>

@@ -1,38 +1,36 @@
 package com.dev.thecodecup.activity;
+<<<<<<< HEAD
 import com.dev.thecodecup.model.auth.AuthManager;
+=======
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.util.TypedValue;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.ProductAdapter;
-//import com.dev.thecodecup.model.network.dto.CategoryDto;
 import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
-//import com.dev.thecodecup.model.network.dto.CategoryWithProductsDto;
 import com.dev.thecodecup.model.network.viewmodel.ProductViewModel;
-import com.google.android.material.tabs.TabLayout;
-import android.widget.PopupMenu;
-
-import org.jetbrains.annotations.NotNull;
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 
 public class ProductListActivity extends BaseBottomNavActivity {
 
-    private TabLayout tabLayout;
+    private TextView tabAll;
     private RecyclerView rvProducts;
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
-    private ImageButton btnProfile;
+    private String currentCategoryId = "all";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,33 +38,45 @@ public class ProductListActivity extends BaseBottomNavActivity {
         setContentView(R.layout.activity_product_list);
         setupBottomNav();
 
+<<<<<<< HEAD
         // 1) View binding
         tabLayout  = findViewById(R.id.tabLayout);
+=======
+        tabAll = findViewById(R.id.tabAll);
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
         rvProducts = findViewById(R.id.rvProducts);
         btnProfile = findViewById(R.id.btnProfile);
 
-        // 2) RecyclerView + Adapter (2 cột)
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(this);
+<<<<<<< HEAD
+=======
+        adapter.setOnItemClickListener(product -> {
+            Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
+            intent.putExtra("productId", product.getProductId());
+            startActivity(intent);
+        });
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
         rvProducts.setAdapter(adapter);
 
-        // 3) ViewModel
         viewModel = new ViewModelProvider(this).get(ProductViewModel.class);
 
-        // 4) Quan sát Products -> cập nhật adapter để lên hình
         viewModel.getProductsLiveData().observe(this, products -> {
+<<<<<<< HEAD
             android.util.Log.d("ProductActivity", "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
+=======
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
             if (products != null && !products.isEmpty()) {
                 adapter.setItems(products);
                 rvProducts.post(() -> adapter.notifyDataSetChanged());
             } else if (products != null && products.isEmpty()) {
-                adapter.setItems(products); // Cần đảm bảo adapter có thể xử lý list rỗng (nên đã làm)
+                adapter.setItems(products);
             }
         });
 
-        // 5) Quan sát Categories -> đổ TabLayout và load category đầu tiên
         viewModel.getCategoriesLiveData().observe(this, categories -> {
             buildTabs(categories);
+<<<<<<< HEAD
             // Chọn tab đầu tiên (nếu có) để load sản phẩm ban đầu
             if (tabLayout.getTabCount() > 0) {
                 TabLayout.Tab first = tabLayout.getTabAt(0);
@@ -95,6 +105,13 @@ public class ProductListActivity extends BaseBottomNavActivity {
         });
 
         // 7) Gọi load categories ban đầu
+=======
+            selectTab(tabAll, "all");
+            viewModel.loadProducts(null, null, "all");
+        });
+
+        setupTabListeners();
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a
         viewModel.loadCategories();
         btnProfile.setOnClickListener(v -> showProfileMenu(v));
     }
@@ -130,9 +147,73 @@ public class ProductListActivity extends BaseBottomNavActivity {
         finish();
     }
 
+    private void setupTabListeners() {
+        View.OnClickListener listener = v -> {
+            if (v.getId() == R.id.tabAll) {
+                selectTab(tabAll, "all");
+                viewModel.loadProducts(null, null, "all");
+            } else {
+                Object tag = v.getTag();
+                if (tag != null) {
+                    String categoryId = (String) tag;
+                    selectTab((TextView) v, categoryId);
+                    viewModel.loadProducts(null, null, categoryId);
+                }
+            }
+        };
 
-    /** Đổ danh sách Tab từ categories */
+        tabAll.setOnClickListener(listener);
+        updateTabUI();
+    }
+
+    private void selectTab(TextView tab, String categoryId) {
+        currentCategoryId = categoryId;
+        updateTabUI();
+    }
+
+    private void updateTabUI() {
+        resetTab(tabAll);
+
+        LinearLayout tabContainer = findViewById(R.id.tabContainer);
+        if (tabContainer != null) {
+            for (int i = 0; i < tabContainer.getChildCount(); i++) {
+                View child = tabContainer.getChildAt(i);
+                if (child instanceof TextView && child.getId() != R.id.tabAll) {
+                    resetTab((TextView) child);
+                }
+            }
+        }
+
+        if (currentCategoryId.equals("all")) {
+            setTabSelected(tabAll);
+        } else {
+            if (tabContainer != null) {
+                for (int i = 0; i < tabContainer.getChildCount(); i++) {
+                    View child = tabContainer.getChildAt(i);
+                    if (child instanceof TextView) {
+                        Object tag = child.getTag();
+                        if (tag != null && tag.equals(currentCategoryId)) {
+                            setTabSelected((TextView) child);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void resetTab(TextView tab) {
+        tab.setBackground(null);
+        tab.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+    }
+
+    private void setTabSelected(TextView tab) {
+        tab.setBackgroundResource(R.drawable.bg_order_tab_selected);
+        tab.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+    }
+
     private void buildTabs(List<CategoryWithProductsDto> categories) {
+<<<<<<< HEAD
         tabLayout.removeAllTabs();
         if (categories == null || categories.isEmpty()) return;
 
@@ -145,3 +226,36 @@ public class ProductListActivity extends BaseBottomNavActivity {
         }
     }
 }
+=======
+        if (categories == null || categories.isEmpty()) {
+            return;
+        }
+
+        LinearLayout tabContainer = findViewById(R.id.tabContainer);
+        if (tabContainer == null) {
+            return;
+        }
+
+        while (tabContainer.getChildCount() > 1) {
+            tabContainer.removeViewAt(1);
+        }
+
+        for (CategoryWithProductsDto c : categories) {
+            String title = c.getCategoryName() != null ? c.getCategoryName() : "Category";
+            TextView tabView = new TextView(this);
+            tabView.setText(title);
+            tabView.setTag(c.getCategoryId());
+            tabView.setPadding(16, 8, 16, 8);
+            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            tabView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+
+            tabView.setOnClickListener(v -> {
+                selectTab(tabView, c.getCategoryId());
+                viewModel.loadProducts(null, null, c.getCategoryId());
+            });
+
+            tabContainer.addView(tabView);
+        }
+    }
+}
+>>>>>>> 961c39d98dbd30ad5e67631c678459b5f8ffc05a

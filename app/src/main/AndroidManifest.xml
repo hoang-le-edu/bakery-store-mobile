@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- For saving images on API <= 28 -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <application
         android:name=".App"
@@ -33,6 +37,9 @@
         <activity android:name=".activity.AdminOrdersActivity" />
         <activity android:name=".activity.AdminHomeActivity" />
         <activity android:name=".activity.AdminProfileActivity" />
+        <activity android:name=".activity.AdminOrderDetailActivity" />
+        <activity android:name=".activity.AdminCustomerDetailActivity" />
+        <activity android:name=".activity.ProductReviewsActivity"/>
 
 
 

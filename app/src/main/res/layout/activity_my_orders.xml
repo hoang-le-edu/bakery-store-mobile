@@ -11,16 +11,19 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        android:layout_marginTop="@dimen/space_xl">
 
         <ImageButton
             android:id="@+id/btn_back"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@color/white"
             android:src="@drawable/ic_arrowback"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
             android:contentDescription="Back" />
 
         <TextView
@@ -33,20 +36,114 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+    <!-- Title Orders -->
+    <TextView
+        android:id="@+id/tvOrdersTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="fixed"
-        app:tabGravity="fill"
-        app:tabIndicatorColor="@color/purple_500"
-        app:tabSelectedTextColor="@color/purple_500"
-        app:tabTextColor="@android:color/darker_gray"
-        app:tabTextAppearance="@style/MyCustomTabText" />
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:text="@string/orders"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <!-- Tabs status -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/layoutStatusTabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp">
+
+            <!-- Các tab nằm ở đây -->
+            <TextView
+                android:id="@+id/tabAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="@string/all"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabWaitForApproval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/wait_for_approval"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabInProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/in_progress"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabDelivered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/delivered"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tabCancelled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/cancelled"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvOrders"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
 </LinearLayout>
