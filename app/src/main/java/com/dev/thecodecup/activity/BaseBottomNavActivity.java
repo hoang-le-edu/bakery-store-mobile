@@ -34,7 +34,7 @@ public abstract class BaseBottomNavActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-            // Đang ở đúng tab rồi -> giữ nó sáng, không đi đâu cả
+            // Nếu bấm lại tab hiện tại -> không làm gì
             if (itemId == getBottomNavMenuItemId()) {
                 return true;
             }
@@ -46,21 +46,20 @@ public abstract class BaseBottomNavActivity extends AppCompatActivity {
             } else if (itemId == R.id.navigation_product) {
                 intent = new Intent(this, ProductListActivity.class);
             } else if (itemId == R.id.navigation_cart) {
-                intent = new Intent(this, CartActivity.class);
+//                intent = new Intent(this, CartActivity.class);      // nếu có
             } else if (itemId == R.id.navigation_profile) {
-                intent = new Intent(this, ProfileActivity.class);
+//                intent = new Intent(this, ProfileActivity.class);  // nếu có
             }
 
             if (intent != null) {
+                // tránh tạo stack dài
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
-                overridePendingTransition(0, 0);
-
-                // ⬇⬇⬇ QUAN TRỌNG: trả về false để KHÔNG đổi tab ở activity hiện tại
-                return false;
+                overridePendingTransition(0, 0); // không animation nếu muốn
+                // không bắt buộc finish(), tuỳ cách bạn quản lý back
             }
 
-            return false;
+            return true;
         });
     }
 }

@@ -2,7 +2,6 @@ package com.dev.thecodecup.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,11 +14,7 @@ import androidx.lifecycle.LifecycleOwnerKt;
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.auth.GoogleAuthManager;
 import com.dev.thecodecup.model.auth.AuthManager;
-import com.dev.thecodecup.model.network.ApiService;
 import com.dev.thecodecup.model.network.NetworkModule;
-import com.dev.thecodecup.model.network.dto.LoginDataDto;
-import com.dev.thecodecup.model.network.dto.LoginResponseDto;
-import com.dev.thecodecup.model.network.dto.UserDto;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import android.widget.TextView;
@@ -30,16 +25,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import kotlin.jvm.functions.Function0;
-import retrofit2.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
@@ -61,31 +50,13 @@ public class Login extends AppCompatActivity {
     private static final int RC_GOOGLE_SIGN_IN = 1234; // request code
 
     private GoogleAuthManager googleAuthManager;
-    private ApiService apiService;
-
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (AuthManager.INSTANCE.isLoggedIn()) {
             NetworkModule.INSTANCE.setTokenProvider(() -> AuthManager.INSTANCE.getValidIdTokenBlocking());
-            // đọc user_type + accessToken đã lưu
-            SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
-            String userType = prefs.getString("USER_TYPE", null);
-            String accessToken = prefs.getString("ACCESS_TOKEN", null);
-
-            Intent intent;
-            if ("user".equalsIgnoreCase(userType)) {
-                // Admin
-                intent = new Intent(Login.this, AdminHomeActivity.class);
-                // nếu còn accessToken thì truyền, nếu null thì AdminHomeActivity có thể tự lấy lại nếu cần
-                intent.putExtra("accessToken", accessToken);
-            } else {
-                // Customer (hoặc chưa có userType)
-                intent = new Intent(Login.this, HomeActivity.class);
-            }
-
-            startActivity(intent);
+            startActivity(new Intent(Login.this, HomeActivity.class));
             finish();
             return;
         }
@@ -101,7 +72,7 @@ public class Login extends AppCompatActivity {
 
 
         googleAuthManager = GoogleAuthManager.getInstance(this);
-        apiService = NetworkModule.INSTANCE.getApiService();
+
 
 
         loginButton.setOnClickListener(v -> doLogin());
@@ -268,10 +239,9 @@ public class Login extends AppCompatActivity {
                                         AuthManager.INSTANCE.getValidIdTokenBlocking()
                                 );
 
-//                                Toast.makeText(this, "Sign in successfully", Toast.LENGTH_SHORT).show();
-//                                startActivity(new Intent(this, HomeActivity.class));
-//                                finish();
-                                fetchUserAndNavigate(email, pass, dlg);
+                                Toast.makeText(this, "Sign in successfully", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(this, HomeActivity.class));
+                                finish();
                             } else {
                                 uiFail(dlg, "Không lấy được idToken: " + tokenTask.getException().getMessage());
                             }
@@ -315,6 +285,36 @@ public class Login extends AppCompatActivity {
                     }
                 });
     }
+//    private void doForgotPassword() {
+//        String email = emailEditText.getText().toString().trim();
+//
+//        if (email.isEmpty()) {
+//            Toast.makeText(this, "Vui lòng nhập Email để nhận link khôi phục mật khẩu", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        ProgressDialog dlg = ProgressDialog.show(
+//                this, null, "Đang gửi email khôi phục...", true, false);
+//
+//        // Sử dụng FirebaseAuth instance
+//        FirebaseAuth auth = FirebaseAuth.getInstance();
+//        auth.sendPasswordResetEmail(email)
+//                .addOnCompleteListener(task -> {
+//                    dlg.dismiss();
+//
+//                    if (task.isSuccessful()) {
+//                        // Thông báo cho người dùng kiểm tra email.
+//                        // Link trong email sẽ tự mở ResetPasswordActivity
+//                        Toast.makeText(this,
+//                                "Đã gửi email khôi phục mật khẩu. Vui lòng kiểm tra email và nhấn vào link để đặt lại mật khẩu trong ứng dụng!",
+//                                Toast.LENGTH_LONG).show();
+//                    } else {
+//                        Toast.makeText(this,
+//                                "Lỗi gửi email: " + task.getException().getMessage(),
+//                                Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//    }
 
     private void uiFail(ProgressDialog dlg, String msg) {
         runOnUiThread(() -> {
@@ -337,86 +337,4 @@ public class Login extends AppCompatActivity {
             }
         } catch (Exception ignored) {}        return "Đăng nhập thất bại.";
     }
-
-    private void fetchUserAndNavigate(String email, String password, ProgressDialog dlg) {
-        Map<String, String> body = new HashMap<>();
-        body.put("email", email);
-        body.put("password", password);
-
-        Call<LoginResponseDto> call = apiService.login(body);
-        call.enqueue(new Callback<LoginResponseDto>() {
-            @Override
-            public void onResponse(Call<LoginResponseDto> call, Response<LoginResponseDto> response) {
-                dlg.dismiss();
-
-                if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(Login.this,
-                            "Login API failed: " + response.code(),
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                LoginResponseDto loginRes = response.body();
-                Boolean success = loginRes.getSuccess();
-                if (success == null || !success) {
-                    String msg = loginRes.getMessage() != null
-                            ? loginRes.getMessage()
-                            : "Đăng nhập thất bại.";
-                    Toast.makeText(Login.this, msg, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                LoginDataDto data = loginRes.getData();
-                if (data == null) {
-                    Toast.makeText(Login.this,
-                            "Không có dữ liệu user",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                String accessToken = data.getAccessToken();
-                String refreshToken = data.getRefreshToken();
-                UserDto user = data.getUser();
-                String userType = user != null ? user.getUserType() : null;
-
-                // LƯU user info + token để dùng cho profile và auto login
-                SharedPreferences prefs = getSharedPreferences("APP_PREFS", MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("USER_TYPE", userType);          // "user" hoặc "customer"
-                editor.putString("ACCESS_TOKEN", accessToken);    // cho AdminHomeActivity dùng
-                if (user != null) {
-                    editor.putString("USER_NAME", user.getName());
-                    editor.putString("USER_EMAIL", user.getEmail());
-                    editor.putString("USER_PHONE", user.getPhoneNumber());
-                }
-                editor.apply();
-
-                Toast.makeText(Login.this, "Sign in successfully", Toast.LENGTH_SHORT).show();
-
-                if ("user".equalsIgnoreCase(userType)) {
-                    // Admin
-                    Intent intent = new Intent(Login.this, AdminHomeActivity.class);
-                    intent.putExtra("accessToken", accessToken);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    // Customer
-                    Intent intent = new Intent(Login.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<LoginResponseDto> call, Throwable t) {
-                dlg.dismiss();
-                Toast.makeText(Login.this,
-                        "Lỗi login API: " + t.getMessage(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-
 }

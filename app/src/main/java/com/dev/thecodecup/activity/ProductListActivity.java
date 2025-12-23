@@ -1,7 +1,5 @@
 package com.dev.thecodecup.activity;
-
 import com.dev.thecodecup.model.auth.AuthManager;
-import com.dev.thecodecup.auth.GoogleAuthManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,8 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.widget.Toast;
 
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.ProductAdapter;
@@ -45,19 +41,13 @@ public class ProductListActivity extends BaseBottomNavActivity {
         setupBottomNav();
 
         // 1) View binding
-        tabLayout = findViewById(R.id.tabLayout);
+        tabLayout  = findViewById(R.id.tabLayout);
         rvProducts = findViewById(R.id.rvProducts);
-        bottomNav = findViewById(R.id.bottomNav);
+        btnProfile = findViewById(R.id.btnProfile);
 
         // 2) RecyclerView + Adapter (2 cột)
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(this);
-        adapter.setOnItemClickListener(product -> {
-            // Navigate to ProductDetailActivity
-            Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
-            intent.putExtra("productId", product.getProductId());
-            startActivity(intent);
-        });
         rvProducts.setAdapter(adapter);
 
         // 3) ViewModel
@@ -65,8 +55,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
 
         // 4) Quan sát Products -> cập nhật adapter để lên hình
         viewModel.getProductsLiveData().observe(this, products -> {
-            android.util.Log.d("ProductActivity",
-                    "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
+            android.util.Log.d("ProductActivity", "Nhận được " + (products != null ? products.size() : 0) + " sản phẩm.");
             if (products != null && !products.isEmpty()) {
                 adapter.setItems(products);
                 rvProducts.post(() -> adapter.notifyDataSetChanged());
@@ -78,7 +67,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
         // 5) Quan sát Categories -> đổ TabLayout và load category đầu tiên
         viewModel.getCategoriesLiveData().observe(this, categories -> {
             buildTabs(categories);
-            // Chọn tab đầu tiên (tab All) để load sản phẩm ban đầu
+            // Chọn tab đầu tiên (nếu có) để load sản phẩm ban đầu
             if (tabLayout.getTabCount() > 0) {
                 TabLayout.Tab first = tabLayout.getTabAt(0);
                 if (first != null) {
@@ -97,52 +86,62 @@ public class ProductListActivity extends BaseBottomNavActivity {
                 String categoryId = (String) tab.getTag();
                 viewModel.loadProducts(null, null, categoryId);
             }
-
-            @Override
-            public void onTabUnselected(@NonNull TabLayout.Tab tab) { }
-
-            @Override
-            public void onTabReselected(@NonNull TabLayout.Tab tab) {
+            @Override public void onTabUnselected(@NonNull TabLayout.Tab tab) {}
+            @Override public void onTabReselected(@NonNull TabLayout.Tab tab) {
                 // Có thể refresh lại nếu muốn
                 String categoryId = (String) tab.getTag();
                 viewModel.loadProducts(null, null, categoryId);
             }
         });
 
-
-
         // 7) Gọi load categories ban đầu
         viewModel.loadCategories();
+        btnProfile.setOnClickListener(v -> showProfileMenu(v));
     }
-
 
     @Override
     protected int getBottomNavMenuItemId() {
-        return R.id.navigation_product;
+        return R.id.navigation_home;
+    }
+
+    private void showProfileMenu(View anchorView) {
+        PopupMenu popup = new PopupMenu(this, anchorView);
+        popup.getMenu().add(0, 1, 0, "Logout");
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == 1) { // ID của "Đăng xuất"
+                    handleLogout();
+                    return true;
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+    private void handleLogout() {
+        AuthManager.INSTANCE.clearTokens();
+
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
 
     /** Đổ danh sách Tab từ categories */
     private void buildTabs(List<CategoryWithProductsDto> categories) {
         tabLayout.removeAllTabs();
+        if (categories == null || categories.isEmpty()) return;
 
-        // 1) Tab "All" đứng đầu
-        TabLayout.Tab allTab = tabLayout.newTab().setText("All");
-        allTab.setTag("all");  // <-- QUAN TRỌNG: dùng đúng với default trong ViewModel
-        tabLayout.addTab(allTab);
-
-        // 2) Nếu không có category nào thì thôi, chỉ có tab All
-        if (categories == null || categories.isEmpty()) {
-            return;
-        }
-
-        // 3) Các tab category phía sau
         for (CategoryWithProductsDto c : categories) {
-            String title = c.getCategoryName() != null ? c.getCategoryName() : "Category";
+            String title = c.getCategoryName() != null ? c.getCategoryName() : "Danh mục";
             TabLayout.Tab tab = tabLayout.newTab().setText(title);
-            tab.setTag(c.getCategoryId());  // tag = ID category thực tế
+            // tag = category_id để khi click tab sẽ dùng id call API
+            tab.setTag(c.getCategoryId());
             tabLayout.addTab(tab);
         }
     }
-
 }
