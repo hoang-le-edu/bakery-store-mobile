@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Override Material Design default Vietnamese strings to English -->
-    <string name="in_progress">In Progress</string>
+    <string name="in_progress">Đang tiến hành</string>
     <string name="filter">Bộ lọc</string>
     <string name="khong_tim_thay">Không tìm thấy đơn hàng</string>
     <string name="product_name">Tên sản phẩm</string>

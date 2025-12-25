@@ -4,23 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:background="#FAFAFA"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Toolbar -->
+        <!-- Header (styled like admin order detail) -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/pink_primary"
-            app:title="Chi tiết đơn hàng"
-            app:titleTextColor="@android:color/white"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white" />
+            android:layout_height="56dp"
+            android:paddingStart="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_lg"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tvToolbarTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Order Details"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:singleLine="true" />
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical|start"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_arrowback"
+                    app:tint="@color/black"
+                    android:contentDescription="@string/back" />
+
+            </FrameLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <!-- Order Status Card -->
         <androidx.cardview.widget.CardView
@@ -52,11 +82,11 @@
                             android:id="@+id/txtOrderNumber"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đơn hàng #123"
+                            android:text="Order #123"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:textColor="#212121"
-                            tools:text="Đơn hàng #12345" />
+                            tools:text="Order #12345" />
 
                         <TextView
                             android:id="@+id/txtOrderDate"
@@ -74,141 +104,18 @@
                         android:id="@+id/txtOrderStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chờ duyệt"
+                        android:text="Pending"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:background="@drawable/bg_status_pending"
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="8dp"
-                        tools:text="Chờ duyệt" />
+                        tools:text="Pending" />
 
                 </LinearLayout>
 
-                <!-- Timeline -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="24dp">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <View
-                            android:id="@+id/timelinePending"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_timeline_active" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Chờ duyệt"
-                            android:textSize="11sp"
-                            android:textColor="#212121"
-                            android:layout_marginTop="6dp" />
-
-                        <TextView
-                            android:id="@+id/txtTimePending"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="15/11 14:30"
-                            android:textSize="10sp"
-                            android:textColor="#757575"
-                            android:layout_marginTop="2dp"
-                            tools:text="15/11 14:30" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="2dp"
-                        android:layout_weight="1"
-                        android:background="#E0E0E0"
-                        android:layout_marginBottom="60dp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <View
-                            android:id="@+id/timelineProgress"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_timeline_inactive" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Đang xử lý"
-                            android:textSize="11sp"
-                            android:textColor="#212121"
-                            android:layout_marginTop="6dp" />
-
-                        <TextView
-                            android:id="@+id/txtTimeProgress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--"
-                            android:textSize="10sp"
-                            android:textColor="#757575"
-                            android:layout_marginTop="2dp"
-                            android:visibility="gone"
-                            tools:text="16/11 10:00" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="2dp"
-                        android:layout_weight="1"
-                        android:background="#E0E0E0"
-                        android:layout_marginBottom="60dp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <View
-                            android:id="@+id/timelineCompleted"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_timeline_inactive" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hoàn thành"
-                            android:textSize="11sp"
-                            android:textColor="#212121"
-                            android:layout_marginTop="6dp" />
-
-                        <TextView
-                            android:id="@+id/txtTimeCompleted"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--"
-                            android:textSize="10sp"
-                            android:textColor="#757575"
-                            android:layout_marginTop="2dp"
-                            android:visibility="gone"
-                            tools:text="17/11 15:20" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
+                <!-- Timeline removed (redundant) -->
 
             </LinearLayout>
 
@@ -232,7 +139,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thông tin khách hàng"
+                    android:text="Customer Information"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#212121"
@@ -256,7 +163,7 @@
                         android:id="@+id/txtCustomerName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tên khách"
+                        android:text="Customer Name"
                         android:textSize="14sp"
                         android:textColor="#212121"
                         android:layout_marginStart="10dp"
@@ -282,7 +189,7 @@
                         android:id="@+id/txtCustomerPhone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Số điện thoại"
+                        android:text="Phone Number"
                         android:textSize="14sp"
                         android:textColor="#212121"
                         android:layout_marginStart="10dp"
@@ -308,7 +215,7 @@
                         android:id="@+id/txtCustomerLevel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hạng"
+                        android:text="Level"
                         android:textSize="14sp"
                         android:textColor="#212121"
                         android:layout_marginStart="10dp"
@@ -325,7 +232,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thông tin giao hàng"
+                    android:text="Delivery Information"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#212121"
@@ -430,7 +337,7 @@
                         android:textSize="14sp"
                         android:textColor="#212121"
                         android:layout_marginStart="10dp"
-                        tools:text="Thanh toán khi nhận hàng (COD)" />
+                        tools:text="Cash on Delivery (COD)" />
 
                 </LinearLayout>
 
@@ -456,7 +363,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sản phẩm đã đặt"
+                    android:text="Ordered Products"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#212121"
@@ -490,7 +397,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chi tiết thanh toán"
+                    android:text="Payment Details"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#212121"
@@ -506,7 +413,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Tạm tính:"
+                        android:text="Subtotal:" 
                         android:textSize="14sp"
                         android:textColor="#757575" />
 
@@ -531,7 +438,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Phí vận chuyển:"
+                        android:text="Shipping Fee:" 
                         android:textSize="14sp"
                         android:textColor="#757575" />
 
@@ -555,7 +462,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Giảm giá:"
+                        android:text="Discount:" 
                         android:textSize="14sp"
                         android:textColor="#757575" />
 
@@ -584,7 +491,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Mã giảm giá:"
+                        android:text="Voucher Code:" 
                         android:textSize="14sp"
                         android:textColor="#757575" />
 
@@ -616,7 +523,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Tổng cộng:"
+                        android:text="Total:" 
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#212121" />
@@ -644,7 +551,7 @@
             android:layout_height="56dp"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
-            android:text="Thanh toán ngay"
+            android:text="Pay Now"
             android:textSize="16sp"
             android:textStyle="bold"
             android:backgroundTint="@color/pink_primary"
@@ -657,7 +564,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_margin="16dp"
-            android:text="Hủy đơn hàng"
+            android:text="Cancel Order"
             android:textSize="16sp"
             app:strokeColor="@color/pink_primary"
             app:strokeWidth="2dp"

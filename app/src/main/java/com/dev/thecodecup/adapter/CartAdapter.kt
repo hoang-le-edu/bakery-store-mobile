@@ -132,7 +132,7 @@ class CartAdapter(
             // Note
             if (!item.note.isNullOrEmpty()) {
                 noteLayout.visibility = View.VISIBLE
-                txtNote.text = "Ghi chú: ${item.note}"
+                txtNote.text = "Note: ${item.note}"
             } else {
                 noteLayout.visibility = View.GONE
             }

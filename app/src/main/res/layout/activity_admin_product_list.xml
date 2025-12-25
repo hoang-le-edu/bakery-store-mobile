@@ -32,7 +32,6 @@
                 android:layout_height="48dp"
                 android:layout_marginEnd="@dimen/space_lg"
                 android:layout_weight="1"
-                android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
                 android:drawablePadding="@dimen/space_sm"
                 android:gravity="center_vertical"
@@ -40,7 +39,6 @@
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:minHeight="48dp"
-                android:paddingEnd="@dimen/space_md"
                 android:paddingStart="@dimen/space_md"
                 android:textColor="#333333"
                 android:textColorHint="@color/colorGrayText"
@@ -65,29 +63,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:padding="@dimen/space_sm">
 
         <LinearLayout
-            android:id="@+id/tabContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/space_lg"
-            android:paddingEnd="@dimen/space_lg">
+            android:paddingHorizontal="@dimen/space_lg"
+            android:padding="@dimen/space_sm">
 
             <TextView
                 android:id="@+id/tabAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:paddingStart="24dp"
+                android:paddingStart="12dp"
                 android:paddingTop="8dp"
-                android:paddingEnd="24dp"
+                android:paddingEnd="12dp"
                 android:paddingBottom="8dp"
-                android:text="All"
+                android:text="@string/all"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/text_md"
-                android:textStyle="normal" />
+                android:textSize="@dimen/text_lg"
+                android:textStyle="bold"
+                />
 
         </LinearLayout>
     </HorizontalScrollView>

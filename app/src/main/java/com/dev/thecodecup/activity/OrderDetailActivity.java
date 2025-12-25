@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class OrderDetailActivity extends BaseAuthActivity {
     public static final String EXTRA_ORDER_ID = "ORDER_ID";
 
     private MaterialToolbar toolbar;
+    private ImageButton btnBack;
     private TextView txtOrderNumber;
     private TextView txtOrderDate;
     private TextView txtOrderStatus;
@@ -82,6 +84,7 @@ public class OrderDetailActivity extends BaseAuthActivity {
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
+        btnBack = findViewById(R.id.btnBack);
         txtOrderNumber = findViewById(R.id.txtOrderNumber);
         txtOrderDate = findViewById(R.id.txtOrderDate);
         txtOrderStatus = findViewById(R.id.txtOrderStatus);
@@ -102,7 +105,7 @@ public class OrderDetailActivity extends BaseAuthActivity {
     }
 
     private void setupToolbar() {
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        if (btnBack != null) btnBack.setOnClickListener(v -> onBackPressed());
     }
 
     private void setupRecyclerView() {
