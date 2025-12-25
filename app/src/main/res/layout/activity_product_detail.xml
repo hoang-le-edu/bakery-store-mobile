@@ -10,8 +10,7 @@
     <RelativeLayout
         android:id="@+id/headerProductDetail"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/space_xxl"
-        android:layout_marginTop="@dimen/space_lg"
+        android:layout_height="48dp"
         android:paddingStart="@dimen/space_lg"
         android:paddingEnd="@dimen/space_lg"
         android:background="@android:color/white"

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="@dimen/space_lg"
+    android:layout_marginVertical="@dimen/space_sm"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
     android:backgroundTint="@color/white">
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/space_lg">
 
         <!-- Header: Mã đơn + Ngày đặt -->
         <LinearLayout
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@android:color/black"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_sm"
                 android:textStyle="bold"
                 tools:text="#ORD12345678" />
 
@@ -38,14 +38,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/darker_gray"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_xs"
                 tools:text="12/12/2025" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="12dp"
+            android:layout_marginVertical="@dimen/space_md"
             android:background="#F0F0F0" />
 
         <!-- Body: Ảnh SP + Tên SP + Status -->
@@ -75,14 +75,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginStart="12dp">
+                android:layout_marginStart="@dimen/space_md">
 
                 <TextView
                     android:id="@+id/tv_product_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_md"
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:textStyle="bold"
@@ -94,8 +94,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#757575"
-                    android:textSize="13sp"
-                    android:layout_marginTop="2dp"
+                    android:textSize="@dimen/text_xs"
+                    android:layout_marginTop="@dimen/space_xs"
                     android:visibility="visible"
                     tools:text="Size: S • x1 • 2 Topping" />
 
@@ -103,13 +103,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="4dp">
+                    android:layout_marginTop="@dimen/space_xs">
 
                     <TextView
                         android:id="@+id/tv_item_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="13sp"
+                        android:textSize="@dimen/text_xs"
                         android:textColor="#757575"
                         tools:text="1 sản phẩm" />
                     
@@ -123,7 +123,7 @@
                         android:id="@+id/tv_order_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="13sp"
+                        android:textSize="@dimen/text_xs"
                         android:textStyle="bold"
                         tools:text="In Progress"
                         tools:textColor="@color/purple_500"/>
@@ -135,7 +135,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="12dp"
+            android:layout_marginVertical="@dimen/space_md"
             android:background="#F0F0F0" />
 
         <!-- Footer: Tổng tiền và Nút Review -->
@@ -155,7 +155,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#757575"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_xs"
                     tools:text="Thanh toán: Tiền mặt" />
                  <TextView
                     android:id="@+id/tv_total_price_label"
@@ -163,14 +163,14 @@
                     android:layout_height="wrap_content"
                     android:text="Thành tiền: "
                     android:textColor="@android:color/black"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/text_sm" />
 
                 <TextView
                     android:id="@+id/tv_total_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/red_add_button"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_md"
                     android:textStyle="bold"
                     tools:text="150.000₫" />
             </LinearLayout>
@@ -193,9 +193,9 @@
             android:id="@+id/btn_pay_now"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/space_md"
             android:text="Pay Now"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_sm"
             android:textStyle="bold"
             android:textColor="@android:color/white"
             android:backgroundTint="@color/pink_primary"

@@ -55,7 +55,7 @@
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
                 android:text="PENDING"
-                android:textSize="11sp"
+                android:textSize="@dimen/text_sm"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_order_status" />

@@ -32,21 +32,21 @@
                 android:text="ORD123456"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
-                android:textSize="@dimen/text_md" />
+                android:textSize="@dimen/text_lg" />
 
             <TextView
                 android:id="@+id/tvOrderStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:text="Pending"
+                android:textSize="@dimen/text_sm"
+                android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_xs"
-                android:paddingStart="@dimen/space_sm"
-                android:paddingEnd="@dimen/space_sm"
-                android:paddingTop="@dimen/space_xs"
-                android:paddingBottom="@dimen/space_xs"
-                android:background="@drawable/bg_order_status"
-                android:gravity="center" />
+                android:background="@drawable/bg_order_status" />
         </LinearLayout>
 
         <!-- Total and Payment Method -->
@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:text="Total"
                     android:textColor="@color/colorGrayText"
-                    android:textSize="@dimen/text_xs" />
+                    android:textSize="@dimen/text_sm" />
 
                 <TextView
                     android:id="@+id/tvOrderTotal"
@@ -76,7 +76,7 @@
                     android:text="0đ"
                     android:textColor="@color/red_add_button"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_md" />
+                    android:textSize="@dimen/text_lg" />
             </LinearLayout>
 
             <LinearLayout
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:text="Payment"
                     android:textColor="@color/colorGrayText"
-                    android:textSize="@dimen/text_xs" />
+                    android:textSize="@dimen/text_lg" />
 
                 <TextView
                     android:id="@+id/tvPaymentMethod"
@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:text="Date:"
                 android:textColor="@color/colorGrayText"
-                android:textSize="@dimen/text_xs" />
+                android:textSize="@dimen/text_sm" />
 
             <TextView
                 android:id="@+id/tvCreatedAt"

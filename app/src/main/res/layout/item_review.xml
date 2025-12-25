@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/space_lg">
 
     <!-- Header: User info & Rating -->
     <LinearLayout
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="@dimen/space_md">
 
             <TextView
                 android:id="@+id/tvUserName"
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="2dp">
+                android:layout_marginTop="@dimen/space_xs">
 
                 <!-- Rating Bar (static) -->
                 <RatingBar
@@ -58,17 +58,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:numStars="5"
-                    android:rating="5"
+                    android:rating="3"
                     android:isIndicator="true"
-                    android:progressTint="@color/purple_500"
-                    android:secondaryProgressTint="@color/purple_500"/>
+                    android:progressTint="@color/red_add_button"
+                    android:secondaryProgressTint="@color/red_add_button"/>
 
                 <TextView
                     android:id="@+id/tvReviewDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2025-12-21"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_sm"
                     android:textColor="@android:color/darker_gray"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
@@ -81,12 +81,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Verified Purchase"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_sm"
         android:textColor="#4CAF50"
         android:background="#E8F5E9"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="2dp"
-        android:layout_marginTop="8dp"
+        android:paddingHorizontal="@dimen/space_sm"
+        android:paddingVertical="@dimen/space_xs"
+        android:layout_marginTop="@dimen/space_sm"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -97,15 +97,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Review content goes here..."
-        android:textColor="#333333"
+        android:textColor="@color/black"
         android:lineSpacingExtra="4dp"
-        android:textSize="14sp"/>
+        android:textSize="@dimen/text_sm"/>
 
     <!-- Separator -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#F0F0F0"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="@dimen/space_lg"/>
 
 </LinearLayout>

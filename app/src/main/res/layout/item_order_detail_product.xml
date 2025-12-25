@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="@dimen/space_md"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp">
 
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="@dimen/space_md">
 
         <!-- Product Image -->
         <ImageView
@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/space_md"
             android:orientation="vertical">
 
             <!-- Product Name -->
@@ -36,7 +36,7 @@
                 android:id="@+id/txtProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_md"
                 android:textStyle="bold"
                 android:textColor="#212121"
                 android:maxLines="2"
@@ -48,9 +48,9 @@
                 android:id="@+id/txtSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="@dimen/text_xs"
                 android:textColor="#757575"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/space_xs"
                 tools:text="Size: S" />
 
             <!-- Toppings -->
@@ -58,9 +58,9 @@
                 android:id="@+id/txtToppings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_xs"
                 android:textColor="#757575"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone"
                 tools:text="Toppings: Sợi dừa, Hạt sen"
                 tools:visibility="visible" />
@@ -70,10 +70,10 @@
                 android:id="@+id/txtNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_xs"
                 android:textColor="#FF6B6B"
                 android:textStyle="italic"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone"
                 tools:text="Note: Ít đường"
                 tools:visibility="visible" />
@@ -83,14 +83,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/space_sm"
                 android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/txtQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_sm"
                     android:textColor="#212121"
                     tools:text="x3" />
 
@@ -103,7 +103,7 @@
                     android:id="@+id/txtPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/text_sm"
                     android:textStyle="bold"
                     android:textColor="@color/pink_primary"
                     tools:text="24,000₫" />

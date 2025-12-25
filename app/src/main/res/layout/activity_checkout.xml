@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:background="#FAFAFA"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +15,7 @@
         <!-- Header (match admin order header style) -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/space_xxl"
+            android:layout_height="48dp"
             android:layout_marginTop="@dimen/space_xxl"
             android:paddingStart="@dimen/space_lg"
             android:paddingEnd="@dimen/space_lg"

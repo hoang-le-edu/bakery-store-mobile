@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:fitsSystemWindows="true">
 
     <!-- Toolbar with Search -->
     <LinearLayout
@@ -12,8 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/space_lg"
-        android:layout_marginTop="@dimen/space_md">
+        android:padding="@dimen/space_lg">
 
         <EditText
             android:id="@+id/etSearch"

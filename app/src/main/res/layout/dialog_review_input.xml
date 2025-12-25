@@ -10,20 +10,22 @@
         android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/space_lg"
         android:text="Write a Review"
-        android:textSize="@dimen/text_xl"
-        android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginBottom="@dimen/space_lg"/>
+        android:textSize="@dimen/text_subsubtitle"
+        android:textStyle="bold" />
 
     <RatingBar
         android:id="@+id/ratingBar_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:progressTint="@color/red_add_button"
+        android:secondaryProgressTint="@color/red_add_button"
         android:numStars="5"
         android:stepSize="1"
-        android:rating="0" />
+        android:rating="3" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/reviewTextInputLayout"
@@ -31,6 +33,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_lg"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="@dimen/space_sm"
+        app:boxCornerRadiusTopEnd="@dimen/space_sm"
+        app:boxCornerRadiusBottomStart="@dimen/space_sm"
+        app:boxCornerRadiusBottomEnd="@dimen/space_sm"
         android:hint="Share your experience...">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -82,7 +89,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitReview"
             android:backgroundTint="@color/red_add_button"
-            app:cornerRadius="@dimen/space_sm"
+            app:cornerRadius="50dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Submit"/>

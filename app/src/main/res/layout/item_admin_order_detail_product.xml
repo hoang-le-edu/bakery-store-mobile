@@ -67,9 +67,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="end|center_vertical"
-            android:textColor="@color/black"
+            android:textColor="@color/red_add_button"
             android:textStyle="bold"
-            android:textSize="@dimen/text_sm"
+            android:textSize="@dimen/text_lg"
             android:text="0đ" />
 
     </LinearLayout>

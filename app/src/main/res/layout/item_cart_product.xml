@@ -74,14 +74,6 @@
                 android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone">
 
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/ic_size"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="Size icon"
-                    app:tint="#757575" />
-
                 <TextView
                     android:id="@+id/txtSize"
                     android:layout_width="wrap_content"
@@ -103,13 +95,6 @@
                 android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone">
 
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/ic_topping"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="Topping icon"
-                    app:tint="#757575" />
 
                 <TextView
                     android:id="@+id/txtToppings"
@@ -135,20 +120,12 @@
                 android:layout_marginTop="@dimen/space_xs"
                 android:visibility="gone">
 
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/ic_note"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="Note icon"
-                    app:tint="#757575" />
-
                 <TextView
                     android:id="@+id/txtNote"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Ghi chú"
+                    android:text="Note"
                     android:textSize="@dimen/text_xs"
                     android:textColor="#757575"
                     android:textStyle="italic"
@@ -181,7 +158,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Quantity: "
-                        android:textSize="@dimen/text_sm"
+                        android:textSize="@dimen/text_md"
                         android:textColor="@color/colorGrayText" />
 
                     <TextView
@@ -189,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1"
-                        android:textSize="@dimen/text_sm"
+                        android:textSize="@dimen/text_md"
                         android:textStyle="bold"
                         android:textColor="#212121"
                         tools:text="2" />

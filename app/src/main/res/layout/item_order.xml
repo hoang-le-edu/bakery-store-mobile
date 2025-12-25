@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="@dimen/space_sm"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp">
 
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/space_lg">
 
         <!-- Order Header -->
         <LinearLayout
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="12dp">
+            android:paddingBottom="@dimen/space_md">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -32,20 +32,20 @@
                     android:id="@+id/txtOrderId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đơn hàng #123"
-                    android:textSize="16sp"
+                    android:text="Order #123"
+                    android:textSize="@dimen/text_md"
                     android:textStyle="bold"
                     android:textColor="#212121"
-                    tools:text="Đơn hàng #12345" />
+                    tools:text="Order #12345" />
 
                 <TextView
                     android:id="@+id/txtOrderDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="15/11/2024 14:30"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_xs"
                     android:textColor="#757575"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="@dimen/space_xs"
                     tools:text="15/11/2024 14:30" />
 
             </LinearLayout>
@@ -54,14 +54,14 @@
                 android:id="@+id/txtOrderStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chờ duyệt"
-                android:textSize="12sp"
+                android:text="Pending"
+                android:textSize="@dimen/text_xs"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_status_pending"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                tools:text="Chờ duyệt" />
+                android:paddingHorizontal="@dimen/space_md"
+                android:paddingVertical="@dimen/space_xs"
+                tools:text="Pending" />
 
         </LinearLayout>
 
@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#E0E0E0"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="@dimen/space_md" />
 
         <!-- Receiver Info -->
         <LinearLayout
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="8dp">
+            android:paddingBottom="@dimen/space_sm">
 
             <ImageView
                 android:layout_width="16dp"
@@ -90,20 +90,20 @@
                 android:id="@+id/txtReceiverName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nguyễn Văn A"
-                android:textSize="14sp"
+                android:text="John Doe"
+                android:textSize="@dimen/text_sm"
                 android:textColor="#212121"
-                android:layout_marginStart="8dp"
-                tools:text="Nguyễn Văn A" />
+                android:layout_marginStart="@dimen/space_sm"
+                tools:text="John Doe" />
 
             <TextView
                 android:id="@+id/txtReceiverPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0123456789"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_sm"
                 android:textColor="#757575"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/space_sm"
                 tools:text="• 0123456789" />
 
         </LinearLayout>
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="top"
-            android:paddingBottom="12dp">
+            android:paddingBottom="@dimen/space_md">
 
             <ImageView
                 android:layout_width="16dp"
@@ -129,13 +129,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="123 Nguyễn Huệ, Quận 1, TP.HCM"
+                android:text="123 Nguyen Hue, District 1, HCMC"
                 android:textSize="13sp"
                 android:textColor="#757575"
                 android:layout_marginStart="8dp"
                 android:maxLines="2"
                 android:ellipsize="end"
-                tools:text="123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh" />
+                tools:text="123 Nguyen Hue, District 1, Ho Chi Minh City" />
 
         </LinearLayout>
 
@@ -181,17 +181,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng:"
+                android:text="Total:"
                 android:textSize="14sp"
                 android:textColor="#757575"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="@dimen/space_sm" />
 
             <TextView
                 android:id="@+id/txtTotalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="150,000₫"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_md"
                 android:textStyle="bold"
                 android:textColor="@color/pink_primary"
                 tools:text="150,000₫" />

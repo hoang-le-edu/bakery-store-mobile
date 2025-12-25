@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.TheCodeCup" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorRedButton</item>
+        <item name="colorPrimaryVariant">@color/colorRedButton</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/colorRedButton</item>
     </style>
 
     <style name="MyCustomTabText" parent="TextAppearance.Design.Tab">

@@ -20,7 +20,7 @@
             android:text="Wait For Approval"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:textSize="14sp" />
+            android:textSize="@dimen/text_lg" />
 
         <TextView
             android:id="@+id/tvChangedAt"
@@ -37,8 +37,8 @@
         android:layout_height="wrap_content"
         android:text="By Admin"
         android:textColor="@color/colorGrayText"
-        android:textSize="12sp"
-        android:layout_marginTop="2dp" />
+        android:textSize="@dimen/text_sm"
+        android:layout_marginTop="@dimen/space_sm" />
 
     <TextView
         android:id="@+id/tvNote"
