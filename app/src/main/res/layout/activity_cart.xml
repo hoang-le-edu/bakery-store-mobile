@@ -19,9 +19,7 @@
         <RelativeLayout
             android:id="@+id/headerLayout"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-                android:fitsSystemWindows="false">
-
+            android:layout_height="48dp">
 
             <ImageButton
                 android:id="@+id/btnHome"
@@ -33,6 +31,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back"
                 android:src="@drawable/ic_home"
+                app:tint="#777777"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
                 android:paddingStart="@dimen/space_lg"
@@ -302,8 +301,8 @@
         <!-- Shadow mỏng phía trên bottom nav -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="#14000000"/>
+            android:layout_height="10dp"
+            android:background="@drawable/shadow_top"/>
 
         <LinearLayout
             android:layout_width="match_parent"

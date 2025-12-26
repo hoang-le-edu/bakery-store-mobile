@@ -100,24 +100,22 @@
                 android:id="@+id/tabAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="8dp"
+                android:minHeight="48dp"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
                 android:text="All"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_lg"
                 android:textStyle="bold"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless" />
 
         </LinearLayout>
     </HorizontalScrollView>
 
-    <View
-        android:id="@+id/tabShadow"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@drawable/shadow_bottom" />
+    
 
 
     <androidx.recyclerview.widget.RecyclerView
