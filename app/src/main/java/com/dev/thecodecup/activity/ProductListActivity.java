@@ -157,9 +157,26 @@ public class ProductListActivity extends BaseBottomNavActivity {
             TextView tabView = new TextView(this);
             tabView.setText(title);
             tabView.setTag(c.getCategoryId());
-            tabView.setPadding(16, 8, 16, 8);
-            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            // Padding và minHeight giống tabAll trong XML (left=16, top=0, right=16, bottom=0, minHeight=48dp)
+            int px16 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+            tabView.setPadding(px16, 0, px16, 0);
+            tabView.setMinHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics()));
+            tabView.setGravity(android.view.Gravity.CENTER);
+            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_lg));
             tabView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+            tabView.setTypeface(tabView.getTypeface(), android.graphics.Typeface.BOLD);
+            tabView.setClickable(true);
+            // Sửa lỗi setForeground cho ripple effect
+            android.util.TypedValue outValue = new android.util.TypedValue();
+            if (getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)) {
+                tabView.setForeground(ContextCompat.getDrawable(this, outValue.resourceId));
+            }
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMarginEnd(8);
+            tabView.setLayoutParams(params);
 
             tabView.setOnClickListener(v -> {
                 selectTab(tabView, c.getCategoryId());

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/white"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -13,44 +13,38 @@
         android:orientation="vertical">
 
         <!-- Header (styled like admin order detail) -->
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="48dp"
             android:paddingStart="@dimen/space_lg"
             android:paddingEnd="@dimen/space_lg"
             android:background="@android:color/white">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/tvToolbarTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Order Details"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:ellipsize="end"
-                    android:singleLine="true" />
 
                 <ImageButton
                     android:id="@+id/btnBack"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/white"
                     android:src="@drawable/ic_arrowback"
-                    app:tint="@color/black"
-                    android:contentDescription="@string/back" />
+                    android:scaleType="fitCenter"
+                    android:padding="8dp"
+                    android:contentDescription="Back"/>
 
-            </FrameLayout>
-
-        </com.google.android.material.appbar.MaterialToolbar>
+                <TextView
+                    android:id="@+id/tvToolbarTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="Order Details"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_subsubtitle"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:singleLine="true" />
+            </RelativeLayout>
 
         <!-- Order Status Card -->
         <androidx.cardview.widget.CardView
@@ -545,12 +539,13 @@
         </androidx.cardview.widget.CardView>
 
         <!-- Pay Now Button -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPayNow"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="6dp"
             android:text="Pay Now"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -563,7 +558,10 @@
             android:id="@+id/btnCancelOrder"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="16dp"
             android:text="Cancel Order"
             android:textSize="16sp"
             app:strokeColor="@color/pink_primary"

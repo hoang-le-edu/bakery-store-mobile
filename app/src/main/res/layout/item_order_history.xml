@@ -16,7 +16,7 @@
         android:orientation="vertical"
         android:padding="@dimen/space_lg">
 
-        <!-- Header: Mã đơn + Ngày đặt -->
+        <!-- Header: Order number + Order date -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/text_sm"
+                android:textSize="@dimen/text_md"
                 android:textStyle="bold"
                 tools:text="#ORD12345678" />
 
@@ -37,8 +37,8 @@
                 android:id="@+id/tv_order_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="@dimen/text_xs"
+                android:textColor="@color/colorGrayText"
+                android:textSize="@dimen/text_sm"
                 tools:text="12/12/2025" />
         </LinearLayout>
 
@@ -48,14 +48,14 @@
             android:layout_marginVertical="@dimen/space_md"
             android:background="#F0F0F0" />
 
-        <!-- Body: Ảnh SP + Tên SP + Status -->
+        <!-- Body: Product image + Product name + Status -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- Ảnh sản phẩm đại diện -->
+            <!-- Product thumbnail image -->
             <androidx.cardview.widget.CardView
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -70,7 +70,7 @@
                     android:src="@drawable/placeholder_image" />
             </androidx.cardview.widget.CardView>
 
-            <!-- Thông tin bên phải ảnh -->
+            <!-- Info on the right of image -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,16 +88,16 @@
                     android:textStyle="bold"
                     tools:text="Bánh kem sinh nhật dâu tây" />
 
-                <!-- Thông tin Size, Số lượng, Topping -->
+                <!-- Info: Size, Quantity, Topping -->
                 <TextView
                     android:id="@+id/tv_product_variant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#757575"
-                    android:textSize="@dimen/text_xs"
+                    android:textColor="@color/colorGrayText"
+                    android:textSize="@dimen/text_sm"
                     android:layout_marginTop="@dimen/space_xs"
                     android:visibility="visible"
-                    tools:text="Size: S • x1 • 2 Topping" />
+                    tools:text="Size: S • x1 • 2 Toppings" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -109,9 +109,9 @@
                         android:id="@+id/tv_item_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/text_xs"
-                        android:textColor="#757575"
-                        tools:text="1 sản phẩm" />
+                        android:textSize="@dimen/text_sm"
+                        android:textColor="@color/colorGrayText"
+                        tools:text="1 item" />
                     
                     <TextView
                         android:layout_width="wrap_content"
@@ -123,7 +123,7 @@
                         android:id="@+id/tv_order_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/text_xs"
+                        android:textSize="@dimen/text_sm"
                         android:textStyle="bold"
                         tools:text="In Progress"
                         tools:textColor="@color/purple_500"/>
@@ -138,7 +138,7 @@
             android:layout_marginVertical="@dimen/space_md"
             android:background="#F0F0F0" />
 
-        <!-- Footer: Tổng tiền và Nút Review -->
+        <!-- Footer: Total price and Review button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,15 +154,15 @@
                     android:id="@+id/tv_payment_method"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#757575"
-                    android:textSize="@dimen/text_xs"
-                    tools:text="Thanh toán: Tiền mặt" />
+                    android:textColor="@color/colorGrayText"
+                    android:textSize="@dimen/text_sm"
+                    tools:text="Payment: Cash" />
                  <TextView
                     android:id="@+id/tv_total_price_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thành tiền: "
-                    android:textColor="@android:color/black"
+                    android:text="Total: "
+                    android:textColor="@color/colorGrayText"
                     android:textSize="@dimen/text_sm" />
 
                 <TextView
@@ -181,8 +181,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Review"
-                android:textColor="@color/purple_500"
-                app:strokeColor="@color/purple_500"
+                android:textColor="@color/colorRedButton"
+                app:strokeColor="@color/colorRedButton"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

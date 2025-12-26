@@ -60,8 +60,8 @@
                     android:numStars="5"
                     android:rating="3"
                     android:isIndicator="true"
-                    android:progressTint="@color/red_add_button"
-                    android:secondaryProgressTint="@color/red_add_button"/>
+                    android:progressTint="@color/yellow_star"
+                    android:secondaryProgressTint="@color/yellow_star"/>
 
                 <TextView
                     android:id="@+id/tvReviewDate"

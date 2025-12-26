@@ -242,29 +242,32 @@ public class OrderDetailActivity extends BaseAuthActivity {
     }
 
     private void setStatusStyle(String status) {
-        int backgroundColor;
-        int textColor = 0xFFFFFFFF; // White text
-
+        // Always use background drawable with radius
+        txtOrderStatus.setBackgroundResource(R.drawable.bg_order_status);
+        int color;
         switch (status.toLowerCase()) {
             case "wait for approval":
-                backgroundColor = 0xFFFFA726; // Orange
+                color = 0xFFDB5560; // Pink
                 break;
             case "in progress":
-                backgroundColor = 0xFF42A5F5; // Blue
+                color = 0xFFFFA726; // Yellow/Orange
                 break;
             case "completed":
-                backgroundColor = 0xFF66BB6A; // Green
+                color = 0xFF66BB6A; // Green
                 break;
             case "cancelled":
-                backgroundColor = 0xFFEF5350; // Red
+                color = 0xFF9E9E9E; // Gray 
                 break;
             default:
-                backgroundColor = 0xFF9E9E9E; // Grey
+                color = 0xFF9E9E9E; // Grey
                 break;
         }
-
-        txtOrderStatus.setBackgroundColor(backgroundColor);
-        txtOrderStatus.setTextColor(textColor);
+        // Set color filter for background shape
+        android.graphics.drawable.Drawable bg = txtOrderStatus.getBackground();
+        if (bg != null) {
+            bg.setTint(color);
+        }
+        txtOrderStatus.setTextColor(0xFFFFFFFF); // White text
         txtOrderStatus.setPadding(24, 12, 24, 12);
     }
 
@@ -310,16 +313,16 @@ public class OrderDetailActivity extends BaseAuthActivity {
 
     private void showCancelOrderDialog() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Hủy đơn hàng")
-                .setMessage("Bạn có chắc chắn muốn hủy đơn hàng này?")
-                .setPositiveButton("Hủy đơn", (dialog, which) -> cancelOrder())
-                .setNegativeButton("Không", null)
-                .show();
+            .setTitle("Cancel Order")
+            .setMessage("Are you sure you want to cancel this order?")
+            .setPositiveButton("Cancel Order", (dialog, which) -> cancelOrder())
+            .setNegativeButton("No", null)
+            .show();
     }
 
     private void cancelOrder() {
         final ProgressDialog dialog = ProgressDialog.show(this, null,
-                "Đang hủy đơn hàng...", true, false);
+            "Cancelling order...", true, false);
 
         BakeryJavaBridge.INSTANCE.cancelOrder(this, orderId, new CancelOrderCallback() {
             @Override
@@ -329,7 +332,7 @@ public class OrderDetailActivity extends BaseAuthActivity {
                 if (error != null) {
                     Log.e(TAG, "Cancel order error", error);
                     Toast.makeText(OrderDetailActivity.this,
-                            "Lỗi khi hủy đơn: " + error.getMessage(),
+                            "Error cancelling order: " + error.getMessage(),
                             Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -341,7 +344,7 @@ public class OrderDetailActivity extends BaseAuthActivity {
                     // Reload order detail to update status
                     loadOrderDetail();
                 } else {
-                    String errorMsg = "Không thể hủy đơn hàng";
+                    String errorMsg = "Unable to cancel order";
                     if (response != null && response.errorBody() != null) {
                         try {
                             errorMsg = response.errorBody().string();

@@ -21,8 +21,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:progressTint="@color/red_add_button"
-        android:secondaryProgressTint="@color/red_add_button"
+        android:progressTint="@color/yellow_star"
+        android:secondaryProgressTint="@color/yellow_star"
+        android:indeterminateTint="@color/yellow_star"
         android:numStars="5"
         android:stepSize="1"
         android:rating="3" />
@@ -34,10 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_lg"
         app:boxBackgroundMode="outline"
-        app:boxCornerRadiusTopStart="@dimen/space_sm"
-        app:boxCornerRadiusTopEnd="@dimen/space_sm"
-        app:boxCornerRadiusBottomStart="@dimen/space_sm"
-        app:boxCornerRadiusBottomEnd="@dimen/space_sm"
         android:hint="Share your experience...">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -45,7 +42,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minLines="4"
-            android:gravity="top"/>
+            android:gravity="top"
+            app:boxCornerRadiusTopStart="@dimen/space_sm"
+            app:boxCornerRadiusTopEnd="@dimen/space_sm"
+            app:boxCornerRadiusBottomStart="@dimen/space_sm"
+            app:boxCornerRadiusBottomEnd="@dimen/space_sm"/>
     </com.google.android.material.textfield.TextInputLayout>
     
     <!-- Read-only TextView for viewing existing review -->

@@ -125,9 +125,9 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             int color;
             switch (status) {
                 case "Completed": color = Color.parseColor("#4CAF50"); break;
-                case "Cancelled": color = Color.parseColor("#F44336"); break;
-                case "Wait For Approval": color = Color.parseColor("#FF9800"); break;
-                case "In Progress": color = Color.parseColor("#2196F3"); break;
+                case "Cancelled": color = Color.parseColor("#9E9E9E"); break; // Gray (admin order status)
+                case "Wait For Approval": color = Color.parseColor("#DB5560"); break; // đỏ hồng
+                case "In Progress": color = Color.parseColor("#FF9800"); break; // vàng
                 default: color = Color.BLACK;
             }
             tvOrderStatus.setTextColor(color);
