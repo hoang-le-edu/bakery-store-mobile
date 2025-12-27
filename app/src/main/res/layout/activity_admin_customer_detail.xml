@@ -32,8 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Customer Information"
-            android:textColor="#324A59"
-            android:textSize="@dimen/text_xl"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_subsubtitle"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -66,7 +66,7 @@
                 android:layout_marginBottom="@dimen/space_lg"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:strokeColor="#E0E0E0"
+                app:strokeColor="@color/colorGrayLine"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -82,7 +82,7 @@
                         android:text="Information"
                         android:textColor="@android:color/black"
                         android:textStyle="bold"
-                        android:textSize="@dimen/text_lg"
+                        android:textSize="@dimen/text_xl"
                         android:layout_marginBottom="@dimen/space_md" />
 
                     <!-- Customer Name -->
@@ -98,7 +98,7 @@
                             android:layout_weight="0.4"
                             android:text="Name:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md"/>
 
                         <TextView
                             android:id="@+id/tvCustomerName"
@@ -107,7 +107,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                     <!-- Email -->
@@ -123,7 +123,7 @@
                             android:layout_weight="0.4"
                             android:text="Email:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
 
                         <TextView
                             android:id="@+id/tvEmail"
@@ -132,7 +132,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                     <!-- Phone -->
@@ -148,7 +148,7 @@
                             android:layout_weight="0.4"
                             android:text="Phone:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
 
                         <TextView
                             android:id="@+id/tvPhoneNumber"
@@ -157,7 +157,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                     <!-- Date Registered -->
@@ -173,7 +173,7 @@
                             android:layout_weight="0.4"
                             android:text="Registered:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
 
                         <TextView
                             android:id="@+id/tvDateRegistered"
@@ -182,7 +182,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                     <!-- Date of Birth -->
@@ -198,7 +198,7 @@
                             android:layout_weight="0.4"
                             android:text="DOB:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
 
                         <TextView
                             android:id="@+id/tvDateOfBirth"
@@ -207,7 +207,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                     <!-- Gender -->
@@ -223,7 +223,7 @@
                             android:layout_weight="0.4"
                             android:text="Gender:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
 
                         <TextView
                             android:id="@+id/tvGender"
@@ -232,7 +232,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                     <!-- Address -->
@@ -247,7 +247,7 @@
                             android:layout_weight="0.4"
                             android:text="Address:"
                             android:textColor="@color/colorGrayText"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
 
                         <TextView
                             android:id="@+id/tvAddress"
@@ -256,7 +256,7 @@
                             android:layout_weight="0.6"
                             android:text="--"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/text_sm" />
+                            android:textSize="@dimen/text_md" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -284,7 +284,7 @@
                         android:text="Orders"
                         android:textColor="@android:color/black"
                         android:textStyle="bold"
-                        android:textSize="@dimen/text_lg"
+                        android:textSize="@dimen/text_xl"
                         android:layout_marginBottom="@dimen/space_md" />
 
                     <androidx.recyclerview.widget.RecyclerView

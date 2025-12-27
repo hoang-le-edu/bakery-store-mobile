@@ -67,6 +67,7 @@
         android:padding="@dimen/space_sm">
 
         <LinearLayout
+            android:id="@+id/tabContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -77,10 +78,10 @@
                 android:id="@+id/tabAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="8dp"
+                android:paddingStart="@dimen/space_lg"
+                android:paddingEnd="@dimen/space_lg"
+                android:paddingTop="@dimen/space_lg"
+                android:paddingBottom="@dimen/space_lg"
                 android:text="@string/all"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_lg"

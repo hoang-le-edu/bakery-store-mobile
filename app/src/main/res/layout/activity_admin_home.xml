@@ -239,7 +239,7 @@
                     android:text="Summary"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_md" />
+                    android:textSize="@dimen/text_lg" />
 
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/barChartSummary"

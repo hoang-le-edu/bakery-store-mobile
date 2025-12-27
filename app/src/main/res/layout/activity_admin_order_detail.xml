@@ -32,8 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Order Detail"
-            android:textColor="#324A59"
-            android:textSize="@dimen/text_xl"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_subsubtitle"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -267,7 +267,7 @@
                         android:text="Items"
                         android:textColor="@color/black"
                         android:textStyle="bold"
-                        android:textSize="@dimen/text_lg" />
+                        android:textSize="@dimen/text_xl" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvItems"
