@@ -270,7 +270,7 @@
                     android:text="Daily Revenue Trend"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_sm"
+                    android:textSize="@dimen/text_md"
                     android:layout_marginTop="@dimen/space_lg" />
 
                 <com.github.mikephil.charting.charts.BarChart

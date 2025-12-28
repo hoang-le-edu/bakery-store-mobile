@@ -41,7 +41,6 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
 
     private ApiService apiService;
     private String orderId;
-
     private ProgressBar progressBar;
     private ScrollView scrollContent;
     private TextView tvOrderNumber;
@@ -408,9 +407,9 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         if (status == null) {
             color = getResources().getColor(android.R.color.darker_gray);
         } else if ("Wait For Approval".equalsIgnoreCase(status)) {
-            color = getResources().getColor(R.color.status_pending);
+            color = getResources().getColor(R.color.status_waitForApproval);
         } else if ("In Progress".equalsIgnoreCase(status) || "Delivering".equalsIgnoreCase(status)) {
-            color = getResources().getColor(R.color.status_ongoing);
+            color = getResources().getColor(R.color.status_inProgress);
         } else if ("Completed".equalsIgnoreCase(status)) {
             color = getResources().getColor(R.color.status_completed);
         } else if ("Cancelled".equalsIgnoreCase(status)) {
