@@ -58,7 +58,7 @@
                 android:textSize="@dimen/text_xs"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:background="@drawable/bg_status_pending"
+                android:background="@drawable/bg_status_approval"
                 android:paddingHorizontal="@dimen/space_md"
                 android:paddingVertical="@dimen/space_xs"
                 tools:text="Pending" />

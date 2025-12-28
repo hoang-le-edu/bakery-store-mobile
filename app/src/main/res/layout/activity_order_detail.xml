@@ -102,7 +102,7 @@
                         android:textSize="13sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
-                        android:background="@drawable/bg_status_pending"
+                        android:background="@drawable/bg_status_approval"
                         android:paddingHorizontal="16dp"
                         android:paddingVertical="8dp"
                         tools:text="Pending" />

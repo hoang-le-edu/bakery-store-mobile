@@ -89,7 +89,7 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
         if ("paid".equalsIgnoreCase(paymentStatus) || "completed".equalsIgnoreCase(paymentStatus)) {
             paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_completed);
         } else if ("pending".equalsIgnoreCase(paymentStatus)) {
-            paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_pending);
+            paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_waitForApproval);
         } else {
             paymentColor = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_cancelled);
         }
@@ -104,13 +104,13 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
         int color;
         switch (status) {
             case "Wait For Approval":
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_pending);
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_waitForApproval);
                 break;
             case "In Progress":
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_ongoing);
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_inProgress);
                 break;
             case "Delivering":
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_ongoing);
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_inProgress);
                 break;
             case "Completed":
                 color = ContextCompat.getColor(holder.itemView.getContext(), R.color.status_completed);
