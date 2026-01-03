@@ -2,7 +2,11 @@ package com.dev.thecodecup.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.LinearLayout;
@@ -27,6 +31,11 @@ public class ProductListActivity extends BaseBottomNavActivity {
     private ProductAdapter adapter;
     private ProductViewModel viewModel;
     private String currentCategoryId = "all";
+    private String currentSearchText = "";
+
+    private EditText etSearch;
+    private final Handler searchHandler = new Handler();
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +46,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
         tabAll = findViewById(R.id.tabAll);
         rvProducts = findViewById(R.id.rvProducts);
         bottomNav = findViewById(R.id.bottomNav);
+        etSearch = findViewById(R.id.etSearch);
 
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ProductAdapter(this);
@@ -61,10 +71,11 @@ public class ProductListActivity extends BaseBottomNavActivity {
         viewModel.getCategoriesLiveData().observe(this, categories -> {
             buildTabs(categories);
             selectTab(tabAll, "all");
-            viewModel.loadProducts(null, null, "all");
+            viewModel.loadProducts(null, currentSearchText.isEmpty() ? null : currentSearchText, "all");
         });
 
         setupTabListeners();
+        setupSearch();
         viewModel.loadCategories();
     }
 
@@ -77,19 +88,53 @@ public class ProductListActivity extends BaseBottomNavActivity {
         View.OnClickListener listener = v -> {
             if (v.getId() == R.id.tabAll) {
                 selectTab(tabAll, "all");
-                viewModel.loadProducts(null, null, "all");
+                viewModel.loadProducts(null, currentSearchText.isEmpty() ? null : currentSearchText, "all");
             } else {
                 Object tag = v.getTag();
                 if (tag != null) {
                     String categoryId = (String) tag;
                     selectTab((TextView) v, categoryId);
-                    viewModel.loadProducts(null, null, categoryId);
+                    viewModel.loadProducts(null, currentSearchText.isEmpty() ? null : currentSearchText, categoryId);
                 }
             }
         };
 
         tabAll.setOnClickListener(listener);
         updateTabUI();
+    }
+
+    /**
+     * Thiết lập thanh tìm kiếm: debounce và gọi API với param searchText
+     */
+    private void setupSearch() {
+        if (etSearch == null) return;
+
+        // Bấm nút search trên bàn phím
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                triggerSearchImmediate();
+                return true;
+            }
+            return false;
+        });
+
+        // Gõ ký tự -> debounce ~400ms
+        searchRunnable = this::triggerSearchImmediate;
+        etSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                currentSearchText = s.toString().trim();
+                searchHandler.removeCallbacks(searchRunnable);
+                searchHandler.postDelayed(searchRunnable, 400);
+            }
+        });
+    }
+
+    private void triggerSearchImmediate() {
+        String query = currentSearchText.trim();
+        viewModel.loadProducts(null, query.isEmpty() ? null : query, currentCategoryId);
     }
 
     private void selectTab(TextView tab, String categoryId) {
@@ -180,7 +225,7 @@ public class ProductListActivity extends BaseBottomNavActivity {
 
             tabView.setOnClickListener(v -> {
                 selectTab(tabView, c.getCategoryId());
-                viewModel.loadProducts(null, null, c.getCategoryId());
+                viewModel.loadProducts(null, currentSearchText.isEmpty() ? null : currentSearchText, c.getCategoryId());
             });
 
             tabContainer.addView(tabView);

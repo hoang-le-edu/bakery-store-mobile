@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -62,6 +64,14 @@ public class Login extends AppCompatActivity {
 
     private GoogleAuthManager googleAuthManager;
     private ApiService apiService;
+
+    // Timeout & state control to avoid infinite spinner
+    // Allow more time for slower devices/networks to avoid false timeouts
+    private static final long LOGIN_TIMEOUT_MS = 30000; // 30s for whole flow
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private volatile boolean loginInProgress = false;
+    private Runnable loginTimeoutRunnable;
+    private Call<LoginResponseDto> currentLoginApiCall;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -245,10 +255,32 @@ public class Login extends AppCompatActivity {
 
         ProgressDialog dlg = ProgressDialog.show(
                 this, null, "Signing in...", true, false);
+        dlg.setCanceledOnTouchOutside(false);
+
+        // Start timeout watchdog for the entire login flow
+        loginInProgress = true;
+        if (loginTimeoutRunnable != null) handler.removeCallbacks(loginTimeoutRunnable);
+        loginTimeoutRunnable = () -> {
+            if (!loginInProgress) return;
+            // Cancel any pending backend call
+            try { if (currentLoginApiCall != null) currentLoginApiCall.cancel(); } catch (Exception ignored) {}
+            dlg.dismiss();
+            loginInProgress = false;
+            Toast.makeText(Login.this,
+                    "Login timeout. Check your internet connection.",
+                    Toast.LENGTH_LONG).show();
+            // If Firebase token already stored, let user into Home as fallback
+            if (AuthManager.INSTANCE.isLoggedIn()) {
+                startActivity(new Intent(Login.this, HomeActivity.class));
+                finish();
+            }
+        };
+        handler.postDelayed(loginTimeoutRunnable, LOGIN_TIMEOUT_MS);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(task -> {
+                    if (!loginInProgress) return; // already timed out
                     dlg.dismiss();
 
                     if (task.isSuccessful()) {
@@ -259,6 +291,7 @@ public class Login extends AppCompatActivity {
                         }
 
                         user.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                            if (!loginInProgress) return; // timeout already occurred
                             if (tokenTask.isSuccessful()) {
                                 String idToken = tokenTask.getResult().getToken();
 
@@ -268,9 +301,7 @@ public class Login extends AppCompatActivity {
                                         AuthManager.INSTANCE.getValidIdTokenBlocking()
                                 );
 
-//                                Toast.makeText(this, "Sign in successfully", Toast.LENGTH_SHORT).show();
-//                                startActivity(new Intent(this, HomeActivity.class));
-//                                finish();
+                                // Tiếp tục gọi API backend để lấy user type nhưng vẫn giữ watchdog
                                 fetchUserAndNavigate(email, pass, dlg);
                             } else {
                                 uiFail(dlg, "Không lấy được idToken: " + tokenTask.getException().getMessage());
@@ -318,6 +349,10 @@ public class Login extends AppCompatActivity {
 
     private void uiFail(ProgressDialog dlg, String msg) {
         runOnUiThread(() -> {
+            // Stop login watchdog and any pending API call to avoid late timeout toasts
+            try { if (currentLoginApiCall != null) currentLoginApiCall.cancel(); } catch (Exception ignored) {}
+            handler.removeCallbacks(loginTimeoutRunnable);
+            loginInProgress = false;
             dlg.dismiss();
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         });
@@ -343,16 +378,22 @@ public class Login extends AppCompatActivity {
         body.put("email", email);
         body.put("password", password);
 
-        Call<LoginResponseDto> call = apiService.login(body);
-        call.enqueue(new Callback<LoginResponseDto>() {
+        currentLoginApiCall = apiService.login(body);
+        currentLoginApiCall.enqueue(new Callback<LoginResponseDto>() {
             @Override
             public void onResponse(Call<LoginResponseDto> call, Response<LoginResponseDto> response) {
+                if (!loginInProgress) return; // timed out
+                handler.removeCallbacks(loginTimeoutRunnable);
+                loginInProgress = false;
                 dlg.dismiss();
 
                 if (!response.isSuccessful() || response.body() == null) {
                     Toast.makeText(Login.this,
                             "Login API failed: " + response.code(),
                             Toast.LENGTH_SHORT).show();
+                    // Fallback: vẫn cho vào Home nếu đã có Firebase token
+                    startActivity(new Intent(Login.this, HomeActivity.class));
+                    finish();
                     return;
                 }
 
@@ -363,6 +404,9 @@ public class Login extends AppCompatActivity {
                             ? loginRes.getMessage()
                             : "Đăng nhập thất bại.";
                     Toast.makeText(Login.this, msg, Toast.LENGTH_SHORT).show();
+                    // Fallback: vẫn cho vào Home nếu đã có Firebase token
+                    startActivity(new Intent(Login.this, HomeActivity.class));
+                    finish();
                     return;
                 }
 
@@ -409,10 +453,18 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponseDto> call, Throwable t) {
+                if (!loginInProgress) return; // timed out
+                handler.removeCallbacks(loginTimeoutRunnable);
+                loginInProgress = false;
                 dlg.dismiss();
                 Toast.makeText(Login.this,
                         "Lỗi login API: " + t.getMessage(),
                         Toast.LENGTH_SHORT).show();
+                // Fallback: vào Home nếu đã có Firebase token
+                if (AuthManager.INSTANCE.isLoggedIn()) {
+                    startActivity(new Intent(Login.this, HomeActivity.class));
+                    finish();
+                }
             }
         });
     }
