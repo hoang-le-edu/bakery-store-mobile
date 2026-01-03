@@ -7,14 +7,21 @@ import com.dev.thecodecup.model.network.dto.AdminCustomerDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminProductDto
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto
 import com.dev.thecodecup.model.network.dto.ApiResponse
+import com.dev.thecodecup.model.network.dto.CategoriesResponse
 import com.dev.thecodecup.model.network.dto.LoginResponseDto
 import com.dev.thecodecup.model.network.dto.ProductByIdDto
+import com.dev.thecodecup.model.network.dto.ProductDetailResponseDto
+import com.dev.thecodecup.model.network.dto.ProductOperationResponseDto
 import com.dev.thecodecup.model.network.dto.ProductsResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -142,6 +149,67 @@ interface ApiService {
         @Path("id") productId: String,
         @Body body: Map<String, @JvmSuppressWildcards Any?>
     ): Call<AdminProductDto>
+
+    /**
+     * Get all categories for admin
+     * Example: /api/admin/categories/all
+     */
+    @GET("admin/categories/all")
+    fun getAdminCategories(): Call<CategoriesResponse>
+
+    /**
+     * Get admin product detail by id
+     * Example: /api/admin/products/{id}
+     */
+    @GET("admin/products/{id}")
+    fun getAdminProductDetail(
+        @Path("id") productId: String
+    ): Call<ProductDetailResponseDto>
+
+    /**
+     * Add new product with multipart/form-data
+     * Example: /api/admin/products/add
+     */
+    @Multipart
+    @POST("admin/products/add")
+    fun addAdminProduct(
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody?,
+        @Part("status") status: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("cost") cost: RequestBody,
+        @Part("up_m_price") upMPrice: RequestBody,
+        @Part("up_l_price") upLPrice: RequestBody,
+        @Part("is_topping") isTopping: RequestBody,
+        @Part("priority") priority: RequestBody,
+        @Part thumbnailImage: MultipartBody.Part?,
+        @Part("categories_id[]") categoriesId: List<@JvmSuppressWildcards RequestBody>,
+        @Part("toppings_id[]") toppingsId: List<@JvmSuppressWildcards RequestBody>?,
+        @Part productDetailImages: List<MultipartBody.Part>?
+    ): Call<ProductOperationResponseDto>
+
+    /**
+     * Update product with multipart/form-data
+     * Example: /api/admin/products/update/{id}
+     */
+    @Multipart
+    @POST("admin/products/update/{id}")
+    fun updateAdminProductMultipart(
+        @Path("id") productId: String,
+        @Part("name") name: RequestBody?,
+        @Part("description") description: RequestBody?,
+        @Part("status") status: RequestBody?,
+        @Part("price") price: RequestBody?,
+        @Part("cost") cost: RequestBody?,
+        @Part("up_m_price") upMPrice: RequestBody?,
+        @Part("up_l_price") upLPrice: RequestBody?,
+        @Part("is_topping") isTopping: RequestBody?,
+        @Part("priority") priority: RequestBody?,
+        @Part thumbnailImage: MultipartBody.Part?,
+        @Part("categories_id[]") categoriesId: List<@JvmSuppressWildcards RequestBody>?,
+        @Part("toppings_id[]") toppingsId: List<@JvmSuppressWildcards RequestBody>?,
+        @Part productDetailImages: List<MultipartBody.Part>?
+    ): Call<ProductOperationResponseDto>
 
 }
 

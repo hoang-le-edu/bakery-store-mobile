@@ -19,13 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.AdminProductAdapter;
-import com.dev.thecodecup.activity.AdminUpdateProductDialog;
 import com.dev.thecodecup.adapter.AdminToppingAdapter;
 import com.dev.thecodecup.model.network.ApiService;
 import com.dev.thecodecup.model.network.NetworkModule;
 import com.dev.thecodecup.model.network.dto.AdminProductCategoryDto;
 import com.dev.thecodecup.model.network.dto.AdminProductDto;
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,12 +81,15 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     private TextView tabAll;
     private LinearLayout tabContainer;
     private RecyclerView rvProducts;
+    private FloatingActionButton fabAddProduct;
 
     private AdminProductAdapter adapter;
     private ApiService apiService;
 
     private static final String TAB_ALL = "all";
     private static final String TAB_TOPPING = "topping";
+    private static final int REQUEST_ADD_PRODUCT = 100;
+    private static final int REQUEST_EDIT_PRODUCT = 101;
     private String currentCategoryId = TAB_ALL;
     private List<AdminProductCategoryDto> categories = new ArrayList<>();
 
@@ -109,6 +112,14 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh the product list when returning to this activity
+        // This ensures we see any changes made in the edit activity
+        performSearch();
+    }
+
+    @Override
     protected int getAdminMenuItemId() {
         return R.id.navigation_admin_product;
     }
@@ -118,6 +129,13 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
         tabAll = findViewById(R.id.tabAll);
         tabContainer = findViewById(R.id.tabContainer);
         rvProducts = findViewById(R.id.rvProducts);
+        fabAddProduct = findViewById(R.id.fabAddProduct);
+
+        // FAB click listener
+        fabAddProduct.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminProductListActivity.this, AdminAddProductActivity.class);
+            startActivityForResult(intent, REQUEST_ADD_PRODUCT);
+        });
 
         // Đặt padding, minHeight, gravity, textSize, bold, ripple effect cho tabAll giống các tab động
         int px16 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
@@ -129,25 +147,34 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
         tabAll.setClickable(true);
         TypedValue outValue = new TypedValue();
         if (getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)) {
-            tabAll.setForeground(ContextCompat.getDrawable(this, outValue.resourceId));
+            tabAll.setBackgroundResource(outValue.resourceId);
         }
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMarginEnd(8);
+        tabAll.setLayoutParams(params);
     }
 
     private void setupRecycler() {
         adapter = new AdminProductAdapter(this);
         adapter.setOnItemClickListener(product -> {
-            // Nếu là callback update từ dialog thì gọi API update
-            if (product != null && product.getProductId() != null && product.getProductName() != null) {
-                showUpdateProductConfirm(product);
-            } else {
-                // Mặc định: mở chi tiết sản phẩm
-                Intent intent = new Intent(AdminProductListActivity.this, ProductDetailActivity.class);
-                intent.putExtra("productId", product.getProductId());
-                startActivity(intent);
-            }
+            // This is called when the update dialog completes or when item is clicked
+            // Reload the product list to reflect changes
+            performSearch();
         });
         rvProducts.setLayoutManager(new GridLayoutManager(this, 1));
         rvProducts.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((requestCode == REQUEST_ADD_PRODUCT || requestCode == REQUEST_EDIT_PRODUCT) && resultCode == RESULT_OK) {
+            // Reload product list
+            performSearch();
+        }
     }
 
     private void showUpdateProductConfirm(AdminProductDto updatedProduct) {

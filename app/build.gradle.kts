@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") version "2.0.21-1.0.28"
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
 }
@@ -68,6 +67,11 @@ android {
     }
 }
 
+// Configure KAPT
+kapt {
+    correctErrorTypes = true
+    useBuildCache = true
+}
 
 dependencies {
     testImplementation("org.robolectric:robolectric:4.11.1")
@@ -86,7 +90,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -98,7 +102,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
     
     // Socket.IO for real-time payment status
     implementation("io.socket:socket.io-client:2.1.0")
