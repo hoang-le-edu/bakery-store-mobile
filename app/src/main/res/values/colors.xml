@@ -26,4 +26,5 @@
     <color name="status_completed">#4CAF50</color>
     <color name="pink_primary">#f26d78</color>
     <color name="yellow_star">#FFD600</color>
+    <color name="colorPrimary">#f26d78</color>
 </resources>
