@@ -217,7 +217,22 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
                     @Override
                     public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            totalProducts = countProducts(response.body());
+                            AdminProductsResponseDto res = response.body();
+                            // Ưu tiên lấy trường products_count nếu có
+                            int productsCount = 0;
+                            try {
+                                java.lang.reflect.Method m = res.getClass().getMethod("getProductsCount");
+                                Object val = m.invoke(res);
+                                if (val instanceof Integer) {
+                                    productsCount = (Integer) val;
+                                } else if (val != null) {
+                                    productsCount = Integer.parseInt(val.toString());
+                                }
+                            } catch (Exception e) {
+                                // fallback nếu không có method getProductsCount
+                                productsCount = countProducts(res);
+                            }
+                            totalProducts = productsCount;
                             tvProductCount.setText("Total products: " + totalProducts);
                             updateCharts();
                         } else {
@@ -268,8 +283,8 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
         int pendingCount = orderStatusCount.getOrDefault("Pending", 0);
         int completedCount = orderStatusCount.getOrDefault("Completed", 0);
 
-        tvOrderPendingCount.setText("⏳ Pending: " + pendingCount);
-        tvOrderCompletedCount.setText("✓ Completed: " + completedCount);
+        tvOrderPendingCount.setText("Pending: " + pendingCount);
+        tvOrderCompletedCount.setText("Completed: " + completedCount);
     }
 
     private int countProducts(AdminProductsResponseDto res) {
@@ -296,7 +311,9 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
         entries.add(new BarEntry(1f, (float) totalOrders));
 
         BarDataSet dataSet = new BarDataSet(entries, "Summary");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        // Sử dụng màu tươi hơn: Products - xanh lá tươi, Orders - đỏ tươi
+        int[] summaryColors = new int[] { 0xFF00E676, 0xFFFF1744 };
+        dataSet.setColors(summaryColors);
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.4f);
@@ -318,27 +335,46 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
 
     private void updatePieChartOrderStatus() {
         List<PieEntry> entries = new ArrayList<>();
-        int[] colors = new int[orderStatusCount.size()];
-        int colorIndex = 0;
+        List<Integer> colorList = new ArrayList<>();
+
+        // Map trạng thái sang màu giống AdminOrdersActivity
+        Map<String, Integer> statusColorMap = new HashMap<>();
+        statusColorMap.put("Wait For Approval", 0xFFFF1744); // Đỏ tươi
+        statusColorMap.put("In Progress", 0xFFFFD600); // Vàng tươi
+        statusColorMap.put("Delivering", 0xFFFF9100); // Cam tươi
+        statusColorMap.put("Completed", 0xFF00E676); // Xanh lá tươi
+        statusColorMap.put("Cancelled", 0xFF90A4AE); // Xám xanh tươi
+        statusColorMap.put("Unknown", 0xFFB0BEC5); // Xám nhạt tươi
 
         for (Map.Entry<String, Integer> entry : orderStatusCount.entrySet()) {
+            String status = entry.getKey();
+            if (status != null && status.equalsIgnoreCase("Draft")) continue;
             entries.add(new PieEntry(entry.getValue(), entry.getKey()));
-            colors[colorIndex++] = ColorTemplate.MATERIAL_COLORS[colorIndex % ColorTemplate.MATERIAL_COLORS.length];
+            Integer color = statusColorMap.get(status);
+            if (color == null) color = 0xFF90CAF9; // Mặc định xanh dương nhạt nếu không khớp
+            colorList.add(color);
         }
 
+        int[] colors;
         if (entries.isEmpty()) {
             entries.add(new PieEntry(0, "No Data"));
             colors = new int[]{0xFF999999};
+        } else {
+            colors = new int[colorList.size()];
+            for (int i = 0; i < colorList.size(); i++) {
+                colors[i] = colorList.get(i);
+            }
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Order Status Distribution");
         dataSet.setColors(colors);
+        dataSet.setValueTextColor(android.graphics.Color.BLACK); // Đặt màu chữ thành đen cho value
 
         PieData data = new PieData(dataSet);
         data.setValueTextSize(12f);
 
         pieChartOrderStatus.setData(data);
-        
+
         Legend legend = pieChartOrderStatus.getLegend();
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
@@ -348,6 +384,19 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
         desc.setText("Orders by Status");
         pieChartOrderStatus.setDescription(desc);
         pieChartOrderStatus.invalidate();
+    }
+
+    // Kết hợp nhiều bảng màu để tăng số lượng màu khác nhau
+    private int[] combineColorPalettes() {
+        List<Integer> palette = new ArrayList<>();
+        for (int c : ColorTemplate.MATERIAL_COLORS) palette.add(c);
+        for (int c : ColorTemplate.COLORFUL_COLORS) palette.add(c);
+        for (int c : ColorTemplate.JOYFUL_COLORS) palette.add(c);
+        for (int c : ColorTemplate.PASTEL_COLORS) palette.add(c);
+        for (int c : ColorTemplate.LIBERTY_COLORS) palette.add(c);
+        int[] arr = new int[palette.size()];
+        for (int i = 0; i < palette.size(); i++) arr[i] = palette.get(i);
+        return arr;
     }
 
     private void updateBarChartRevenue() {
@@ -377,24 +426,50 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
 
         List<BarEntry> entries = new ArrayList<>();
         int startIndex = Math.max(0, sortedDates.size() - 10);
-        
+        final List<String> xLabels = new ArrayList<>();
+
         for (int i = startIndex; i < sortedDates.size(); i++) {
             String date = sortedDates.get(i);
             entries.add(new BarEntry(i - startIndex, (float) (double) dailyRevenue.get(date)));
+            // Chỉ hiển thị MM-dd
+            String label = date;
+            if (date != null && date.length() >= 10) {
+                label = date.substring(5, 10); // MM-dd
+            }
+            xLabels.add(label);
         }
 
         if (entries.isEmpty()) {
             entries.add(new BarEntry(0, 0));
+            xLabels.add("");
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "Daily Revenue");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        // Sử dụng màu cam tươi cho cột doanh thu
+        int[] revenueColors = new int[] { 0xFFFF9100 };
+        dataSet.setColors(revenueColors);
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.6f);
 
         barChartRevenue.setData(data);
         barChartRevenue.getXAxis().setGranularity(1f);
+
+        // Set X axis label formatter to show date string
+        XAxis xAxis = barChartRevenue.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                int index = (int) value;
+                if (index >= 0 && index < xLabels.size()) {
+                    return xLabels.get(index);
+                } else {
+                    return "";
+                }
+            }
+        });
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
 
         Description desc = new Description();
         desc.setText("Daily Revenue (Last 10 Days)");

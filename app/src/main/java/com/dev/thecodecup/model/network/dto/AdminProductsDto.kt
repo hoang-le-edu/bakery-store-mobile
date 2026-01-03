@@ -16,7 +16,14 @@ data class AdminProductsResponseDto(
 
     @Json(name = "topping_data")
     val toppingData: List<AdminToppingCategoryDto>? = null
+
+    ,@Json(name = "products_count")
+    val productsCount: Int? = null
 )
+
+// Java getter for productsCount
+@Suppress("unused")
+fun AdminProductsResponseDto.getProductsCount(): Int? = this.productsCount
 
 @JsonClass(generateAdapter = true)
 data class AdminToppingCategoryDto(

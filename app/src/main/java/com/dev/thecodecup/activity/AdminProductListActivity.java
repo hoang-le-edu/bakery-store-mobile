@@ -118,6 +118,19 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
         tabAll = findViewById(R.id.tabAll);
         tabContainer = findViewById(R.id.tabContainer);
         rvProducts = findViewById(R.id.rvProducts);
+
+        // Đặt padding, minHeight, gravity, textSize, bold, ripple effect cho tabAll giống các tab động
+        int px16 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+        tabAll.setPadding(px16, 0, px16, 0);
+        tabAll.setMinHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics()));
+        tabAll.setGravity(android.view.Gravity.CENTER);
+        tabAll.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_lg));
+        tabAll.setTypeface(tabAll.getTypeface(), android.graphics.Typeface.BOLD);
+        tabAll.setClickable(true);
+        TypedValue outValue = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)) {
+            tabAll.setForeground(ContextCompat.getDrawable(this, outValue.resourceId));
+        }
     }
 
     private void setupRecycler() {
@@ -244,12 +257,23 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
             TextView tabTopping = new TextView(this);
             tabTopping.setText("Topping");
             tabTopping.setTag(TAB_TOPPING);
-            tabTopping.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), dpToPx(8));
-            tabTopping.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            // Padding giống tabAll trong ProductListActivity: 16dp left/right, 0dp top/bottom
+            int px16 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+            tabTopping.setPadding(px16, 0, px16, 0);
+            tabTopping.setMinHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics()));
+            tabTopping.setGravity(android.view.Gravity.CENTER);
+            tabTopping.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_lg));
             tabTopping.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+            tabTopping.setTypeface(tabTopping.getTypeface(), android.graphics.Typeface.BOLD);
+            tabTopping.setClickable(true);
+            // Ripple effect foreground
+            TypedValue outValue = new TypedValue();
+            if (getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)) {
+                tabTopping.setForeground(ContextCompat.getDrawable(this, outValue.resourceId));
+            }
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMarginEnd(dpToPx(16));
+            params.setMarginEnd(8);
             tabTopping.setLayoutParams(params);
             tabTopping.setOnClickListener(v -> selectTabAndReload(TAB_TOPPING));
             tabContainer.addView(tabTopping);
@@ -294,13 +318,8 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     private void buildTabs(List<AdminProductCategoryDto> data) {
         if (tabContainer == null) return;
 
-        // Keep the first child (tabAll), remove the rest before rebuilding (giữ tabAll, xóa các tab khác, trừ tabTopping nếu có)
+        // Xóa tất cả các tab trừ tabAll (index 0)
         while (tabContainer.getChildCount() > 1) {
-            View child = tabContainer.getChildAt(1);
-            if (child.getTag() != null && TAB_TOPPING.equals(child.getTag())) {
-                // giữ lại tab topping
-                break;
-            }
             tabContainer.removeViewAt(1);
         }
 
@@ -314,18 +333,30 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
             TextView tabView = new TextView(this);
             tabView.setText(c.getCategoryName() != null ? c.getCategoryName() : "Category");
             tabView.setTag(c.getCategoryId());
-            tabView.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), dpToPx(8));
-            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_md));
+            int px16 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+            tabView.setPadding(px16, 0, px16, 0);
+            tabView.setMinHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics()));
+            tabView.setGravity(android.view.Gravity.CENTER);
+            tabView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_lg));
             tabView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+            tabView.setTypeface(tabView.getTypeface(), android.graphics.Typeface.BOLD);
+            tabView.setClickable(true);
+            TypedValue outValue = new TypedValue();
+            if (getTheme().resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, outValue, true)) {
+                tabView.setForeground(ContextCompat.getDrawable(this, outValue.resourceId));
+            }
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMarginEnd(dpToPx(16));
+            params.setMarginEnd(8);
             tabView.setLayoutParams(params);
-            tabView.setOnClickListener(v -> selectTabAndReload(c.getCategoryId()));
+            tabView.setOnClickListener(v -> {
+                currentCategoryId = c.getCategoryId();
+                updateTabUI();
+                loadProductsFromApi(null, c.getCategoryId());
+            });
             tabContainer.addView(tabView);
         }
-
-        setupTabTopping(); // Đảm bảo tab topping luôn có
+        setupTabTopping();
         updateTabUI();
     }
 
@@ -337,7 +368,7 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
             loadToppingList();
         } else {
             adapter.setToppingMode(false);
-            performSearch();
+            loadProductsFromApi(null, currentCategoryId);
         }
     }
 
@@ -397,7 +428,7 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
         tab.setBackgroundResource(0);
         // Set màu đen trực tiếp để không bị hệ thống đổi thành xám
         tab.setTextColor(0xFF000000); // #000000
-        tab.setTypeface(null, android.graphics.Typeface.NORMAL);
+        tab.setTypeface(tab.getTypeface(), android.graphics.Typeface.BOLD);
     }
 
     private void setTabSelected(TextView tab) {

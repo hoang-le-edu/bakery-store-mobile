@@ -254,7 +254,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private int getStatusBackground(String status) {
         switch (status) {
             case "Wait For Approval":
-                return R.drawable.bg_status_pending;
+                return R.drawable.bg_status_approval;
             case "In Progress":
                 return R.drawable.bg_status_progress;
             case "Completed":
@@ -262,7 +262,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             case "Cancelled":
                 return R.drawable.bg_status_cancelled;
             default:
-                return R.drawable.bg_status_pending;
+                return R.drawable.bg_status_approval;
         }
     }
 }

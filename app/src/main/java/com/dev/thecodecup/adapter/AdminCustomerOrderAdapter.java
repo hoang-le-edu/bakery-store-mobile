@@ -120,9 +120,9 @@ public class AdminCustomerOrderAdapter extends RecyclerView.Adapter<AdminCustome
             if (status == null) {
                 color = itemView.getContext().getResources().getColor(android.R.color.darker_gray);
             } else if ("Wait For Approval".equalsIgnoreCase(status)) {
-                color = itemView.getContext().getResources().getColor(R.color.status_pending);
+                color = itemView.getContext().getResources().getColor(R.color.status_waitForApproval);
             } else if ("In Progress".equalsIgnoreCase(status) || "Delivering".equalsIgnoreCase(status)) {
-                color = itemView.getContext().getResources().getColor(R.color.status_ongoing);
+                color = itemView.getContext().getResources().getColor(R.color.status_inProgress);
             } else if ("Completed".equalsIgnoreCase(status)) {
                 color = itemView.getContext().getResources().getColor(R.color.status_completed);
             } else if ("Cancelled".equalsIgnoreCase(status)) {

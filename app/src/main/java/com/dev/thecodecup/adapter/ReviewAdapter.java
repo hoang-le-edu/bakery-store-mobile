@@ -9,6 +9,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -57,6 +58,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         ImageView ivUserAvatar;
         TextView tvUserName, tvReviewDate, tvVerifiedPurchase, tvReviewText;
         RatingBar ratingBar;
+        RecyclerView rvReviewMedia;
+        ReviewMediaAdapter mediaAdapter;
 
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,6 +69,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             tvVerifiedPurchase = itemView.findViewById(R.id.tvVerifiedPurchase);
             tvReviewText = itemView.findViewById(R.id.tvReviewText);
             ratingBar = itemView.findViewById(R.id.ratingBar);
+            rvReviewMedia = itemView.findViewById(R.id.rvReviewMedia);
+
+            // Initialize media adapter
+            mediaAdapter = new ReviewMediaAdapter(context);
+            rvReviewMedia.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            rvReviewMedia.setAdapter(mediaAdapter);
         }
 
         public void bind(ReviewItem review) {
@@ -104,6 +113,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             } else {
                 tvReviewText.setVisibility(View.GONE);
             }
+
+            // Media Files
+            if (review.getMedia_files() != null && !review.getMedia_files().isEmpty()) {
+                mediaAdapter.submitList(review.getMedia_files());
+                rvReviewMedia.setVisibility(View.VISIBLE);
+            } else {
+                rvReviewMedia.setVisibility(View.GONE);
+            }
+        }
         }
     }
-}

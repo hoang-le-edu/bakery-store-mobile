@@ -43,7 +43,7 @@ interface BakeryApiService {
     ): Response<ProductDetailResponse>
 
     /**
-     * Get product reviews
+     * Get reviews for a product
      */
     @GET("products/{productId}/reviews")
     suspend fun getProductReviews(
@@ -51,7 +51,15 @@ interface BakeryApiService {
         @Query("page") page: Int = 1
     ): Response<ReviewResponse>
     
-    /**
+/**
+ * Upload media file for review
+ */
+@Multipart
+@POST("reviews/upload-media")
+suspend fun uploadReviewMedia(
+    @Header("Authorization") authorization: String,
+    @Part media: okhttp3.MultipartBody.Part
+): Response<MediaUploadSuccessResponse>    /**
      * Create a review for a product in an order
      */
     @POST("products/{productId}/reviews")
@@ -295,12 +303,28 @@ data class UpdateOrderStatusRequest(
 data class CreateReviewRequest(
     val order_id: String,
     val rating: Int,
-    val review_text: String
+    val review_text: String,
+    val media_files: List<String> = emptyList()
 )
 
 data class UpdateReviewRequest(
     val rating: Int,
-    val review_text: String
+    val review_text: String,
+    val media_files: List<String> = emptyList()
+)
+
+data class MediaUploadResponse(
+    val file_path: String,
+    val file_url: String,
+    val file_type: String,
+    val file_name: String,
+    val file_size: Long
+)
+
+data class MediaUploadSuccessResponse(
+    val success: Boolean,
+    val message: String,
+    val data: MediaUploadResponse?
 )
 
 // ==================== Response DTOs ====================
@@ -530,13 +554,20 @@ data class ReviewItem(
     val reviewed_at: String,
     val is_verified_purchase: Boolean,
     val user: ReviewUser,
-    val helpful_count: Int
+    val helpful_count: Int,
+    val media_files: List<ReviewMediaFile> = emptyList()
 ) : Serializable
 
 data class ReviewUser(
     val id: String,
     val name: String,
     val avatar: String?
+) : Serializable
+
+data class ReviewMediaFile(
+    val url: String,
+    val type: String, // "image" or "video"
+    val name: String
 ) : Serializable
 
 data class ReviewSummary(
@@ -577,7 +608,8 @@ data class MyReviewData(
     val review_text: String?,
     val reviewed_at: String,
     val product: ReviewProductInfo?,
-    val order: ReviewOrderInfo?
+    val order: ReviewOrderInfo?,
+    val media_files: List<ReviewMediaFile> = emptyList()
 )
 
 data class ReviewProductInfo(
