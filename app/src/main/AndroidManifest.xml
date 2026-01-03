@@ -15,6 +15,8 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.TheCodeCup"
@@ -65,6 +67,11 @@
         <activity
             android:name=".activity.OrderDetailActivity"
             android:parentActivityName=".activity.MyOrdersActivity"
+            android:theme="@style/Theme.TheCodeCup" />
+
+        <activity
+            android:name=".activity.MediaViewerActivity"
+            android:parentActivityName=".activity.ProductReviewsActivity"
             android:theme="@style/Theme.TheCodeCup" />
 
         <!--        <activity android:name=".activity.ResetPasswordActivity"-->

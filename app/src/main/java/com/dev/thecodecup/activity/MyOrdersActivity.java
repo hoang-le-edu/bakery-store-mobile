@@ -3,10 +3,15 @@ package com.dev.thecodecup.activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -14,6 +19,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
@@ -21,7 +28,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
+import com.dev.thecodecup.adapter.MediaUploadAdapter;
 import com.dev.thecodecup.adapter.OrderHistoryAdapter;
+import com.dev.thecodecup.model.auth.AuthManager;
 import com.dev.thecodecup.model.network.api.BakeryJavaBridge;
 import com.dev.thecodecup.model.network.api.CreateReviewRequest;
 import com.dev.thecodecup.model.network.api.CustomerOrdersResponse;
@@ -30,12 +39,21 @@ import com.dev.thecodecup.model.network.api.Order;
 import com.dev.thecodecup.model.network.api.PaymentLinkCallback;
 import com.dev.thecodecup.model.network.api.PaymentLinkResponse;
 import com.dev.thecodecup.model.network.api.UpdateReviewRequest;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Response;
 
 public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAdapter.OnOrderClickListener, OrderHistoryAdapter.OnReviewClickListener {
@@ -48,6 +66,13 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
 
     private final List<Order> allOrders = new ArrayList<>();
     private final List<Order> filteredOrders = new ArrayList<>();
+
+    // Media upload related fields
+    private MediaUploadAdapter mediaUploadAdapter;
+    private List<MediaUploadAdapter.MediaItem> uploadedMediaItems = new ArrayList<>();
+    private List<String> uploadedFilePaths = new ArrayList<>();
+    private ExecutorService uploadExecutor = Executors.newSingleThreadExecutor();
+    private ActivityResultLauncher<Intent> mediaPickerLauncher;
 
     private static final String FILTER_ALL = "ALL";
     private static final String FILTER_WAIT_FOR_APPROVAL = "Wait For Approval";
@@ -62,10 +87,22 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_orders);
 
+        initMediaPicker();
         initViews();
         setupTabs();
         setupRecycler();
         loadOrders();
+    }
+
+    private void initMediaPicker() {
+        mediaPickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    handleMediaSelection(result.getData());
+                }
+            }
+        );
     }
 
     private void initViews() {
@@ -251,6 +288,7 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
         builder.setView(view);
         final AlertDialog dialog = builder.create();
 
+        // Initialize views
         TextView tvDialogTitle = view.findViewById(R.id.tvDialogTitle);
         RatingBar ratingBar = view.findViewById(R.id.ratingBar_dialog);
         TextInputLayout reviewTextInputLayout = view.findViewById(R.id.reviewTextInputLayout);
@@ -259,6 +297,31 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
         Button btnSubmit = view.findViewById(R.id.btnSubmitReview);
         Button btnEdit = view.findViewById(R.id.btnEditReview);
         Button btnDelete = view.findViewById(R.id.btnDeleteReview);
+        
+        // Media upload components
+        MaterialCardView cardAddMedia = view.findViewById(R.id.cardAddMedia);
+        RecyclerView rvUploadedMedia = view.findViewById(R.id.rvUploadedMedia);
+
+        // Initialize media upload adapter
+        uploadedMediaItems = new ArrayList<>();
+        uploadedFilePaths = new ArrayList<>();
+        
+        mediaUploadAdapter = new MediaUploadAdapter(new MediaUploadAdapter.OnMediaActionListener() {
+            @Override
+            public void onRemoveMedia(MediaUploadAdapter.MediaItem item, int position) {
+                uploadedMediaItems.remove(position);
+                if (item.getFilePath() != null) {
+                    uploadedFilePaths.remove(item.getFilePath());
+                }
+                mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+            }
+        });
+        
+        rvUploadedMedia.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvUploadedMedia.setAdapter(mediaUploadAdapter);
+
+        // Add media button click listener
+        cardAddMedia.setOnClickListener(v -> showMediaPicker());
 
         // Mode: VIEW existing review
         if (existingReview != null) {
@@ -268,10 +331,16 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
             btnDelete.setVisibility(View.VISIBLE);
             reviewTextInputLayout.setVisibility(View.GONE);
             tvReadOnlyReview.setVisibility(View.VISIBLE);
+            cardAddMedia.setVisibility(View.GONE);
             ratingBar.setIsIndicator(true);
 
             ratingBar.setRating(existingReview.getRating());
             tvReadOnlyReview.setText(existingReview.getReview_text());
+            
+            // Load existing media files
+            if (existingReview.getMedia_files() != null && !existingReview.getMedia_files().isEmpty()) {
+                loadExistingMediaFiles(existingReview.getMedia_files());
+            }
 
             // EDIT button logic
             btnEdit.setOnClickListener(v -> {
@@ -282,6 +351,7 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
                 btnSubmit.setVisibility(View.VISIBLE);
                 reviewTextInputLayout.setVisibility(View.VISIBLE);
                 tvReadOnlyReview.setVisibility(View.GONE);
+                cardAddMedia.setVisibility(View.VISIBLE);
                 etReviewText.setText(existingReview.getReview_text());
                 ratingBar.setIsIndicator(false);
             });
@@ -310,9 +380,23 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
             }
             String reviewText = etReviewText.getText().toString().trim();
 
+            // Check if any media is still uploading
+            boolean hasUploadingMedia = false;
+            for (MediaUploadAdapter.MediaItem item : uploadedMediaItems) {
+                if (item.isUploading()) {
+                    hasUploadingMedia = true;
+                    break;
+                }
+            }
+            
+            if (hasUploadingMedia) {
+                Toast.makeText(this, "Please wait for media uploads to complete", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // If we are UPDATING an existing review
             if (existingReview != null) {
-                UpdateReviewRequest request = new UpdateReviewRequest((int) rating, reviewText);
+                UpdateReviewRequest request = new UpdateReviewRequest((int) rating, reviewText, uploadedFilePaths);
                 BakeryJavaBridge.INSTANCE.updateReview(this, order.getOrder_id(), request, (response, error) -> {
                     if (response != null && response.isSuccessful()) {
                         Toast.makeText(this, "Review updated!", Toast.LENGTH_SHORT).show();
@@ -330,7 +414,7 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
                     return;
                 }
                 String productId = order.getOrder_detail().get(0).getProduct_id();
-                CreateReviewRequest request = new CreateReviewRequest(order.getOrder_id(), (int) rating, reviewText);
+                CreateReviewRequest request = new CreateReviewRequest(order.getOrder_id(), (int) rating, reviewText, uploadedFilePaths);
                 BakeryJavaBridge.INSTANCE.createReview(this, productId, request, (response, error) -> {
                     if (response != null && response.isSuccessful()) {
                         Toast.makeText(this, "Review submitted!", Toast.LENGTH_SHORT).show();
@@ -344,6 +428,327 @@ public class MyOrdersActivity extends BaseAuthActivity implements OrderHistoryAd
         });
 
         dialog.show();
+    }
+
+    private void showMediaPicker() {
+        if (uploadedMediaItems.size() >= 5) {
+            Toast.makeText(this, "Maximum 5 files allowed", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        String[] mimeTypes = {"image/jpeg", "image/png", "image/gif", "video/mp4", "video/mov", "video/avi"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        
+        try {
+            mediaPickerLauncher.launch(Intent.createChooser(intent, "Select Media"));
+        } catch (Exception e) {
+            Toast.makeText(this, "Error opening media picker", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleMediaSelection(Intent data) {
+        List<Uri> selectedUris = new ArrayList<>();
+        
+        if (data.getClipData() != null) {
+            // Multiple files selected
+            int count = data.getClipData().getItemCount();
+            for (int i = 0; i < count; i++) {
+                Uri uri = data.getClipData().getItemAt(i).getUri();
+                selectedUris.add(uri);
+            }
+        } else if (data.getData() != null) {
+            // Single file selected
+            selectedUris.add(data.getData());
+        }
+
+        for (Uri uri : selectedUris) {
+            if (uploadedMediaItems.size() >= 5) {
+                Toast.makeText(this, "Maximum 5 files allowed", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            
+            if (validateAndAddMediaItem(uri)) {
+                // Item was added successfully
+            }
+        }
+    }
+
+    private boolean validateAndAddMediaItem(Uri uri) {
+        try {
+            String mimeType = getContentResolver().getType(uri);
+            if (mimeType == null) {
+                Toast.makeText(this, "Cannot determine file type", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            // Validate file type
+            if (!isValidMediaType(mimeType)) {
+                Toast.makeText(this, "Invalid file type. Please select JPG, PNG, GIF, MP4, MOV, or AVI files", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            // Get file size
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            long fileSize = 0;
+            String fileName = "media_file";
+            
+            if (cursor != null) {
+                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                
+                if (cursor.moveToFirst()) {
+                    if (sizeIndex != -1) {
+                        fileSize = cursor.getLong(sizeIndex);
+                    }
+                    if (nameIndex != -1) {
+                        fileName = cursor.getString(nameIndex);
+                    }
+                }
+                cursor.close();
+            }
+
+            // Validate file size (10MB limit)
+            long maxSize = 10 * 1024 * 1024; // 10MB
+            if (fileSize > maxSize) {
+                Toast.makeText(this, "File too large. Maximum size is 10MB", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            // Create media item
+            String mediaType = mimeType.startsWith("video/") ? "video" : "image";
+            MediaUploadAdapter.MediaItem mediaItem = new MediaUploadAdapter.MediaItem(uri, mediaType, fileName);
+            
+            // Add to list and start upload
+            uploadedMediaItems.add(mediaItem);
+            mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+            
+            // Upload the file
+            uploadMediaFile(mediaItem);
+            
+            return true;
+        } catch (Exception e) {
+            Toast.makeText(this, "Error processing file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    private boolean isValidMediaType(String mimeType) {
+        return mimeType.equals("image/jpeg") ||
+               mimeType.equals("image/jpg") ||
+               mimeType.equals("image/png") ||
+               mimeType.equals("image/gif") ||
+               mimeType.equals("video/mp4") ||
+               mimeType.equals("video/mov") ||
+               mimeType.equals("video/avi");
+    }
+
+    private void uploadMediaFile(MediaUploadAdapter.MediaItem mediaItem) {
+        Log.d("MediaUpload", "Starting upload for: " + mediaItem.getName());
+        mediaItem.setUploading(true);
+        mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+
+        uploadExecutor.execute(() -> {
+            File tempFile = null;
+            try {
+                Log.d("MediaUpload", "Creating temp file from URI: " + mediaItem.getUri());
+                // Create a temporary file
+                tempFile = createTempFileFromUri(mediaItem.getUri(), mediaItem.getName());
+                Log.d("MediaUpload", "Temp file created: " + tempFile.getAbsolutePath() + ", size: " + tempFile.length() + " bytes");
+                
+                // Create RequestBody and MultipartBody.Part
+                String mimeType = getContentResolver().getType(mediaItem.getUri());
+                Log.d("MediaUpload", "MIME type: " + mimeType);
+                
+                RequestBody requestBody = RequestBody.create(tempFile, MediaType.parse(mimeType));
+                MultipartBody.Part mediaPart = MultipartBody.Part.createFormData("media", tempFile.getName(), requestBody);
+                
+                // Get auth token
+                String token = AuthManager.INSTANCE.getIdTokenOrNull();
+                if (token == null) {
+                    Log.e("MediaUpload", "Authentication token is null");
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Authentication token not found", Toast.LENGTH_SHORT).show();
+                        removeMediaItem(mediaItem);
+                    });
+                    return;
+                }
+                
+                Log.d("MediaUpload", "Starting API call with token length: " + token.length());
+
+                // Keep reference to temp file for cleanup
+                final File finalTempFile = tempFile;
+
+                // Upload via BakeryJavaBridge
+                BakeryJavaBridge.INSTANCE.uploadReviewMedia(this, "Bearer " + token, mediaPart, (response, error) -> {
+                    Log.d("MediaUpload", "Upload response received");
+                    runOnUiThread(() -> {
+                        mediaItem.setUploading(false);
+                        
+                        if (response != null && response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                            // Upload successful - use file_url for display, file_path for API
+                            String filePath = response.body().getData().getFile_path();
+                            String fileUrl = response.body().getData().getFile_url();
+                            String convertedUrl = convertToAssetsPath(fileUrl); // Convert to assets path
+                            
+                            Log.d("MediaUpload", "Upload successful, file path: " + filePath + ", file URL: " + fileUrl + ", converted: " + convertedUrl);
+                            mediaItem.setFilePath(filePath);     // Keep file path for API submission
+                            mediaItem.setFileUrl(convertedUrl);  // Use converted URL for display
+                            uploadedFilePaths.add(filePath);
+                            
+                            Toast.makeText(this, "Media uploaded successfully", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Upload failed - log the error for debugging
+                            String errorMessage = "Failed to upload media";
+                            if (error != null) {
+                                Log.e("MediaUpload", "Upload error: " + error.getMessage(), error);
+                                errorMessage += ": " + error.getMessage();
+                            } else if (response != null) {
+                                Log.e("MediaUpload", "Upload failed with HTTP code: " + response.code() + ", message: " + response.message());
+                                try {
+                                    String errorBody = response.errorBody() != null ? response.errorBody().string() : "No error body";
+                                    Log.e("MediaUpload", "Error body: " + errorBody);
+                                } catch (Exception e) {
+                                    Log.e("MediaUpload", "Error reading error body", e);
+                                }
+                                errorMessage += " (HTTP " + response.code() + ")";
+                            }
+                            
+                            removeMediaItem(mediaItem);
+                            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                        }
+                        
+                        mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+                        
+                        // Clean up temp file after upload attempt
+                        if (finalTempFile != null && finalTempFile.exists()) {
+                            Log.d("MediaUpload", "Cleaning up temp file: " + finalTempFile.getAbsolutePath());
+                            finalTempFile.delete();
+                        }
+                    });
+                });
+                
+            } catch (Exception e) {
+                // Clean up temp file on exception
+                if (tempFile != null && tempFile.exists()) {
+                    Log.d("MediaUpload", "Cleaning up temp file due to exception: " + tempFile.getAbsolutePath());
+                    tempFile.delete();
+                }
+                
+                Log.e("MediaUpload", "Exception during upload", e);
+                runOnUiThread(() -> {
+                    mediaItem.setUploading(false);
+                    removeMediaItem(mediaItem);
+                    Toast.makeText(this, "Error uploading media: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+                });
+            }
+        });
+    }
+
+    private File createTempFileFromUri(Uri uri, String fileName) throws Exception {
+        Log.d("MediaUpload", "Creating temp file from URI: " + uri);
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        if (inputStream == null) {
+            throw new Exception("Cannot open input stream for URI: " + uri);
+        }
+
+        // Create temp file
+        String mimeType = getContentResolver().getType(uri);
+        String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+        if (extension == null) {
+            // Fallback to extract extension from filename if available
+            String uriPath = uri.getPath();
+            if (uriPath != null && uriPath.contains(".")) {
+                extension = uriPath.substring(uriPath.lastIndexOf(".") + 1);
+            } else {
+                extension = "tmp";
+            }
+        }
+        
+        Log.d("MediaUpload", "File extension determined: " + extension + " (from MIME type: " + mimeType + ")");
+        
+        File tempFile = File.createTempFile("upload_", "." + extension, getCacheDir());
+        Log.d("MediaUpload", "Temp file created at: " + tempFile.getAbsolutePath());
+        
+        FileOutputStream outputStream = new FileOutputStream(tempFile);
+        byte[] buffer = new byte[8192]; // Increased buffer size for better performance
+        int length;
+        long totalBytes = 0;
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
+            totalBytes += length;
+        }
+        
+        inputStream.close();
+        outputStream.close();
+        
+        Log.d("MediaUpload", "File copied successfully. Size: " + totalBytes + " bytes, Final file size: " + tempFile.length() + " bytes");
+        
+        if (tempFile.length() == 0) {
+            throw new Exception("Temp file is empty after copying from URI");
+        }
+        
+        return tempFile;
+    }
+
+    private void removeMediaItem(MediaUploadAdapter.MediaItem mediaItem) {
+        uploadedMediaItems.remove(mediaItem);
+        if (mediaItem.getFilePath() != null) {
+            uploadedFilePaths.remove(mediaItem.getFilePath());
+        }
+        mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+    }
+
+    /**
+     * Convert review media URL to use build/assets/reviews path
+     * From: https://domain.com/storage/reviews/media/filename.jpg
+     * To:   https://domain.com/storage/build/assets/reviews/filename.jpg
+     */
+    private String convertToAssetsPath(String originalUrl) {
+        if (originalUrl == null || !originalUrl.contains("/storage/reviews/media/")) {
+            return originalUrl;
+        }
+        
+        // Extract filename from the original URL
+        String filename = originalUrl.substring(originalUrl.lastIndexOf("/") + 1);
+        
+        // Build new URL with build/assets/reviews path
+        String baseUrl = originalUrl.substring(0, originalUrl.indexOf("/storage/"));
+        return baseUrl + "/storage/build/assets/reviews/" + filename;
+    }
+
+    private void loadExistingMediaFiles(List<com.dev.thecodecup.model.network.api.ReviewMediaFile> mediaFiles) {
+        for (com.dev.thecodecup.model.network.api.ReviewMediaFile mediaFile : mediaFiles) {
+            try {
+                // Convert URL to assets path for display
+                String convertedUrl = convertToAssetsPath(mediaFile.getUrl());
+                
+                Uri uri = Uri.parse(convertedUrl);
+                MediaUploadAdapter.MediaItem mediaItem = new MediaUploadAdapter.MediaItem(uri, mediaFile.getType(), mediaFile.getName());
+                mediaItem.setFilePath(mediaFile.getUrl());    // Keep original for API
+                mediaItem.setFileUrl(convertedUrl);           // Use converted for display
+                uploadedMediaItems.add(mediaItem);
+                uploadedFilePaths.add(mediaFile.getUrl());    // Keep original for API
+            } catch (Exception e) {
+                Log.e("ReviewDialog", "Error loading existing media: " + e.getMessage());
+            }
+        }
+        
+        if (mediaUploadAdapter != null) {
+            mediaUploadAdapter.submitList(new ArrayList<>(uploadedMediaItems));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (uploadExecutor != null) {
+            uploadExecutor.shutdown();
+        }
     }
 
     private void deleteReview(String orderId, int position, DialogInterface dialog) {

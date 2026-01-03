@@ -101,6 +101,15 @@
         android:lineSpacingExtra="4dp"
         android:textSize="@dimen/text_sm"/>
 
+    <!-- Review Media -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvReviewMedia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_sm"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
     <!-- Separator -->
     <View
         android:layout_width="match_parent"

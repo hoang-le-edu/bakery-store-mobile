@@ -81,6 +81,10 @@ interface DeleteReviewCallback {
     fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
 }
 
+interface MediaUploadCallback {
+    fun onResult(response: Response<MediaUploadSuccessResponse>?, error: Throwable?)
+}
+
 interface CancelOrderCallback {
     fun onResult(response: Response<SuccessResponse>?, error: Throwable?)
 }
@@ -163,6 +167,22 @@ object BakeryJavaBridge {
         owner.lifecycleScope.launch {
             try {
                 val response = apiService.getMyReview(orderId)
+                callback.onResult(response, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
+            }
+        }
+    }
+
+    fun uploadReviewMedia(
+        owner: LifecycleOwner,
+        authorization: String,
+        mediaPart: okhttp3.MultipartBody.Part,
+        callback: MediaUploadCallback
+    ) {
+        owner.lifecycleScope.launch {
+            try {
+                val response = apiService.uploadReviewMedia(authorization, mediaPart)
                 callback.onResult(response, null)
             } catch (e: Exception) {
                 callback.onResult(null, e)
