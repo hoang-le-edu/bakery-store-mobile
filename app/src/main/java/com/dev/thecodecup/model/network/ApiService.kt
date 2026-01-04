@@ -143,5 +143,15 @@ interface ApiService {
         @Body body: Map<String, @JvmSuppressWildcards Any?>
     ): Call<AdminProductDto>
 
+    /**
+     * Update admin order (payment status, order status, etc.)
+     * Example: /api/admin/orders/update/{id}
+     */
+    @POST("admin/orders/update/{id}")
+    fun updateAdminOrder(
+        @Path("id") orderId: String,
+        @Body body: Map<String, String>
+    ): Call<SuccessResponse>
+
 }
 

@@ -273,11 +273,17 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         apiService.updateOrderStatus(orderId, body).enqueue(new Callback<SuccessResponse>() {
             @Override
             public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
-                showLoading(false);
                 if (response.isSuccessful()) {
-                    Toast.makeText(AdminOrderDetailActivity.this, "Updated", Toast.LENGTH_SHORT).show();
-                    fetchDetail();
+                    // If marking as Completed and payment method is Cash, update payment status
+                    if ("Completed".equalsIgnoreCase(status) && shouldUpdatePaymentStatus()) {
+                        updatePaymentStatusToPaid();
+                    } else {
+                        showLoading(false);
+                        Toast.makeText(AdminOrderDetailActivity.this, "Updated", Toast.LENGTH_SHORT).show();
+                        fetchDetail();
+                    }
                 } else {
+                    showLoading(false);
                     Toast.makeText(AdminOrderDetailActivity.this, "Update failed", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -286,6 +292,38 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
             public void onFailure(Call<SuccessResponse> call, Throwable t) {
                 showLoading(false);
                 Toast.makeText(AdminOrderDetailActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean shouldUpdatePaymentStatus() {
+        if (currentOrder == null || currentOrder.getPaymentInfo() == null) {
+            return false;
+        }
+        String paymentMethod = currentOrder.getPaymentInfo().getPaymentMethod();
+        return "Cash".equalsIgnoreCase(paymentMethod);
+    }
+
+    private void updatePaymentStatusToPaid() {
+        HashMap<String, String> paymentBody = new HashMap<>();
+        paymentBody.put("payment_status", "paid");
+        apiService.updateAdminOrder(orderId, paymentBody).enqueue(new Callback<SuccessResponse>() {
+            @Override
+            public void onResponse(Call<SuccessResponse> call, Response<SuccessResponse> response) {
+                showLoading(false);
+                if (response.isSuccessful()) {
+                    Toast.makeText(AdminOrderDetailActivity.this, "Order completed and payment updated", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AdminOrderDetailActivity.this, "Order updated but payment update failed", Toast.LENGTH_SHORT).show();
+                }
+                fetchDetail();
+            }
+
+            @Override
+            public void onFailure(Call<SuccessResponse> call, Throwable t) {
+                showLoading(false);
+                Toast.makeText(AdminOrderDetailActivity.this, "Order updated but payment error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                fetchDetail();
             }
         });
     }
