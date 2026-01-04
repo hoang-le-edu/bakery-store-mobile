@@ -27,4 +27,12 @@
     <color name="pink_primary">#f26d78</color>
     <color name="yellow_star">#FFD600</color>
     <color name="colorPrimary">#f26d78</color>
+    
+    <!-- Offline Cart Colors -->
+    <color name="primary">#f26d78</color>
+    <color name="secondary">#FFC107</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="border_light">#E0E0E0</color>
+    <color name="text_secondary">#757575</color>
 </resources>

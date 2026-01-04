@@ -32,6 +32,7 @@ android {
         
         // Production API - Bakery Store
         buildConfigField("String", "API_BASE_URL", "\"https://bepmetayapi-9adx6.ondigitalocean.app/api/\"")
+//        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/\"")
         // Old URLs (commented for reference):
         // buildConfigField("String", "API_BASE_URL", "\"https://api-bakery-store-mobile-btfrg4gqevhveyfy.eastasia-01.azurewebsites.net/\"")
         // buildConfigField("String", "API_BASE_URL", "\"https://bepmetayapi-9adx6.ondigitalocean.app/\"")

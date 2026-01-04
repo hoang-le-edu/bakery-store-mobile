@@ -245,6 +245,7 @@ fun CoffeeDetailScreen(
                         onClick = {
                             onAddToCart(
                                 CartItemEntity(
+                                    productId = coffeeItem.name, // Use coffee name as productId for now
                                     name = coffeeItem.name,
                                     price = unitPrice,  // Store unit price, not total
                                     imageResId = coffeeItem.imageResId,

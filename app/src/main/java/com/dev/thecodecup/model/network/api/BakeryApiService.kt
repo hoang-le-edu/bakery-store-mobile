@@ -71,6 +71,58 @@ suspend fun uploadReviewMedia(
     // ==================== Cart APIs ====================
 
     /**
+     * Get Cart - Offline Sync Compatible
+     * Returns current cart state with server timestamp
+     */
+    @GET("api/cart")
+    suspend fun getCart(
+        @Header("Authorization") authorization: String,
+        @Header("X-Device-ID") deviceId: String
+    ): Response<OfflineCartResponse>
+    
+    /**
+     * Add/Update Item to Cart - Offline Sync Compatible
+     * Creates or updates cart item
+     */
+    @POST("api/cart/items")
+    suspend fun addCartItem(
+        @Header("Authorization") authorization: String,
+        @Header("X-Device-ID") deviceId: String,
+        @Body request: AddCartItemRequest
+    ): Response<CartItemResponse>
+    
+    /**
+     * Update Item Quantity - Offline Sync Compatible
+     */
+    @PUT("api/cart/items/{cartItemId}")
+    suspend fun updateCartItem(
+        @Header("Authorization") authorization: String,
+        @Header("X-Device-ID") deviceId: String,
+        @Path("cartItemId") cartItemId: String,
+        @Body request: UpdateCartItemRequest
+    ): Response<CartItemResponse>
+    
+    /**
+     * Remove Item from Cart - Offline Sync Compatible
+     */
+    @DELETE("api/cart/items/{cartItemId}")
+    suspend fun removeCartItem(
+        @Header("Authorization") authorization: String,
+        @Header("X-Device-ID") deviceId: String,
+        @Path("cartItemId") cartItemId: String
+    ): Response<SuccessResponse>
+    
+    /**
+     * Checkout Cart - Offline Sync Compatible
+     */
+    @POST("api/cart/checkout")
+    suspend fun checkoutCart(
+        @Header("Authorization") authorization: String,
+        @Header("X-Device-ID") deviceId: String
+    ): Response<CheckoutResponse>
+
+    // Legacy Cart APIs - keeping for backward compatibility
+    /**
      * Create a new empty cart
      * Used in: CartScreen, ProductDetailScreen
      */
@@ -622,4 +674,65 @@ data class ReviewOrderInfo(
     val id: String,
     val order_number: String,
     val status: String
+)
+
+// ==================== Offline Cart Sync Models ====================
+
+// Request models
+data class AddCartItemRequest(
+    val product_id: String,
+    val quantity: Int
+)
+
+data class UpdateCartItemRequest(
+    val quantity: Int
+)
+
+// Response models
+data class OfflineCartResponse(
+    val success: Boolean,
+    val data: OfflineCartData
+)
+
+data class OfflineCartData(
+    val cart_items: List<OfflineCartItem>,
+    val total_amount: Double,
+    val total_items: Int,
+    val device_id: String,
+    val server_timestamp: String
+)
+
+data class OfflineCartItem(
+    val id: String,
+    val product_id: String,
+    val quantity: Int,
+    val unit_price: Double,
+    val total_price: Double,
+    val status: String, // "active", "checkout", "deleted"
+    val device_id: String,
+    val last_updated: String,
+    val product: OfflineCartProduct?
+)
+
+data class OfflineCartProduct(
+    val id: String,
+    val name: String,
+    val price: Double,
+    val image: String?,
+    val is_available: Boolean
+)
+
+data class CartItemResponse(
+    val success: Boolean,
+    val data: CartItemResponseData?,
+    val message: String
+)
+
+data class CartItemResponseData(
+    val cart_item: OfflineCartItem
+)
+
+data class CheckoutResponseData(
+    val order_id: String,
+    val total_amount: Double
 )

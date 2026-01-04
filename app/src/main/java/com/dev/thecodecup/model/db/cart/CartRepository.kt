@@ -17,7 +17,7 @@ class CartRepository private constructor(context: Context) {
     private val cartDao = db.cartItemDao()
 
     suspend fun getAllCartItems(): List<CartItemEntity> = withContext(Dispatchers.IO) {
-        cartDao.getAll()
+        cartDao.getActiveItems()
     }
 
     suspend fun insertCartItem(item: CartItemEntity) = withContext(Dispatchers.IO) {

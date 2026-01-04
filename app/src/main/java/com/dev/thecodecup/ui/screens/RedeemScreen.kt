@@ -41,6 +41,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.dev.thecodecup.model.db.user.UserViewModel
+import java.util.UUID
 
 @Composable
 fun RedeemScreen(
@@ -125,6 +126,7 @@ fun RedeemScreen(
                                         orderViewModel.insertOrder(
                                             OrderEntity.fromCartItem(
                                                 cartItem = CartItemEntity(
+                                                    productId = UUID.randomUUID().toString(), // Added productId
                                                     name = coffee.name,
                                                     price = 0.0,
                                                     imageResId = coffee.imageResId,

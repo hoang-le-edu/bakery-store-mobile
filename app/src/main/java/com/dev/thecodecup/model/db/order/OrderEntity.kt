@@ -21,7 +21,7 @@ data class OrderEntity(
 ) {
     // Helper function to convert to CartItemEntity (not stored in database)
     fun toCartItem(): CartItemEntity = CartItemEntity(
-        id = 0,
+        productId = "unknown", // OrderEntity doesn't have productId, use placeholder
         name = cart_name,
         price = cart_price,
         imageResId = cart_imageResId,

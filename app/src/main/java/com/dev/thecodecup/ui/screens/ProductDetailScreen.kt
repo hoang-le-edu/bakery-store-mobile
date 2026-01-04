@@ -249,6 +249,7 @@ fun ProductDetailScreen(
                     Button(
                         onClick = {
                             val cartItem = CartItemEntity(
+                                productId = product.productId,
                                 name = product.productName,
                                 price = product.price,
                                 imageUrl = product.productImage,

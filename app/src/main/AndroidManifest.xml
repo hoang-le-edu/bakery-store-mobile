@@ -75,6 +75,18 @@
             android:name=".activity.MediaViewerActivity"
             android:parentActivityName=".activity.ProductReviewsActivity"
             android:theme="@style/Theme.TheCodeCup" />
+            
+        <!-- Offline Cart Activity -->
+        <activity
+            android:name=".ui.OfflineCartActivity"
+            android:parentActivityName=".activity.HomeActivity"
+            android:theme="@style/Theme.TheCodeCup" />
+            
+        <!-- Cart Sync Service -->
+        <service
+            android:name=".services.CartSyncService"
+            android:enabled="true"
+            android:exported="false" />
 
         <!--        <activity android:name=".activity.ResetPasswordActivity"-->
 <!--            android:exported="true">-->
