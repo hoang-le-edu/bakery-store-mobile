@@ -1,8 +1,8 @@
 package com.dev.thecodecup.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
-import com.dev.thecodecup.activity.AdminUpdateProductDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dev.thecodecup.R;
+import com.dev.thecodecup.activity.AdminAddProductActivity;
 import com.dev.thecodecup.model.network.dto.AdminProductDto;
 
 import java.text.DecimalFormat;
@@ -54,7 +55,7 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-            .inflate(R.layout.item_admin_product, parent, false); // layout riêng cho admin
+            .inflate(R.layout.item_admin_product, parent, false);
         return new VH(v);
     }
 
@@ -74,20 +75,16 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
             h.txtProductPrice.setText("");
         }
 
-        // Trạng thái: nếu có logic kiểm soát hàng, ví dụ còn hàng/hết hàng
-        h.txtProductStatus.setText("In stock"); // or get from p if available
+        h.txtProductStatus.setText("In stock");
 
-        // Đánh giá
         int rating = p.getAvgRating() != null ? p.getAvgRating() : 0;
         int reviewCount = p.getReviewCount() != null ? p.getReviewCount() : 0;
         h.txtProductRating.setText(rating + "★ (" + reviewCount + " reviews)");
 
-        // Luôn hiển thị hình ảnh nếu có (kể cả topping)
         if (h.imgProduct != null) {
             h.imgProduct.setVisibility(View.VISIBLE);
             String imgUrl = p.getProductImageUrl();
             if (imgUrl != null && !imgUrl.isEmpty()) {
-                // Sử dụng Glide để load ảnh
                 try {
                     com.bumptech.glide.Glide.with(h.imgProduct.getContext())
                         .load(imgUrl)
@@ -102,18 +99,19 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
             }
         }
 
-        // Nút sửa/xóa sản phẩm
+        // Edit button - launch AdminAddProductActivity in edit mode
         h.btnEditProduct.setOnClickListener(v -> {
-            // Hiển thị dialog cập nhật sản phẩm
-            new AdminUpdateProductDialog(v.getContext(), p, updatedProduct -> {
-                if (clickListener != null) {
-                    clickListener.onItemClick(updatedProduct); // callback cho activity xử lý update API
-                }
-            }).show();
+            if (p.getProductId() != null) {
+                Intent intent = new Intent(ctx, AdminAddProductActivity.class);
+                intent.putExtra("productId", p.getProductId());
+                ctx.startActivity(intent);
+            }
         });
+        
         h.btnDeleteProduct.setOnClickListener(v -> {
-            // TODO: xác nhận và xóa sản phẩm
+            // TODO: implement delete functionality
         });
+        
         h.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onItemClick(p);
