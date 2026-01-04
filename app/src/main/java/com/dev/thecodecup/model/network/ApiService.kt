@@ -151,6 +151,16 @@ interface ApiService {
     ): Call<AdminProductDto>
 
     /**
+     * Update admin order (payment status, order status, etc.)
+     * Example: /api/admin/orders/update/{id}
+     */
+    @POST("admin/orders/update/{id}")
+    fun updateAdminOrder(
+        @Path("id") orderId: String,
+        @Body body: Map<String, String>
+    ): Call<SuccessResponse>
+
+    /**
      * Get all categories for admin
      * Example: /api/admin/categories/all
      */

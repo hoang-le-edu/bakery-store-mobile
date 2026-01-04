@@ -312,7 +312,7 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
 
         BarDataSet dataSet = new BarDataSet(entries, "Summary");
         // Sử dụng màu tươi hơn: Products - xanh lá tươi, Orders - đỏ tươi
-        int[] summaryColors = new int[] { 0xFF00E676, 0xFFFF1744 };
+        int[] summaryColors = new int[] { 0xFFE63A5C, 0xFF16C77A };
         dataSet.setColors(summaryColors);
 
         BarData data = new BarData(dataSet);
@@ -339,12 +339,12 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
 
         // Map trạng thái sang màu giống AdminOrdersActivity
         Map<String, Integer> statusColorMap = new HashMap<>();
-        statusColorMap.put("Wait For Approval", 0xFFFF1744); // Đỏ tươi
-        statusColorMap.put("In Progress", 0xFFFFD600); // Vàng tươi
-        statusColorMap.put("Delivering", 0xFFFF9100); // Cam tươi
-        statusColorMap.put("Completed", 0xFF00E676); // Xanh lá tươi
-        statusColorMap.put("Cancelled", 0xFF90A4AE); // Xám xanh tươi
-        statusColorMap.put("Unknown", 0xFFB0BEC5); // Xám nhạt tươi
+        statusColorMap.put("Wait For Approval", 0xFFE63A5C); // Đỏ (chuẩn bạn chọn)
+        statusColorMap.put("In Progress",      0xFFF2C316); // Vàng cùng tone
+        statusColorMap.put("Delivering",       0xFFF28C16); // Cam cùng tone
+        statusColorMap.put("Completed",        0xFF16C77A); // Xanh lá cùng tone
+        statusColorMap.put("Cancelled",        0xFF9AA7B1); // Xám xanh dịu
+        statusColorMap.put("Unknown",          0xFFCBD3D9); // Xám nhạt
 
         for (Map.Entry<String, Integer> entry : orderStatusCount.entrySet()) {
             String status = entry.getKey();
@@ -446,7 +446,7 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
 
         BarDataSet dataSet = new BarDataSet(entries, "Daily Revenue");
         // Sử dụng màu cam tươi cho cột doanh thu
-        int[] revenueColors = new int[] { 0xFFFF9100 };
+        int[] revenueColors = new int[] { 0xFFF28C16 };
         dataSet.setColors(revenueColors);
 
         BarData data = new BarData(dataSet);
