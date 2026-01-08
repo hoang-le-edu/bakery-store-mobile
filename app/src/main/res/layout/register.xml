@@ -220,8 +220,7 @@
                 android:text="Already have an account? Sign In"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_md"
-                android:onClick="onLoginClick" />
+                android:textSize="@dimen/text_md" />
 
         </LinearLayout>
     </ScrollView>

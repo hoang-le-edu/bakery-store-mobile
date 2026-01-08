@@ -6,6 +6,9 @@ import com.squareup.moshi.JsonClass
 /**
  * Product model - matches actual API response
  * API returns: product_price as String, not Double
+ * 
+ * When sort=best_seller is used in getAllProducts query,
+ * the response includes total_sold field for each product
  */
 @JsonClass(generateAdapter = true)
 data class ProductDto(
@@ -22,7 +25,16 @@ data class ProductDto(
     val productDescription: String? = null,
     
     @Json(name = "product_image")
-    val productImage: String? = null
+    val productImage: String? = null,
+    
+    @Json(name = "total_sold")
+    val totalSold: Int? = null,
+    
+    @Json(name = "avg_rating")
+    val avgRating: Double? = null,
+    
+    @Json(name = "review_count")
+    val reviewCount: Int? = null
 ) {
     // Helper property to get price as Double
     val price: Double

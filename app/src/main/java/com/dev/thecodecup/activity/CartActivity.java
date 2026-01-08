@@ -469,9 +469,9 @@ public class CartActivity extends BaseBottomNavActivity {
 
             if (item != null) {
                 new AlertDialog.Builder(CartActivity.this)
-                        .setTitle("Confirm Deletion")
-                        .setMessage("Are you sure you want to remove the product '" + item.getProduct_name()
-                                + "' from the cart?")
+                        .setTitle("Delete Product")
+                        .setMessage("Are you sure you want to remove '" + item.getProduct_name()
+                                + "' from your cart?")
                         .setPositiveButton("Delete", (dialog, which) -> {
                             if (currentCart != null) {
                                 String cartId = currentCart.getOrder_id();
@@ -481,6 +481,7 @@ public class CartActivity extends BaseBottomNavActivity {
                         .setNegativeButton("Cancel", (dialog, which) -> {
                             cartAdapter.notifyItemChanged(position); // Revert swipe
                         })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setCancelable(false)
                         .show();
             }

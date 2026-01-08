@@ -2,12 +2,21 @@ package com.dev.thecodecup.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.TypedValue;
@@ -34,20 +43,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.util.TypedValue;
-
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,6 +73,7 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     // Xóa rvToppings, toppingAdapter
 
     private EditText etSearch;
+    private ImageButton btnFilter;
     private TextView tabAll;
     private LinearLayout tabContainer;
     private RecyclerView rvProducts;
@@ -85,6 +81,8 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
 
     private AdminProductAdapter adapter;
     private ApiService apiService;
+    private Handler handler;
+    private Runnable searchRunnable;
 
     private static final String TAB_ALL = "all";
     private static final String TAB_TOPPING = "topping";
@@ -93,6 +91,13 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     private String currentCategoryId = TAB_ALL;
     private List<AdminProductCategoryDto> categories = new ArrayList<>();
 
+    // Filter state
+    private String filterStatus = null; // null = all, "active", "inactive"
+    private String filterSortBy = null; // price, cost, up_m_price, up_l_price
+    private Double filterPriceMin = null;
+    private Double filterPriceMax = null;
+    private String filterSortOrder = "asc"; // asc or desc
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,10 +105,12 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
 
         setupAdminBottomNav();
         apiService = NetworkModule.INSTANCE.getApiService();
+        handler = new Handler(Looper.getMainLooper());
 
         initViews();
         setupRecycler();
         setupSearch();
+        setupFilter();
         setupTabAll();
         setupTabTopping();
 
@@ -126,6 +133,7 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
 
     private void initViews() {
         etSearch = findViewById(R.id.etSearch);
+        btnFilter = findViewById(R.id.btnFilter);
         tabAll = findViewById(R.id.tabAll);
         tabContainer = findViewById(R.id.tabContainer);
         rvProducts = findViewById(R.id.rvProducts);
@@ -259,14 +267,52 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     }
 
     private void setupSearch() {
+        if (etSearch == null) return;
+
+        // Clear button handling on drawableEnd
+        etSearch.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (etSearch.getCompoundDrawables()[2] != null) { // drawableEnd
+                    int leftEdgeOfRightDrawable = etSearch.getRight() - etSearch.getCompoundDrawables()[2].getBounds().width() - etSearch.getPaddingEnd();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable) {
+                        etSearch.setText("");
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+
+        searchRunnable = this::performSearch;
+
+        etSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                handler.removeCallbacks(searchRunnable);
+                handler.postDelayed(searchRunnable, 500); // debounce 500ms
+            }
+        });
+
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                handler.removeCallbacks(searchRunnable);
                 performSearch();
                 return true;
             }
             return false;
         });
+    }
+
+    private void setupFilter() {
+        if (btnFilter == null) return;
+        btnFilter.setOnClickListener(v -> openFilterDialog());
     }
 
     private void setupTabAll() {
@@ -316,10 +362,118 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
         loadProductsFromApi(search.isEmpty() ? null : search, currentCategoryId);
     }
 
+    private void openFilterDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_product_filter, null);
+
+        CheckBox cbActive = dialogView.findViewById(R.id.cbStatusActive);
+        CheckBox cbInactive = dialogView.findViewById(R.id.cbStatusInactive);
+        Spinner spinnerSortBy = dialogView.findViewById(R.id.spinnerSortBy);
+        RadioGroup rgSortOrder = dialogView.findViewById(R.id.rgSortOrder);
+        RadioButton rbNone = dialogView.findViewById(R.id.rbNone);
+        RadioButton rbAscending = dialogView.findViewById(R.id.rbAscending);
+        RadioButton rbDescending = dialogView.findViewById(R.id.rbDescending);
+        Button btnReset = dialogView.findViewById(R.id.btnReset);
+        Button btnApply = dialogView.findViewById(R.id.btnApply);
+
+        // Setup spinner for sort_by
+        String[] sortByOptions = {"None", "Price", "Cost", "Medium Price", "Large Price"};
+        String[] sortByValues = {null, "price", "cost", "up_m_price", "up_l_price"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sortByOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSortBy.setAdapter(adapter);
+
+        // Set current filter values
+        if ("active".equals(filterStatus)) {
+            cbActive.setChecked(true);
+        } else if ("inactive".equals(filterStatus)) {
+            cbInactive.setChecked(true);
+        } else {
+            cbActive.setChecked(true);
+            cbInactive.setChecked(true);
+        }
+
+        if (filterSortBy != null) {
+            for (int i = 0; i < sortByValues.length; i++) {
+                if (filterSortBy.equals(sortByValues[i])) {
+                    spinnerSortBy.setSelection(i);
+                    break;
+                }
+            }
+        } else {
+            spinnerSortBy.setSelection(0);
+        }
+
+        // price filters removed
+
+        if (filterSortOrder == null) {
+            rbNone.setChecked(true);
+        } else if ("desc".equals(filterSortOrder)) {
+            rbDescending.setChecked(true);
+        } else {
+            rbAscending.setChecked(true);
+        }
+
+        // Create dialog instance so we can dismiss it from handlers
+        final androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Filter Products")
+            .setView(dialogView)
+            .create();
+
+        // Reset button
+        btnReset.setOnClickListener(v -> {
+            cbActive.setChecked(true);
+            cbInactive.setChecked(true);
+            spinnerSortBy.setSelection(0);
+            // price fields removed: clear stored values
+            filterPriceMin = null;
+            filterPriceMax = null;
+            rbNone.setChecked(true);
+        });
+
+        // Apply button
+        btnApply.setOnClickListener(v -> {
+            // Get status
+            boolean isActive = cbActive.isChecked();
+            boolean isInactive = cbInactive.isChecked();
+            if (isActive && isInactive) {
+                filterStatus = null; // all
+            } else if (isActive) {
+                filterStatus = "active";
+            } else if (isInactive) {
+                filterStatus = "inactive";
+            } else {
+                Toast.makeText(AdminProductListActivity.this, "Please select at least one status", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Get sort by
+            int selectedIndex = spinnerSortBy.getSelectedItemPosition();
+            filterSortBy = sortByValues[selectedIndex];
+
+            // Price range removed; clear any existing filters
+            filterPriceMin = null;
+            filterPriceMax = null;
+
+            // Get sort order: allow None => no sort
+            if (rbAscending.isChecked()) {
+                filterSortOrder = "asc";
+            } else if (rbDescending.isChecked()) {
+                filterSortOrder = "desc";
+            } else {
+                filterSortOrder = null;
+            }
+
+            performSearch();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
     private void loadProductsFromApi(@Nullable String searchText, @Nullable String categoryId) {
         String categoryFilter = categoryId != null && !"all".equals(categoryId) ? categoryId : null;
 
-        apiService.getAdminProducts(null, searchText, categoryFilter)
+        apiService.getAdminProducts(searchText, filterStatus, filterSortBy, filterSortOrder, null)
                 .enqueue(new Callback<AdminProductsResponseDto>() {
                     @Override
                     public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
@@ -405,7 +559,7 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
 
     private void loadToppingList() {
         // Gọi API để lấy topping list (không filter theo category)
-        apiService.getAdminProducts(null, null, null)
+        apiService.getAdminProducts(null, null, null, null, null)
                 .enqueue(new Callback<AdminProductsResponseDto>() {
                     @Override
                     public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {

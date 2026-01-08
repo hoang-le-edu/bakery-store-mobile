@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.jvm.JvmOverloads
 
 class ProductViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -56,16 +57,18 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
     /**
      * Load all products with optional filters
      */
+    @JvmOverloads
     fun loadProducts(
         limit: Int? = null,
         searchText: String? = null,
-        categoryId: String? = "all"
+        categoryId: String? = "all",
+        sort: String? = null
     ) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
 
-            productRepository.getAllProducts(limit, searchText, categoryId)
+            productRepository.getAllProducts(limit, searchText, categoryId, sort)
                 .onSuccess { productList ->
                     android.util.Log.d("ProductVM", "SUCCESS. Kích thước nhận từ Repo: ${productList.size} - Post LiveData...")
                     // Cập nhật LiveData (Java Activity)

@@ -337,7 +337,7 @@ public class AdminAddProductActivity extends AppCompatActivity {
 
     private void loadToppings() {
         // Load toppings from the products API
-        apiService.getAdminProducts(null, null, null).enqueue(new Callback<AdminProductsResponseDto>() {
+        apiService.getAdminProducts(null, null, null, null, null).enqueue(new Callback<AdminProductsResponseDto>() {
             @Override
             public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
                 if (response.isSuccessful() && response.body() != null) {

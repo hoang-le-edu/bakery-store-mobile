@@ -14,16 +14,18 @@ class ProductRemoteRepository {
      * @param limit Maximum number of products to return
      * @param searchText Search query for product name
      * @param categoryId Filter by category ID (use "all" for all categories)
+     * @param sort Sort products by field (e.g., "best_seller")
      * @return Result containing list of products or error
      */
     suspend fun getAllProducts(
         limit: Int? = null,
         searchText: String? = null,
-        categoryId: String? = "all"
+        categoryId: String? = "all",
+        sort: String? = null
     ): Result<List<ProductDto>> = withContext(Dispatchers.IO) {
         try {
-            android.util.Log.d("Repo", "getAllProducts: Calling API with categoryId=$categoryId, limit=$limit, searchText=$searchText")
-            val response = apiService.getAllProducts(limit, searchText, categoryId)
+            android.util.Log.d("Repo", "getAllProducts: Calling API with categoryId=$categoryId, limit=$limit, searchText=$searchText, sort=$sort")
+            val response = apiService.getAllProducts(limit, searchText, categoryId, sort)
             
             if (response.isSuccessful) {
                 val body = response.body()
@@ -33,7 +35,7 @@ class ProductRemoteRepository {
                     val products = body.getAllProducts()
 
                     // <<< THÊM LOG ĐỂ KIỂM TRA SỐ LƯỢNG SẢN PHẨM TRONG REPOSITORY >>>
-                    android.util.Log.d("Repo", "getAllProducts: Kích thước danh sách sản phẩm được làm phẳng: ${products.size}")
+                    android.util.Log.d("Repo", "getAllProducts: Flattened products list size: ${products.size}")
 
                     Result.success(products)
                 } else {
@@ -58,7 +60,7 @@ class ProductRemoteRepository {
     suspend fun getProductById(productId: String): Result<ProductDto?> = withContext(Dispatchers.IO) {
         try {
             // Use getAllProducts to get all products, then filter by ID
-            val response = apiService.getAllProducts(limit = null, searchText = null, categoryId = "all")
+            val response = apiService.getAllProducts(limit = null, searchText = null, categoryId = "all", sort = null)
             
             if (response.isSuccessful) {
                 val body = response.body()
@@ -91,7 +93,7 @@ class ProductRemoteRepository {
     ): Result<List<ProductDto>> = withContext(Dispatchers.IO) {
         try {
             // Use getAllProducts with searchText parameter
-            val response = apiService.getAllProducts(limit = limit, searchText = query, categoryId = "all")
+            val response = apiService.getAllProducts(limit = limit, searchText = query, categoryId = "all", sort = null)
             
             if (response.isSuccessful) {
                 val body = response.body()

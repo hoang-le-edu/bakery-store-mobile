@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/space_lg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Order Filters"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_subsubtitle"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_md" />
+
+        <!-- Payment method -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment method"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_xs" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/space_md">
+
+            <CheckBox
+                android:id="@+id/cbPaymentBanking"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Banking"
+                android:padding="@dimen/space_sm" />
+
+            <CheckBox
+                android:id="@+id/cbPaymentCash"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cash"
+                android:padding="@dimen/space_sm" />
+        </LinearLayout>
+
+        <!-- Payment status -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment status"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_xs" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/space_md">
+
+            <CheckBox
+                android:id="@+id/cbPaymentStatusPending"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="pending"
+                android:padding="@dimen/space_sm" />
+
+            <CheckBox
+                android:id="@+id/cbPaymentStatusPaid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="paid"
+                android:padding="@dimen/space_sm" />
+        </LinearLayout>
+
+        <!-- Order total -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Price range"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_xs" />
+
+        <RadioGroup
+            android:id="@+id/rgTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/space_md">
+
+            <RadioButton
+                android:id="@+id/rbTotalAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="All"
+                android:padding="@dimen/space_sm" />
+            <RadioButton
+                android:id="@+id/rbTotal1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Under 100,000"
+                android:padding="@dimen/space_sm" />
+            <RadioButton
+                android:id="@+id/rbTotal2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="100,000 - 300,000"
+                android:padding="@dimen/space_sm" />
+            <RadioButton
+                android:id="@+id/rbTotal3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="300,000 - 500,000"
+                android:padding="@dimen/space_sm" />
+            <RadioButton
+                android:id="@+id/rbTotal4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Over 500,000"
+                android:padding="@dimen/space_sm" />
+        </RadioGroup>
+
+        <!-- Date range -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date range (YYYY-MM-DD)"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_xs" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/space_md">
+
+            <TextView
+                android:id="@+id/tvFromDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="@dimen/space_md"
+                android:text="From"
+                android:background="@drawable/bg_search_rounded"
+                android:textColor="@android:color/black" />
+
+            <Space
+                android:layout_width="@dimen/space_sm"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvToDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="@dimen/space_md"
+                android:text="To"
+                android:background="@drawable/bg_search_rounded"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <!-- Sort order -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sort by Order day"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_xs" />
+
+        <RadioGroup
+            android:id="@+id/rgSortOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/space_md">
+
+            <RadioButton
+                android:id="@+id/rbSortNone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="None"
+                android:padding="@dimen/space_sm" />
+            <RadioButton
+                android:id="@+id/rbSortNewest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Newest (DESC)"
+                android:padding="@dimen/space_sm" />
+            <RadioButton
+                android:id="@+id/rbSortOldest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Oldest (ASC)"
+                android:padding="@dimen/space_sm" />
+        </RadioGroup>
+
+        <!-- Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset"
+                android:textColor="@color/pink_primary"
+                android:background="@drawable/btn_secondary_rounded"
+                app:backgroundTint="@null"
+                android:layout_marginEnd="@dimen/space_md" />
+
+            <Button
+                android:id="@+id/btnApply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apply"
+                android:background="@drawable/btn_primary_rounded" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

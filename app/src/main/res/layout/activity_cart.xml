@@ -147,6 +147,18 @@
 
                     </LinearLayout>
 
+                    <!-- Swipe to delete note -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Swipe left to delete product"
+                        android:textSize="@dimen/text_sm"
+                        android:textColor="@color/red_add_button"
+                        android:textStyle="italic"
+                        android:paddingHorizontal="@dimen/space_lg"
+                        android:paddingBottom="@dimen/space_sm"
+                        android:drawablePadding="@dimen/space_sm" />
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewCartItems"
                         android:layout_width="match_parent"

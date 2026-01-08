@@ -212,7 +212,7 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
 
     private void loadDashboardData() {
         // Load products count
-        apiService.getAdminProducts(null, null, null)
+        apiService.getAdminProducts(null, null, null, null, null)
                 .enqueue(new Callback<AdminProductsResponseDto>() {
                     @Override
                     public void onResponse(Call<AdminProductsResponseDto> call, Response<AdminProductsResponseDto> response) {
@@ -249,7 +249,7 @@ public class AdminHomeActivity extends AdminBottomNavActivity {
                 });
 
         // Load all orders
-        apiService.getAdminOrders().enqueue(new Callback<AdminOrdersResponseDto>() {
+            apiService.getAdminOrders(null, null, null, null, null, null, null, null).enqueue(new Callback<AdminOrdersResponseDto>() {
             @Override
             public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
