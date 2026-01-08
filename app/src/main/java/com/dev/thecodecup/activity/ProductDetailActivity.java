@@ -441,14 +441,14 @@ public class ProductDetailActivity extends BaseAuthActivity {
         // Workaround for backend API: send an empty order_ids list.
         AddToCartRequest request = new AddToCartRequest(productRequest, Collections.emptyList());
 
-        final ProgressDialog addDialog = ProgressDialog.show(this, null, "Đang thêm vào giỏ...", true, false);
+        final ProgressDialog addDialog = ProgressDialog.show(this, null, "Adding to cart...", true, false);
         BakeryJavaBridge.INSTANCE.addProductToCart(this, request, (response, error) -> {
             addDialog.dismiss();
             if (response != null && response.isSuccessful()) {
-                Toast.makeText(this, "Đã thêm vào giỏ hàng thành công!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Product added to cart successfully!", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                String errorMsg = "Thêm vào giỏ hàng thất bại";
+                String errorMsg = "Failed to add to cart";
                 if (error != null) {
                     errorMsg += ": " + error.getMessage();
                 } else if (response != null) {

@@ -164,6 +164,10 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
             // Reload the product list to reflect changes
             performSearch();
         });
+        adapter.setOnDeleteClickListener((product, position) -> {
+            // Show confirmation dialog before deleting
+            showDeleteConfirmDialog(product, position);
+        });
         rvProducts.setLayoutManager(new GridLayoutManager(this, 1));
         rvProducts.setAdapter(adapter);
     }
@@ -225,7 +229,7 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
         }
 
         if (body.isEmpty()) {
-            Toast.makeText(AdminProductListActivity.this, "Không có thay đổi nào để cập nhật", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AdminProductListActivity.this, "No changes to update", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -489,6 +493,45 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
             }
         }
         adapter.setItems(flatList);
+    }
+
+    private void showDeleteConfirmDialog(AdminProductDto product, int position) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Delete Product")
+            .setMessage("Are you sure you want to delete \"" + product.getProductName() + "\"?")
+            .setPositiveButton("Delete", (dialog, which) -> {
+                deleteProduct(product, position);
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void deleteProduct(AdminProductDto product, int position) {
+        String productId = product.getProductId();
+        if (productId == null) {
+            Toast.makeText(this, "Invalid product ID", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        apiService.deleteAdminProduct(productId).enqueue(new Callback<com.dev.thecodecup.model.network.api.SuccessResponse>() {
+            @Override
+            public void onResponse(Call<com.dev.thecodecup.model.network.api.SuccessResponse> call, 
+                                   Response<com.dev.thecodecup.model.network.api.SuccessResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(AdminProductListActivity.this, 
+                        response.body().getMessage() != null ? response.body().getMessage() : "Product deleted successfully", 
+                        Toast.LENGTH_SHORT).show();
+                    adapter.removeItem(position);
+                } else {
+                    Toast.makeText(AdminProductListActivity.this, "Failed to delete product", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.dev.thecodecup.model.network.api.SuccessResponse> call, Throwable t) {
+                Toast.makeText(AdminProductListActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // Không cần mapToProductDto nữa, dùng trực tiếp AdminProductDto
