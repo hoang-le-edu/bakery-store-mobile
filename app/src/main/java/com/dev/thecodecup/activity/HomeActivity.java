@@ -127,9 +127,8 @@ public class HomeActivity extends BaseBottomNavActivity  {
             }
         });
 
-        // Gọi API lấy tất cả sản phẩm (không quan tâm category)
-        // searchText = null, limit = null, categoryId = null
-        productViewModel.loadProducts(null, null, null);
+        // Gọi API lấy best seller sản phẩm với sort=best_seller & limit=10
+        productViewModel.loadProducts(10, null, null, "best_seller");
     }
 
     /** Đổ dữ liệu vào list Bestseller (tạm thời lấy tất cả sản phẩm) */

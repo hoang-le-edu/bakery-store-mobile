@@ -100,4 +100,5 @@
     <string name="no_data">--</string>
     <!-- Admin Order Detail -->
     <string name="status_history">Status History</string>
+    <string name="customer_avatar">Bepmetay User</string>
 </resources>

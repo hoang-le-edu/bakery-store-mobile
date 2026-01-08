@@ -43,26 +43,6 @@
                 android:layout_marginTop="@dimen/space_xs"
                 android:layout_marginBottom="@dimen/space_lg"/>
 
-            <!-- Ô tìm kiếm -->
-            <EditText
-                android:id="@+id/etSearch"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:minHeight="48dp"
-                android:background="@drawable/bg_search_rounded"
-                android:drawableStart="@drawable/ic_search_category"
-                android:drawablePadding="@dimen/space_sm"
-                android:gravity="center_vertical"
-                android:hint="@string/tim_kiem_san_pham"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:paddingStart="@dimen/space_md"
-                android:paddingEnd="@dimen/space_md"
-                android:layout_marginBottom="@dimen/space_lg"
-                android:textColor="#333333"
-                android:textColorHint="@color/colorGrayText"
-                android:textSize="@dimen/text_md" />
-
             <RelativeLayout
                 android:id="@+id/headerCard"
                 android:layout_width="match_parent"

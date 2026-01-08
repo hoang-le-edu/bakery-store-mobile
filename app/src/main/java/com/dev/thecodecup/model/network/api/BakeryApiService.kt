@@ -24,13 +24,30 @@ interface BakeryApiService {
     
     /**
      * Get all products with categories and filters
-     * GET /api/customer/products/all?limit=&searchText=&category_id=
+     * GET /api/customer/products/all?limit=&searchText=&category_id=&sort=best_seller
+     * 
+     * Parameters:
+     * - sort: "best_seller" - Sort by highest sales (sales count descending)
+     * - limit: Limit results (used with sort=best_seller)
+     * - category_id: Filter by category
+     * - searchText: Search by product name
+     * - min_price, max_price: Filter by price range
+     * - page_size: Items per page
+     * - order: Sort by price (asc/desc)
+     * 
+     * Response when sort=best_seller includes:
+     * - total_sold: Number of units sold for each product
      */
     @GET("customer/products/all")
     suspend fun getAllProducts(
         @Query("limit") limit: Int? = null,
         @Query("searchText") searchText: String? = null,
-        @Query("category_id") categoryId: String? = "all"
+        @Query("category_id") categoryId: String? = "all",
+        @Query("sort") sort: String? = null,
+        @Query("min_price") minPrice: Int? = null,
+        @Query("max_price") maxPrice: Int? = null,
+        @Query("page_size") pageSize: Int? = null,
+        @Query("order") order: String? = null
     ): Response<ProductsResponse>
     
     /**
@@ -130,6 +147,12 @@ suspend fun uploadReviewMedia(
     
     /**
      * Proceed with checkout (convert draft cart to real order)
+     * POST /api/orders/proceed
+     * 
+     * Features:
+     * - Automatically sets order_date = current timestamp
+     * - Converts draft cart to official order
+     * 
      * Used in: CheckoutScreen -> Place Order button
      */
     @POST("orders/proceed")
@@ -204,17 +227,72 @@ suspend fun uploadReviewMedia(
     
     /**
      * Load all products grouped by category (Admin only)
+     * GET /api/admin/products/all
+     * 
+     * Parameters:
+     * - keysearch: Search by product name, description, or category name
+     * - status: Filter by status (active, inactive)
+     * - sort_by: Sort field (price, cost, up_m_price, up_l_price)
+     * - sort_order: asc or desc (default: asc)
+     * - page_size: Items per page
+     * 
+     * Examples:
+     * - GET /api/admin/products/all?keysearch=cake&status=active&sort_by=price&sort_order=desc&page_size=10
+     * - GET /api/admin/products/all?keysearch=bánh&status=inactive&sort_by=cost&sort_order=asc
+     * 
      * Used in: EmployeeScreens -> ProductManagementScreen
      */
     @GET("admin/products/all")
-    suspend fun loadAllProducts(): Response<AdminProductsResponse>
+    suspend fun loadAllProducts(
+        @Query("keysearch") keysearch: String? = null,
+        @Query("status") status: String? = null,
+        @Query("sort_by") sortBy: String? = null,
+        @Query("sort_order") sortOrder: String? = null,
+        @Query("page_size") pageSize: Int? = null
+    ): Response<AdminProductsResponse>
     
     /**
      * Load all orders across all users (Admin only)
+     * GET /api/admin/orders/all
+     * 
+     * Parameters (all optional):
+     * - status: Filter by status
+     *   Enum: Draft, Wait For Approval, In Progress, Delivering, Completed, Cancelled
+     * - payment_method: Filter by payment method
+     *   Enum: Banking, Cash, ""
+     * - payment_status: Filter by payment status
+     *   Enum: pending, paid
+     * - keysearch: Search by order_number or receiver_name
+     * - order_total: Filter by price range
+     *   1: < 100,000
+     *   2: 100,000 - 300,000
+     *   3: 300,000 - 500,000
+     *   4: > 500,000
+     * - from_date: Filter from date (YYYY-MM-DD)
+     * - to_date: Filter to date (YYYY-MM-DD)
+     * 
+     * Sorting:
+     * - Default: order_date DESC, then updated_at DESC
+     * 
+     * Response: Flat list of orders with customers, creator relationships
+     * 
+     * Example:
+     * GET /api/admin/orders/all?status=Completed&payment_method=Banking&keysearch=ORD123&order_total=2&from_date=2026-01-01&to_date=2026-01-31
+     * 
      * Used in: EmployeeScreens -> OrderManagementScreen
      */
     @GET("admin/orders/all")
-    suspend fun loadAllOrders(): Response<AdminOrdersResponse>
+    suspend fun loadAllOrders(
+        @Query("status") status: String? = null,
+        @Query("payment_method") paymentMethod: String? = null,
+        @Query("payment_status") paymentStatus: String? = null,
+        @Query("keysearch") keysearch: String? = null,
+        @Query("order_total") orderTotal: Int? = null,
+        @Query("from_date") fromDate: String? = null,
+        @Query("to_date") toDate: String? = null
+        ,@Query("sort_by") sortBy: String? = null
+        ,@Query("sort_order") sortOrder: String? = null
+    ): Response<AdminOrdersResponse>
     
     /**
      * Update order status (Admin only)

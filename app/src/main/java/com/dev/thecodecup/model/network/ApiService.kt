@@ -30,13 +30,29 @@ interface ApiService {
     
     /**
      * Get all products with optional filters
-     * Example: /api/customer/products/all?limit=10&searchText=coffee&category_id=123
+     * Example: /api/customer/products/all?limit=10&searchText=coffee&category_id=123&sort=best_seller
+     * 
+     * Parameters:
+     * - sort: "best_seller" - Sort by highest sales
+     * - limit: Limit number of products
+     * - category_id: Filter by category
+     * - searchText: Search by name
+     * - min_price, max_price: Price range
+     * - page_size: Items per page
+     * - order: Sort by price (asc/desc)
+     * 
+     * When sort=best_seller, response includes total_sold field per product
      */
     @GET("customer/products/all")
     suspend fun getAllProducts(
         @Query("limit") limit: Int? = null,
         @Query("searchText") searchText: String? = null,
-        @Query("category_id") categoryId: String? = "all"
+        @Query("category_id") categoryId: String? = "all",
+        @Query("sort") sort: String? = null,
+        @Query("min_price") minPrice: Int? = null,
+        @Query("max_price") maxPrice: Int? = null,
+        @Query("page_size") pageSize: Int? = null,
+        @Query("order") order: String? = null
     ): Response<ProductsResponse>
     
     /**
@@ -80,9 +96,11 @@ interface ApiService {
      */
     @GET("admin/products/all")
     fun getAdminProducts(
-        @Query("limit") limit: Int? = null,
-        @Query("searchText") searchText: String? = null,
-        @Query("category_id") categoryId: String? = null
+        @Query("keysearch") keysearch: String? = null,
+        @Query("status") status: String? = null,
+        @Query("sort_by") sortBy: String? = null,
+        @Query("sort_order") sortOrder: String? = null,
+        @Query("page_size") pageSize: Int? = null
     ): Call<AdminProductsResponseDto>
 
     /**
@@ -96,10 +114,31 @@ interface ApiService {
 
     /**
      * Get all orders
-     * Example: /api/admin/orders/all
+     * GET /api/admin/orders/all
+     * 
+     * Parameters:
+     * - status: Draft, Wait For Approval, In Progress, Delivering, Completed, Cancelled
+     * - payment_method: Banking, Cash, ""
+     * - payment_status: pending, paid
+     * - keysearch: Search by order_number or receiver_name
+     * - order_total: 1=<100k, 2=100k-300k, 3=300k-500k, 4=>500k
+     * - from_date, to_date: Date range (YYYY-MM-DD)
+     * 
+     * Default sorting: order_date DESC, then updated_at DESC
+     * 
+     * Example: /api/admin/orders/all?status=Completed&payment_method=Banking
      */
     @GET("admin/orders/all")
-    fun getAdminOrders(): Call<AdminOrdersResponseDto>
+    fun getAdminOrders(
+        @Query("status") status: String? = null,
+        @Query("payment_method") paymentMethod: String? = null,
+        @Query("payment_status") paymentStatus: String? = null,
+        @Query("keysearch") keysearch: String? = null,
+        @Query("order_total") orderTotal: Int? = null,
+        @Query("from_date") fromDate: String? = null,
+        @Query("to_date") toDate: String? = null,
+        @Query("order_date") orderDate: String? = null
+    ): Call<AdminOrdersResponseDto>
 
     /**
      * Get order detail (admin)
@@ -131,7 +170,10 @@ interface ApiService {
 
     /**
      * Search admin orders with filters
-     * Example: /api/admin/orders/search?order_id=123&customer_name=John&date_from=2024-01-01&date_to=2024-12-31
+     * GET /api/admin/orders/search
+     * 
+     * Deprecated: Use getAdminOrders() with query parameters instead
+     * This endpoint is kept for backward compatibility
      */
     @GET("admin/orders/search")
     fun searchAdminOrders(

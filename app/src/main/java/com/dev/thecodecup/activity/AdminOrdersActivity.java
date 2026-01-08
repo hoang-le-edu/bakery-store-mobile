@@ -54,8 +54,15 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
     private String dateFrom = null;
     private String dateTo = null;
     private String currentQuery = "";
+    private String filterStatus = null;
+    private String filterPaymentMethod = null;
+    private String filterPaymentStatus = null;
+    private Integer filterOrderTotal = null;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
+
+    // Sorting
+    private String sortOrder = "desc"; // default: newest first
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -202,7 +209,8 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
     }
 
     private void loadOrdersFromApi() {
-        apiService.getAdminOrders().enqueue(new Callback<AdminOrdersResponseDto>() {
+        apiService.getAdminOrders(filterStatus, filterPaymentMethod, filterPaymentStatus, currentQuery,
+            filterOrderTotal, dateFrom, dateTo, sortOrder).enqueue(new Callback<AdminOrdersResponseDto>() {
             @Override
             public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -253,7 +261,10 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
             return false;
         });
 
-        searchRunnable = () -> performSearch(currentQuery);
+        searchRunnable = () -> {
+            currentQuery = etSearch.getText().toString().trim();
+            loadOrdersFromApi();
+        };
 
         etSearch.addTextChangedListener(new android.text.TextWatcher() {
             @Override
@@ -271,144 +282,151 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
         });
 
         if (btnFilter != null) {
-            btnFilter.setOnClickListener(v -> openDateRangePicker());
+            btnFilter.setOnClickListener(v -> openFilterDialog());
         }
+    }
+
+    private void openFilterDialog() {
+        android.view.LayoutInflater inflater = android.view.LayoutInflater.from(this);
+        android.view.View view = inflater.inflate(R.layout.dialog_filter_orders, null, false);
+
+        android.widget.CheckBox cbPaymentBanking = view.findViewById(R.id.cbPaymentBanking);
+        android.widget.CheckBox cbPaymentCash = view.findViewById(R.id.cbPaymentCash);
+
+        android.widget.CheckBox cbPaymentStatusPending = view.findViewById(R.id.cbPaymentStatusPending);
+        android.widget.CheckBox cbPaymentStatusPaid = view.findViewById(R.id.cbPaymentStatusPaid);
+
+        android.widget.RadioGroup rgTotal = view.findViewById(R.id.rgTotal);
+        android.widget.RadioButton rbTotalAll = view.findViewById(R.id.rbTotalAll);
+        android.widget.RadioButton rbTotal1 = view.findViewById(R.id.rbTotal1);
+        android.widget.RadioButton rbTotal2 = view.findViewById(R.id.rbTotal2);
+        android.widget.RadioButton rbTotal3 = view.findViewById(R.id.rbTotal3);
+        android.widget.RadioButton rbTotal4 = view.findViewById(R.id.rbTotal4);
+
+        android.widget.TextView tvFromDate = view.findViewById(R.id.tvFromDate);
+        android.widget.TextView tvToDate = view.findViewById(R.id.tvToDate);
+
+        android.widget.RadioGroup rgSortOrder = view.findViewById(R.id.rgSortOrder);
+        android.widget.RadioButton rbSortNone = view.findViewById(R.id.rbSortNone);
+        android.widget.RadioButton rbSortNewest = view.findViewById(R.id.rbSortNewest);
+        android.widget.RadioButton rbSortOldest = view.findViewById(R.id.rbSortOldest);
+
+        android.widget.Button btnReset = view.findViewById(R.id.btnReset);
+        android.widget.Button btnApply = view.findViewById(R.id.btnApply);
+
+        // Prefill current selections (status handled by tabs; no status control here)
+        cbPaymentBanking.setChecked("Banking".equalsIgnoreCase(filterPaymentMethod) || filterPaymentMethod == null);
+        cbPaymentCash.setChecked("Cash".equalsIgnoreCase(filterPaymentMethod) || filterPaymentMethod == null);
+
+        cbPaymentStatusPending.setChecked("pending".equalsIgnoreCase(filterPaymentStatus) || filterPaymentStatus == null);
+        cbPaymentStatusPaid.setChecked("paid".equalsIgnoreCase(filterPaymentStatus) || filterPaymentStatus == null);
+
+        if (filterOrderTotal == null) {
+            rbTotalAll.setChecked(true);
+        } else {
+            switch (filterOrderTotal) {
+                case 1: rbTotal1.setChecked(true); break;
+                case 2: rbTotal2.setChecked(true); break;
+                case 3: rbTotal3.setChecked(true); break;
+                case 4: rbTotal4.setChecked(true); break;
+                default: rbTotalAll.setChecked(true); break;
+            }
+        }
+
+        tvFromDate.setText(dateFrom == null ? "From" : dateFrom);
+        tvToDate.setText(dateTo == null ? "To" : dateTo);
+
+        if (sortOrder == null) {
+            rbSortNone.setChecked(true);
+        } else if ("asc".equalsIgnoreCase(sortOrder)) {
+            rbSortOldest.setChecked(true);
+        } else {
+            rbSortNewest.setChecked(true);
+        }
+
+        tvFromDate.setOnClickListener(v -> pickDate((picked) -> {
+            dateFrom = picked;
+            tvFromDate.setText(picked);
+        }));
+
+        tvToDate.setOnClickListener(v -> pickDate((picked) -> {
+            dateTo = picked;
+            tvToDate.setText(picked);
+        }));
+
+        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(this)
+                .setView(view)
+                .create();
+
+        btnReset.setOnClickListener(v -> {
+            cbPaymentBanking.setChecked(true);
+            cbPaymentCash.setChecked(true);
+            cbPaymentStatusPending.setChecked(true);
+            cbPaymentStatusPaid.setChecked(true);
+            rgTotal.check(R.id.rbTotalAll);
+            rbSortNewest.setChecked(true);
+            dateFrom = null;
+            dateTo = null;
+            filterStatus = null;
+            tvFromDate.setText("From");
+            tvToDate.setText("To");
+        });
+
+        btnApply.setOnClickListener(v -> {
+            // status is controlled by tabs; clear extra status filter
+            filterStatus = null;
+
+            // payment method: if both checked -> null (all)
+            boolean banking = cbPaymentBanking.isChecked();
+            boolean cash = cbPaymentCash.isChecked();
+            if (banking && cash) {
+                filterPaymentMethod = null;
+            } else if (banking) {
+                filterPaymentMethod = "Banking";
+            } else if (cash) {
+                filterPaymentMethod = "Cash";
+            } else {
+                filterPaymentMethod = null;
+            }
+
+            // payment status
+            boolean pending = cbPaymentStatusPending.isChecked();
+            boolean paid = cbPaymentStatusPaid.isChecked();
+            if (pending && paid) {
+                filterPaymentStatus = null;
+            } else if (pending) {
+                filterPaymentStatus = "pending";
+            } else if (paid) {
+                filterPaymentStatus = "paid";
+            } else {
+                filterPaymentStatus = null;
+            }
+
+            // order total
+            int totalId = rgTotal.getCheckedRadioButtonId();
+            if (totalId == R.id.rbTotal1) filterOrderTotal = 1;
+            else if (totalId == R.id.rbTotal2) filterOrderTotal = 2;
+            else if (totalId == R.id.rbTotal3) filterOrderTotal = 3;
+            else if (totalId == R.id.rbTotal4) filterOrderTotal = 4;
+            else filterOrderTotal = null;
+
+            // sort order
+            if (rbSortNone.isChecked()) {
+                sortOrder = null;
+            } else {
+                sortOrder = rbSortOldest.isChecked() ? "asc" : "desc";
+            }
+
+            loadOrdersFromApi();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void performSearch(String query) {
-        // If no query and no date filter -> reload default
-        if ((query == null || query.isEmpty()) && (dateFrom == null && dateTo == null)) {
-            loadOrdersFromApi();
-            return;
-        }
-
-        // Build query: if not empty, search by order_id and customer_name (OR logic)
-        String q = (query != null && !query.isEmpty()) ? query : null;
-
-        if (q == null) {
-            // Only date filter, no text query
-            apiService.searchAdminOrders(null, null, dateFrom, dateTo).enqueue(new Callback<AdminOrdersResponseDto>() {
-                @Override
-                public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
-                    handleSearchResponse(response);
-                }
-
-                @Override
-                public void onFailure(Call<AdminOrdersResponseDto> call, Throwable t) {
-                    allOrders.clear();
-                    applyFilter();
-                }
-            });
-        } else {
-            // Search by order_id and customer_name (OR) + date filter
-            final String finalQuery = q;
-            java.util.Set<String> mergedOrderIds = new java.util.LinkedHashSet<>();
-            final List<AdminOrderDto> mergedOrders = new ArrayList<>();
-            final int[] completedRequests = {0};
-
-            // Search by order_id
-            apiService.searchAdminOrders(finalQuery, null, dateFrom, dateTo).enqueue(new Callback<AdminOrdersResponseDto>() {
-                @Override
-                public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        AdminOrdersResponseDto body = response.body();
-                        if (body.getData() != null) {
-                            for (AdminOrderDto o : body.getData()) {
-                                String status = o.getOrderStatus();
-                                if (status != null && !status.equalsIgnoreCase("draft")) {
-                                    if (!mergedOrderIds.contains(o.getId())) {
-                                        mergedOrderIds.add(o.getId());
-                                        mergedOrders.add(o);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    completedRequests[0]++;
-                    if (completedRequests[0] == 2) {
-                        finalizeMergedSearch(mergedOrders);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AdminOrdersResponseDto> call, Throwable t) {
-                    completedRequests[0]++;
-                    if (completedRequests[0] == 2) {
-                        finalizeMergedSearch(mergedOrders);
-                    }
-                }
-            });
-
-            // Search by customer_name
-            apiService.searchAdminOrders(null, finalQuery, dateFrom, dateTo).enqueue(new Callback<AdminOrdersResponseDto>() {
-                @Override
-                public void onResponse(Call<AdminOrdersResponseDto> call, Response<AdminOrdersResponseDto> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        AdminOrdersResponseDto body = response.body();
-                        if (body.getData() != null) {
-                            for (AdminOrderDto o : body.getData()) {
-                                String status = o.getOrderStatus();
-                                if (status != null && !status.equalsIgnoreCase("draft")) {
-                                    if (!mergedOrderIds.contains(o.getId())) {
-                                        mergedOrderIds.add(o.getId());
-                                        mergedOrders.add(o);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    completedRequests[0]++;
-                    if (completedRequests[0] == 2) {
-                        finalizeMergedSearch(mergedOrders);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AdminOrdersResponseDto> call, Throwable t) {
-                    completedRequests[0]++;
-                    if (completedRequests[0] == 2) {
-                        finalizeMergedSearch(mergedOrders);
-                    }
-                }
-            });
-        }
-    }
-
-    private void finalizeMergedSearch(List<AdminOrderDto> mergedOrders) {
-        allOrders.clear();
-        // Filter results by substring match (case-insensitive)
-        String queryLower = currentQuery.toLowerCase();
-        for (AdminOrderDto order : mergedOrders) {
-            boolean matchesOrderNumber = order.getOrderNumber() != null && 
-                    order.getOrderNumber().toLowerCase().contains(queryLower);
-            boolean matchesOrderId = order.getOrderId() != null && 
-                    order.getOrderId().toLowerCase().contains(queryLower);
-            boolean matchesCustomerName = order.getCustomerName() != null && 
-                    order.getCustomerName().toLowerCase().contains(queryLower);
-            if (matchesOrderNumber || matchesOrderId || matchesCustomerName) {
-                allOrders.add(order);
-            }
-        }
-        applyFilter();
-    }
-
-    private void handleSearchResponse(Response<AdminOrdersResponseDto> response) {
-        if (response.isSuccessful() && response.body() != null) {
-            AdminOrdersResponseDto body = response.body();
-            allOrders.clear();
-            if (body.getData() != null) {
-                for (AdminOrderDto o : body.getData()) {
-                    String status = o.getOrderStatus();
-                    if (status != null && !status.equalsIgnoreCase("draft")) {
-                        allOrders.add(o);
-                    }
-                }
-            }
-            applyFilter();
-        } else {
-            allOrders.clear();
-            applyFilter();
-        }
+        currentQuery = query != null ? query.trim() : "";
+        loadOrdersFromApi();
     }
 
     private void openDateRangePicker() {
@@ -447,5 +465,24 @@ public class AdminOrdersActivity extends AdminBottomNavActivity {
             // Fallback: if MaterialDatePicker not available
             android.widget.Toast.makeText(this, "Date picker not available", android.widget.Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private interface DatePicked {
+        void onPicked(String date);
+    }
+
+    private void pickDate(DatePicked callback) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int year = cal.get(java.util.Calendar.YEAR);
+        int month = cal.get(java.util.Calendar.MONTH);
+        int day = cal.get(java.util.Calendar.DAY_OF_MONTH);
+
+        android.app.DatePickerDialog dialog = new android.app.DatePickerDialog(this,
+                (view, y, m, d) -> {
+                    java.text.DecimalFormat df = new java.text.DecimalFormat("00");
+                    String picked = y + "-" + df.format(m + 1) + "-" + df.format(d);
+                    callback.onPicked(picked);
+                }, year, month, day);
+        dialog.show();
     }
 }

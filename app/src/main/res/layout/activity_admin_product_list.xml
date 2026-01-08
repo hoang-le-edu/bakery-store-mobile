@@ -37,17 +37,30 @@
                 android:layout_height="48dp"
                 android:layout_marginEnd="@dimen/space_lg"
                 android:layout_weight="1"
+                android:background="@drawable/bg_search_rounded"
                 android:drawableStart="@drawable/ic_search_category"
+                android:drawableEnd="@drawable/ic_clear"
                 android:drawablePadding="@dimen/space_sm"
                 android:gravity="center_vertical"
-                android:hint="@string/tim_kiem_san_pham"
+                android:hint="@string/search"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:minHeight="48dp"
                 android:paddingStart="@dimen/space_md"
+                android:paddingEnd="@dimen/space_md"
                 android:textColor="#333333"
                 android:textColorHint="@color/colorGrayText"
                 android:textSize="@dimen/text_md" />
+
+            <ImageButton
+                android:id="@+id/btnFilter"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="@dimen/space_lg"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/filter"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_filter" />
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
