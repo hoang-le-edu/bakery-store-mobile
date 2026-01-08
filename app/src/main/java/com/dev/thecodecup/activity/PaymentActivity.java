@@ -25,6 +25,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.dev.thecodecup.R;
+import com.dev.thecodecup.services.PaymentWebSocketService;
+import com.dev.thecodecup.services.PaymentUpdateListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -44,7 +46,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-public class PaymentActivity extends BaseAuthActivity {
+public class PaymentActivity extends BaseAuthActivity implements PaymentUpdateListener {
 
     private static final String TAG = "PaymentActivity";
     private static final String SOCKET_URL = "https://socket.dotb.cloud/";
@@ -65,6 +67,7 @@ public class PaymentActivity extends BaseAuthActivity {
     private Bitmap qrCodeBitmap;
 
     private Socket socket;
+    private PaymentWebSocketService paymentWebSocketService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +88,12 @@ public class PaymentActivity extends BaseAuthActivity {
         initViews();
         setupListeners();
         generateQRCode();
-        initSocketListener();
+        
+        // Use the new WebSocket service
+        initPaymentWebSocketService();
+        
+        // Keep existing socket implementation as fallback
+        // initSocketListener();
     }
 
     private void initViews() {
@@ -209,9 +217,72 @@ public class PaymentActivity extends BaseAuthActivity {
         }
     }
 
+    private void initPaymentWebSocketService() {
+        paymentWebSocketService = PaymentWebSocketService.getInstance(this);
+        
+        // Add this activity as a listener
+        paymentWebSocketService.addPaymentUpdateListener(this);
+        
+        // Connect and subscribe to payment updates for this order
+        paymentWebSocketService.connect();
+        paymentWebSocketService.subscribeToOrderPayment(orderId);
+        
+        Toast.makeText(this, "Listening for payment status via WebSocket service...", Toast.LENGTH_SHORT).show();
+        txtPaymentStatus.setText("Waiting for payment confirmation...");
+    }
+    
     private void checkPaymentStatus() {
         Toast.makeText(this, "Listening for payment status via WebSocket...", Toast.LENGTH_SHORT).show();
         txtPaymentStatus.setText("Waiting for payment confirmation...");
+    }
+
+    // PaymentUpdateListener implementation
+    @Override
+    public void onPaymentSuccess(String orderId, String amount, String orderNumber) {
+        runOnUiThread(() -> {
+            // Verify this is for our order
+            if (orderId.equals(this.orderId)) {
+                txtPaymentStatus.setText("Payment successful! ✓");
+                Toast.makeText(this,
+                        "Payment successful! Order #" + orderNumber + " confirmed.",
+                        Toast.LENGTH_LONG).show();
+                
+                // Update order status in local storage if needed
+                updateOrderStatusLocally(orderId, "paid", "In Progress");
+                
+                // Navigate back to orders or main screen
+                finishPaymentSuccess();
+            } else {
+                Log.w(TAG, "Received payment for different order: " + orderId);
+            }
+        });
+    }
+
+    @Override
+    public void onPaymentFailed(String reason) {
+        runOnUiThread(() -> {
+            txtPaymentStatus.setText("Payment failed");
+            Toast.makeText(this, "Payment failed: " + reason, Toast.LENGTH_LONG).show();
+        });
+    }
+
+    @Override
+    public void onPaymentError(String message) {
+        runOnUiThread(() -> {
+            txtPaymentStatus.setText("Error processing payment status");
+            Log.e(TAG, "Payment error: " + message);
+        });
+    }
+
+    @Override
+    public void onConnectionStatusChanged(boolean connected, String message) {
+        runOnUiThread(() -> {
+            if (connected) {
+                txtPaymentStatus.setText("Connected. Waiting for payment...");
+            } else {
+                txtPaymentStatus.setText("Connection: " + message);
+            }
+        });
     }
 
     private void initSocketListener() {
@@ -219,6 +290,9 @@ public class PaymentActivity extends BaseAuthActivity {
             IO.Options options = new IO.Options();
             options.transports = new String[] { "websocket" };
             options.reconnection = true;
+            options.reconnectionDelay = 1000;
+            options.reconnectionAttempts = 5;
+            options.timeout = 10000;
 
             socket = IO.socket(SOCKET_URL, options);
 
@@ -247,6 +321,30 @@ public class PaymentActivity extends BaseAuthActivity {
                 }
             });
 
+            socket.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    Log.w(TAG, "Socket disconnected: " + args[0]);
+                    runOnUiThread(() -> {
+                        txtPaymentStatus.setText("Connection lost. Reconnecting...");
+                    });
+                }
+            });
+
+            socket.on("reconnect", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    Log.d(TAG, "Socket reconnected after " + args[0] + " attempts");
+                    runOnUiThread(() -> {
+                        txtPaymentStatus.setText("Reconnected. Waiting for payment...");
+                    });
+                    
+                    // Rejoin room after reconnection
+                    String room = "triggerPaymentStatus/" + orderId;
+                    socket.emit("join", room);
+                }
+            });
+
             socket.on("event-phenikaa", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -254,17 +352,39 @@ public class PaymentActivity extends BaseAuthActivity {
                         JSONObject msg = (JSONObject) args[0];
                         boolean success = msg.optBoolean("success", false);
 
-                        Log.d(TAG, "Payment event received: " + msg.toString());
+                        Log.d(TAG, "PayOS payment event received: " + msg.toString());
 
                         runOnUiThread(() -> {
                             if (success) {
-                                txtPaymentStatus.setText("Payment successful! ✓");
-                                Toast.makeText(PaymentActivity.this,
-                                        "Payment successful! Order confirmed.",
-                                        Toast.LENGTH_LONG).show();
-
-                                // Navigate back to main screen or orders
-                                finishPaymentSuccess();
+                                // Extract payment details from PayOS webhook data
+                                JSONObject data = msg.optJSONObject("data");
+                                if (data != null) {
+                                    String orderIdFromPayment = data.optString("order_id", "");
+                                    String amount = data.optString("amount", "");
+                                    String orderNumber = data.optString("order_number", "");
+                                    
+                                    // Verify this is for our order
+                                    if (orderIdFromPayment.equals(orderId)) {
+                                        txtPaymentStatus.setText("Payment successful! ✓");
+                                        Toast.makeText(PaymentActivity.this,
+                                                "Payment successful! Order #" + orderNumber + " confirmed.",
+                                                Toast.LENGTH_LONG).show();
+                                        
+                                        // Update order status in local storage if needed
+                                        updateOrderStatusLocally(orderId, "paid", "In Progress");
+                                        
+                                        // Navigate back to orders or main screen
+                                        finishPaymentSuccess();
+                                    } else {
+                                        Log.w(TAG, "Received payment for different order: " + orderIdFromPayment);
+                                    }
+                                } else {
+                                    txtPaymentStatus.setText("Payment successful! ✓");
+                                    Toast.makeText(PaymentActivity.this,
+                                            "Payment successful! Order confirmed.",
+                                            Toast.LENGTH_LONG).show();
+                                    finishPaymentSuccess();
+                                }
                             } else {
                                 txtPaymentStatus.setText("Payment failed");
                                 Toast.makeText(PaymentActivity.this,
@@ -274,117 +394,48 @@ public class PaymentActivity extends BaseAuthActivity {
                         });
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing payment event", e);
+                        // Handle parsing error
                     }
                 }
             });
 
             socket.connect();
-            Log.d(TAG, "Connecting to socket...");
-
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Socket URI error", e);
-            Toast.makeText(this, "Failed to connect to payment service", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Socket URI syntax error", e);
+            txtPaymentStatus.setText("Error connecting to payment service");
         }
+    }
+
+    private void updateOrderStatusLocally(String orderId, String paymentStatus, String orderStatus) {
+        // TODO: Implement logic to update order status in local database
     }
 
     private void finishPaymentSuccess() {
-        // Wait 2 seconds then finish
-        new android.os.Handler().postDelayed(() -> {
-            // You can navigate to OrdersActivity or MainActivity here
-            finish();
-        }, 2000);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (socket != null) {
-            socket.disconnect();
-            socket.off();
-            Log.d(TAG, "Socket disconnected");
+        // Disconnect from socket
+        // socket.disconnect();
+        
+        // Disconnect from WebSocket service
+        if (paymentWebSocketService != null) {
+            paymentWebSocketService.disconnect();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Cancel Payment")
-                .setMessage("Are you sure you want to cancel payment? Your order will not be confirmed.")
-                .setPositiveButton("Cancel Payment", (dialog, which) -> super.onBackPressed())
-                .setNegativeButton("Continue", null)
-                .show();
+        
+        // Return to MyOrdersActivity and refresh the list
+        Intent intent = new Intent(this, MyOrdersActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void downloadQRCode() {
         if (qrCodeBitmap == null) {
-            Toast.makeText(this, "QR code not available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "QR code is not available", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Check permission for Android 9 and below
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        REQUEST_STORAGE_PERMISSION);
-                return;
-            }
-        }
-
-        saveQRCodeToGallery();
-    }
-
-    private void saveQRCodeToGallery() {
-        try {
-            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-            String fileName = "QR_Payment_" + orderId + "_" + timestamp + ".png";
-
-            OutputStream fos;
-            Uri imageUri;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10 and above - use MediaStore
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
-                values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/BakeryPayments");
-
-                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                if (imageUri == null) {
-                    throw new Exception("Failed to create MediaStore entry");
-                }
-                fos = getContentResolver().openOutputStream(imageUri);
-            } else {
-                // Android 9 and below - use legacy storage
-                File imagesDir = new File(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_PICTURES), "BakeryPayments");
-                if (!imagesDir.exists()) {
-                    imagesDir.mkdirs();
-                }
-
-                File image = new File(imagesDir, fileName);
-                fos = new FileOutputStream(image);
-                imageUri = Uri.fromFile(image);
-            }
-
-            // Save bitmap to output stream
-            qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            if (fos != null) {
-                fos.close();
-            }
-
-            // Notify gallery for Android 9 and below
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imageUri));
-            }
-
-            Toast.makeText(this, "QR code saved to Gallery", Toast.LENGTH_LONG).show();
-            Log.d(TAG, "QR code saved successfully: " + fileName);
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving QR code", e);
-            Toast.makeText(this, "Failed to save QR code: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+        } else {
+            saveImage(qrCodeBitmap);
         }
     }
 
@@ -393,10 +444,54 @@ public class PaymentActivity extends BaseAuthActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveQRCodeToGallery();
+                saveImage(qrCodeBitmap);
             } else {
                 Toast.makeText(this, "Permission denied. Cannot save QR code.", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void saveImage(Bitmap bitmap) {
+        String fileName = "QRCode_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) + ".png";
+        OutputStream fos;
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+
+                Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                fos = getContentResolver().openOutputStream(uri);
+            } else {
+                String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+                File image = new File(imagesDir, fileName);
+                fos = new FileOutputStream(image);
+            }
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+
+            Toast.makeText(this, "QR code saved to Pictures folder", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving QR code", e);
+            Toast.makeText(this, "Failed to save QR code", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Disconnect from socket
+        if (socket != null && socket.connected()) {
+            socket.disconnect();
+        }
+        
+        // Disconnect from WebSocket service
+        if (paymentWebSocketService != null) {
+            paymentWebSocketService.removePaymentUpdateListener(this);
+            paymentWebSocketService.disconnect();
         }
     }
 }
