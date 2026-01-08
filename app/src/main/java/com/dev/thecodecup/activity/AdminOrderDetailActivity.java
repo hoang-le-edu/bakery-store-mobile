@@ -222,7 +222,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         historyAdapter.setItems(histories);
         if (histories != null && !histories.isEmpty()) {
             AdminStatusHistoryDto last = histories.get(histories.size() - 1);
-            tvLastStatusChange.setText(last.getChangedAt());
+            tvLastStatusChange.setText(formatTimestamp(last.getChangedAt()));
         }
 
         updateActionButtons(data.getStatus());
@@ -349,6 +349,18 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         scrollContent.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
         btnPrimary.setEnabled(!loading);
         btnSecondary.setEnabled(!loading);
+    }
+
+    /** Format ISO-like timestamps by replacing T with space and trimming fractional seconds/Z. */
+    private String formatTimestamp(String raw) {
+        if (raw == null || raw.isEmpty()) return "--";
+        String cleaned = raw.replace('T', ' ');
+        int dotIndex = cleaned.indexOf('.');
+        String trimmed = dotIndex > 0 ? cleaned.substring(0, dotIndex) : cleaned;
+        if (trimmed.endsWith("Z")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
     }
 
     private String formatCurrency(String value) {
