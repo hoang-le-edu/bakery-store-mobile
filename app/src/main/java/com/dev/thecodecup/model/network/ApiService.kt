@@ -4,6 +4,7 @@ import com.dev.thecodecup.model.network.api.SuccessResponse
 import com.dev.thecodecup.model.network.dto.AdminOrderDetailResponseDto
 import com.dev.thecodecup.model.network.dto.AdminOrdersResponseDto
 import com.dev.thecodecup.model.network.dto.AdminCustomerDetailResponseDto
+import com.dev.thecodecup.model.network.dto.AdminProductDetailDto
 import com.dev.thecodecup.model.network.dto.AdminProductDto
 import com.dev.thecodecup.model.network.dto.AdminProductsResponseDto
 import com.dev.thecodecup.model.network.dto.ApiResponse
@@ -110,7 +111,7 @@ interface ApiService {
     @GET("admin/products/{id}")
     fun getAdminProductById(
         @Path("id") productId: String
-    ): Call<ApiResponse<ProductByIdDto>>
+    ): Call<ApiResponse<AdminProductDetailDto>>
 
     /**
      * Get all orders

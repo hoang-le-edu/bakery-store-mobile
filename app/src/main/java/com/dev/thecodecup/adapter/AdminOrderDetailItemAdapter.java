@@ -15,7 +15,7 @@ import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.network.ApiService;
 import com.dev.thecodecup.model.network.dto.ApiResponse;
 import com.dev.thecodecup.model.network.dto.AdminOrderItemDto;
-import com.dev.thecodecup.model.network.dto.ProductByIdDto;
+import com.dev.thecodecup.model.network.dto.AdminProductDetailDto;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -137,10 +137,10 @@ public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrder
             }
             
             Log.d(TAG, "Fetching product image for productId: " + productId);
-            apiService.getAdminProductById(productId).enqueue(new Callback<ApiResponse<ProductByIdDto>>() {
+            apiService.getAdminProductById(productId).enqueue(new Callback<ApiResponse<AdminProductDetailDto>>() {
                 @Override
-                public void onResponse(@NonNull Call<ApiResponse<ProductByIdDto>> call,
-                                       @NonNull Response<ApiResponse<ProductByIdDto>> response) {
+                public void onResponse(@NonNull Call<ApiResponse<AdminProductDetailDto>> call,
+                                       @NonNull Response<ApiResponse<AdminProductDetailDto>> response) {
                     String fetchedUrl = null;
                     if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                         fetchedUrl = response.body().getData().getImageUrl();
@@ -157,7 +157,7 @@ public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrder
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<ApiResponse<ProductByIdDto>> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<ApiResponse<AdminProductDetailDto>> call, @NonNull Throwable t) {
                     Log.e(TAG, "Error fetching product image: " + t.getMessage(), t);
                     imgProduct.setImageResource(R.drawable.placeholder_image);
                 }
