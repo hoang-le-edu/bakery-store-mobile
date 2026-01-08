@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dev.thecodecup.R;
 import com.dev.thecodecup.adapter.AdminProductAdapter;
 import com.dev.thecodecup.adapter.AdminToppingAdapter;
+import com.dev.thecodecup.activity.AdminProductDetailActivity;
 import com.dev.thecodecup.model.network.ApiService;
 import com.dev.thecodecup.model.network.NetworkModule;
 import com.dev.thecodecup.model.network.dto.AdminProductCategoryDto;
@@ -168,9 +169,11 @@ public class AdminProductListActivity extends AdminBottomNavActivity {
     private void setupRecycler() {
         adapter = new AdminProductAdapter(this);
         adapter.setOnItemClickListener(product -> {
-            // This is called when the update dialog completes or when item is clicked
-            // Reload the product list to reflect changes
-            performSearch();
+            if (product != null && product.getProductId() != null) {
+                Intent intent = new Intent(this, AdminProductDetailActivity.class);
+                intent.putExtra(AdminProductDetailActivity.EXTRA_PRODUCT_ID, product.getProductId());
+                startActivity(intent);
+            }
         });
         adapter.setOnDeleteClickListener((product, position) -> {
             // Show confirmation dialog before deleting
