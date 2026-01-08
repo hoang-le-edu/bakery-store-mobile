@@ -18,6 +18,7 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -220,6 +221,15 @@ interface ApiService {
         @Part("toppings_id[]") toppingsId: List<@JvmSuppressWildcards RequestBody>?,
         @Part productDetailImages: List<MultipartBody.Part>?
     ): Call<ProductOperationResponseDto>
+
+    /**
+     * Delete product
+     * Example: /api/admin/products/delete/{id}
+     */
+    @DELETE("admin/products/delete/{id}")
+    fun deleteAdminProduct(
+        @Path("id") productId: String
+    ): Call<SuccessResponse>
 
 }
 

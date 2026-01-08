@@ -78,7 +78,7 @@ data class AdminProductDto(
     val productPrice: String? = null,
 
     @Json(name = "avg_rating")
-    val avgRating: Int? = null,
+    val avgRating: Double? = null,
 
     @Json(name = "review_count")
     val reviewCount: Int? = null,

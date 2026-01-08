@@ -25,6 +25,7 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
     private final Context ctx;
     private final List<AdminProductDto> items = new ArrayList<>();
     private OnItemClickListener clickListener;
+    private OnDeleteClickListener deleteListener;
     private boolean isToppingMode = false;
 
     public void setToppingMode(boolean topping) {
@@ -36,6 +37,10 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
         void onItemClick(AdminProductDto product);
     }
 
+    public interface OnDeleteClickListener {
+        void onDeleteClick(AdminProductDto product, int position);
+    }
+
     public AdminProductAdapter(Context ctx) {
         this.ctx = ctx;
     }
@@ -44,11 +49,22 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
         this.clickListener = listener;
     }
 
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteListener = listener;
+    }
+
     public void setItems(List<AdminProductDto> data) {
         items.clear();
         if (data != null)
             items.addAll(data);
         notifyDataSetChanged();
+    }
+
+    public void removeItem(int position) {
+        if (position >= 0 && position < items.size()) {
+            items.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     @NonNull
@@ -77,9 +93,9 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
 
         h.txtProductStatus.setText("In stock");
 
-        int rating = p.getAvgRating() != null ? p.getAvgRating() : 0;
+        double rating = p.getAvgRating() != null ? p.getAvgRating() : 0.0;
         int reviewCount = p.getReviewCount() != null ? p.getReviewCount() : 0;
-        h.txtProductRating.setText(rating + "★ (" + reviewCount + " reviews)");
+        h.txtProductRating.setText(String.format("%.1f★ (%d reviews)", rating, reviewCount));
 
         if (h.imgProduct != null) {
             h.imgProduct.setVisibility(View.VISIBLE);
@@ -109,7 +125,9 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
         });
         
         h.btnDeleteProduct.setOnClickListener(v -> {
-            // TODO: implement delete functionality
+            if (deleteListener != null) {
+                deleteListener.onDeleteClick(p, position);
+            }
         });
         
         h.itemView.setOnClickListener(v -> {
