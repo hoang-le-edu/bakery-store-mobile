@@ -15,6 +15,8 @@ import com.dev.thecodecup.auth.GoogleAuthManager;
 import com.dev.thecodecup.model.auth.AuthManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.dev.thecodecup.activity.CustomerDetailActivity;
+
 /**
  * Trang Profile cơ bản theo theme.
  */
@@ -22,7 +24,7 @@ public class ProfileActivity extends BaseBottomNavActivity {
 
     private TextView tvUserName, tvUserEmail, tvUserPhone;
     private ImageView ivAvatar, btnEditProfile;
-    private LinearLayout rowMyInfo, rowAddress, rowOrders;
+    private LinearLayout rowMyInfo, rowOrders;
     private Button btnLogout;
 
     @Override
@@ -43,7 +45,6 @@ public class ProfileActivity extends BaseBottomNavActivity {
         ivAvatar = findViewById(R.id.ivAvatar);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         rowMyInfo = findViewById(R.id.rowMyInfo);
-        rowAddress = findViewById(R.id.rowAddress);
         rowOrders = findViewById(R.id.rowOrders);
         btnLogout = findViewById(R.id.btnLogout);
     }
@@ -65,11 +66,7 @@ public class ProfileActivity extends BaseBottomNavActivity {
         });
 
         rowMyInfo.setOnClickListener(v -> {
-            // TODO: mở màn MyInfoActivity
-        });
-
-        rowAddress.setOnClickListener(v -> {
-            // TODO: mở màn AddressActivity
+            startActivity(new Intent(this, CustomerDetailActivity.class));
         });
 
         rowOrders.setOnClickListener(v -> {

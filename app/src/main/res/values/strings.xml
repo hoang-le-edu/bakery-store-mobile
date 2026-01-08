@@ -54,4 +54,50 @@
     <string name="priority">Priority</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <!-- Admin Product Management -->
+    <string name="add_new_product">Add New Product</string>
+    <string name="update_product">Update Product</string>
+    <string name="product_name_required">Product Name *</string>
+    <string name="status_required">Status *</string>
+    <string name="status">Status</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="product_type">Product Type</string>
+    <string name="regular_product">Regular Product</string>
+    <string name="topping">Topping</string>
+    <string name="pricing">Pricing</string>
+    <string name="cost">Cost *</string>
+    <string name="price">Price *</string>
+    <string name="medium_size_price">Medium Size Price</string>
+    <string name="large_size_price">Large Size Price</string>
+    <string name="priority_range">Priority (0-10)</string>
+    <string name="categories_required">Categories *</string>
+    <string name="select_categories">Select Categories</string>
+    <string name="toppings_optional">Toppings (Optional)</string>
+    <string name="select_toppings">Select Toppings</string>
+    <string name="images">Images</string>
+    <string name="thumbnail_image">Thumbnail Image</string>
+    <string name="select_thumbnail">Select Thumbnail</string>
+    <string name="product_detail_images">Product Detail Images</string>
+    <string name="select_detail_images">Select Detail Images</string>
+    <string name="save_product">Save Product</string>
+    <!-- Customer Profile -->
+    <string name="guest">Guest</string>
+    <string name="account">Account</string>
+    <string name="my_information">My information</string>
+    <string name="delivery_address">Delivery address</string>
+    <string name="my_orders">My orders</string>
+    <string name="customer_information">Customer Information</string>
+    <string name="information">Information</string>
+    <string name="name_label">Name:</string>
+    <string name="email_label">Email:</string>
+    <string name="phone_label">Phone:</string>
+    <string name="registered_label">Registered:</string>
+    <string name="dob_label">DOB:</string>
+    <string name="gender_label">Gender:</string>
+    <string name="address_label">Address:</string>
+    <string name="orders_label">Orders</string>
+    <string name="no_data">--</string>
+    <!-- Admin Order Detail -->
+    <string name="status_history">Status History</string>
 </resources>

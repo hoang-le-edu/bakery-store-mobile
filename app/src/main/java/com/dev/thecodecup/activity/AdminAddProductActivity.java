@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -124,6 +125,10 @@ public class AdminAddProductActivity extends AppCompatActivity {
 
     private void initViews() {
         tvTitle = findViewById(R.id.tvTitle);
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
         etProductName = findViewById(R.id.etProductName);
         etProductDescription = findViewById(R.id.etProductDescription);
         etCost = findViewById(R.id.etCost);

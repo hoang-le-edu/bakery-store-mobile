@@ -60,7 +60,7 @@ public class AdminStatusHistoryAdapter extends RecyclerView.Adapter<AdminStatusH
 
         void bind(AdminStatusHistoryDto item) {
             tvStatus.setText(item.getStatus() != null ? item.getStatus() : "--");
-            tvChangedAt.setText(item.getChangedAt() != null ? item.getChangedAt() : "--");
+            tvChangedAt.setText(formatTimestamp(item.getChangedAt()));
 
             // Changed by
             String changedByText = "By system";
@@ -86,6 +86,18 @@ public class AdminStatusHistoryAdapter extends RecyclerView.Adapter<AdminStatusH
             } else {
                 tvNote.setVisibility(View.GONE);
             }
+        }
+
+        /** Trim fractional seconds, remove trailing Z, and replace T with space for compact display. */
+        private String formatTimestamp(String raw) {
+            if (raw == null || raw.isEmpty()) return "--";
+            String cleaned = raw.replace('T', ' ');
+            int dotIndex = cleaned.indexOf('.');
+            String trimmed = dotIndex > 0 ? cleaned.substring(0, dotIndex) : cleaned;
+            if (trimmed.endsWith("Z")) {
+                trimmed = trimmed.substring(0, trimmed.length() - 1);
+            }
+            return trimmed;
         }
     }
 }

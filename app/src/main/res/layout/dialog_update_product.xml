@@ -10,6 +10,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Header -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/update_product"
+            android:textSize="@dimen/text_subsubtitle"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_xl"/>
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,33 +98,27 @@
             android:orientation="horizontal"
             android:layout_marginTop="@dimen/space_lg">
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
                 android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="@string/cancel"
-                android:textSize="@dimen/text_md"
-                android:textStyle="bold"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                app:strokeColor="@color/pink_primary"
                 android:textColor="@color/pink_primary"
-                app:cornerRadius="@dimen/space_lg"
+                android:background="@drawable/btn_secondary_rounded"
+                android:backgroundTint="@null"
+                app:backgroundTint="@null"
                 android:layout_marginEnd="@dimen/space_sm" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnSaveProduct"
-                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="@dimen/space_sm"
                 android:layout_weight="1"
-                android:backgroundTint="@color/pink_primary"
-                app:cornerRadius="@dimen/space_lg"
+                android:layout_height="wrap_content"
                 android:text="@string/save"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_md" />
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_primary_rounded"
+                android:layout_marginStart="@dimen/space_sm" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

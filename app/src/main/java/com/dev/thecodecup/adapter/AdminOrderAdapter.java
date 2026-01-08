@@ -57,7 +57,7 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
         holder.tvReceiverName.setText(order.getReceiverName() != null ? order.getReceiverName() : "N/A");
         
         // Created At
-        holder.tvOrderTime.setText(order.getCreatedAt() != null ? order.getCreatedAt() : "N/A");
+        holder.tvOrderTime.setText(formatTimestamp(order.getCreatedAt()));
         
         // Order Total
         if (order.getOrderTotal() != null) {
@@ -154,5 +154,17 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
             tvPaymentMethod = itemView.findViewById(R.id.tvPaymentMethod);
             tvPaymentStatus = itemView.findViewById(R.id.tvPaymentStatus);
         }
+    }
+
+    /** Format ISO-like timestamps to a compact form without fractional seconds, replacing T with space. */
+    private String formatTimestamp(String raw) {
+        if (raw == null || raw.isEmpty()) return "N/A";
+        String cleaned = raw.replace('T', ' ');
+        int dotIndex = cleaned.indexOf('.');
+        String trimmed = dotIndex > 0 ? cleaned.substring(0, dotIndex) : cleaned;
+        if (trimmed.endsWith("Z")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
     }
 }

@@ -1,34 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@android:color/white">
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
+
+    <!-- Header similar to admin order detail -->
+    <RelativeLayout
+        android:id="@+id/headerAddProduct"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg"
+        android:background="@android:color/white">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:minHeight="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="@dimen/space_sm"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrowback"
+            android:contentDescription="@string/back" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/add_new_product"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_subsubtitle"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerAddProduct"
+        android:padding="@dimen/space_lg"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Header -->
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add New Product"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+        <!-- Header moved to toolbar above -->
 
         <!-- Product Name -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Product Name *"
+            android:hint="@string/product_name_required"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etProductName"
@@ -44,7 +76,7 @@
             android:layout_height="wrap_content"
             android:hint="Description"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etProductDescription"
@@ -60,31 +92,32 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Status *"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="@dimen/space_sm"
+            android:text="@string/status_required"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_lg"
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/rgStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <RadioButton
                 android:id="@+id/rbActive"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Active"/>
+                android:text="@string/active"/>
 
             <RadioButton
                 android:id="@+id/rbInactive"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Inactive"
+                android:text="@string/inactive"
                 android:checked="true"/>
         </RadioGroup>
 
@@ -92,24 +125,25 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Type"
-            android:textSize="14sp"
+            android:text="@string/product_type"
+            android:textSize="@dimen/text_lg"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_sm"/>
 
         <RadioGroup
             android:id="@+id/rgIsTopping"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <RadioButton
                 android:id="@+id/rbNotTopping"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Regular Product"
+                android:text="@string/regular_product"
                 android:checked="true"/>
 
             <RadioButton
@@ -117,33 +151,34 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Topping"/>
+                android:text="@string/topping"/>
         </RadioGroup>
 
         <!-- Pricing Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pricing"
-            android:textSize="18sp"
+            android:text="@string/pricing"
+            android:textSize="@dimen/text_lg"
             android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"/>
+            android:textColor="@android:color/black"
+            android:layout_marginTop="@dimen/space_sm"
+            android:layout_marginBottom="@dimen/space_md"/>
 
         <!-- Cost and Price -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Cost *"
+                android:hint="@string/cost"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="@dimen/space_sm">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCost"
@@ -156,9 +191,9 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Price *"
+                android:hint="@string/price"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginStart="8dp">
+                android:layout_marginStart="@dimen/space_sm">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPrice"
@@ -173,15 +208,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Medium Size Price"
+                android:hint="@string/medium_size_price"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="@dimen/space_sm">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUpMPrice"
@@ -194,9 +229,9 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Large Size Price"
+                android:hint="@string/large_size_price"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginStart="8dp">
+                android:layout_marginStart="@dimen/space_sm">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUpLPrice"
@@ -210,9 +245,9 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Priority (0-10)"
+            android:hint="@string/priority_range"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPriority"
@@ -232,25 +267,29 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Categories *"
-                android:textSize="18sp"
+                android:text="@string/categories_required"
+                android:textSize="@dimen/text_lg"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"/>
+                android:textColor="@android:color/black"
+                android:layout_marginTop="@dimen/space_sm"
+                android:layout_marginBottom="@dimen/space_md"/>
 
             <Button
                 android:id="@+id/btnSelectCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select Categories"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="8dp"/>
+                android:text="@string/select_categories"
+                android:textColor="@color/pink_primary"
+                android:background="@drawable/btn_secondary_gray_rounded"
+                android:backgroundTint="@null"
+                app:backgroundTint="@null"
+                android:layout_marginBottom="@dimen/space_sm"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSelectedCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="@dimen/space_lg"/>
         </LinearLayout>
 
         <!-- Toppings Section -->
@@ -263,49 +302,55 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Toppings (Optional)"
-                android:textSize="18sp"
+                android:text="@string/toppings_optional"
+                android:textSize="@dimen/text_lg"
                 android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"/>
+                android:textColor="@android:color/black"
+                android:layout_marginTop="@dimen/space_sm"
+                android:layout_marginBottom="@dimen/space_md"/>
 
             <Button
                 android:id="@+id/btnSelectToppings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select Toppings"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginBottom="8dp"/>
+                android:text="@string/select_toppings"
+                android:textColor="@color/pink_primary"
+                android:background="@drawable/btn_secondary_gray_rounded"
+                android:backgroundTint="@null"
+                app:backgroundTint="@null"
+                android:layout_marginBottom="@dimen/space_sm"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSelectedToppings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="@dimen/space_lg"/>
         </LinearLayout>
 
         <!-- Images Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Images"
-            android:textSize="18sp"
+            android:text="@string/images"
+            android:textSize="@dimen/text_lg"
             android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"/>
+            android:textColor="@android:color/black"
+            android:layout_marginTop="@dimen/space_sm"
+            android:layout_marginBottom="@dimen/space_md"/>
 
         <!-- Thumbnail Image -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thumbnail Image"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp"/>
+            android:text="@string/thumbnail_image"
+            android:textSize="@dimen/text_sm"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_sm"/>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/space_lg">
 
             <ImageView
                 android:id="@+id/ivThumbnail"
@@ -319,57 +364,68 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Select Thumbnail"
-                style="@style/Widget.MaterialComponents.Button"/>
+                android:text="@string/select_thumbnail"
+                android:background="@drawable/btn_primary_rounded"/>
         </FrameLayout>
 
         <!-- Product Detail Images -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Detail Images"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp"/>
+            android:text="@string/product_detail_images"
+            android:textSize="@dimen/text_lg"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="@dimen/space_sm"/>
 
         <Button
             android:id="@+id/btnSelectDetailImages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Detail Images"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_marginBottom="8dp"/>
+            android:text="@string/select_detail_images"
+            android:textColor="@color/pink_primary"
+            android:background="@drawable/btn_secondary_gray_rounded"
+            android:backgroundTint="@null"
+            app:backgroundTint="@null"
+            android:layout_marginBottom="@dimen/space_sm"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDetailImages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="@dimen/space_xl"/>
 
         <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginTop="@dimen/space_lg"
+            android:layout_marginBottom="@dimen/space_lg">
 
             <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Cancel"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginEnd="8dp"/>
+                android:text="@string/cancel"
+                android:textColor="@color/pink_primary"
+                android:background="@drawable/btn_secondary_gray_rounded"
+                android:backgroundTint="@null"
+                app:backgroundTint="@null"
+                android:layout_marginEnd="@dimen/space_sm"/>
 
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Save Product"
-                android:layout_marginStart="8dp"/>
+                android:text="@string/save_product"
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_primary_rounded"
+                android:layout_marginStart="@dimen/space_sm"/>
         </LinearLayout>
 
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+</RelativeLayout>

@@ -48,4 +48,50 @@
     <string name="password">Mật khẩu</string>
     <string name="explore_categories">Khám phá danh mục</string>
     <string name="search">Tìm kiếm...</string>
+    <!-- Admin Product Management -->
+    <string name="add_new_product">Thêm sản phẩm mới</string>
+    <string name="update_product">Cập nhật sản phẩm</string>
+    <string name="product_name_required">Tên sản phẩm *</string>
+    <string name="status_required">Trạng thái *</string>
+    <string name="status">Trạng thái</string>
+    <string name="active">Hoạt động</string>
+    <string name="inactive">Không hoạt động</string>
+    <string name="product_type">Loại sản phẩm</string>
+    <string name="regular_product">Sản phẩm thường</string>
+    <string name="topping">Topping</string>
+    <string name="pricing">Giá cả</string>
+    <string name="cost">Giá vốn *</string>
+    <string name="price">Giá bán *</string>
+    <string name="medium_size_price">Giá kích cỡ M</string>
+    <string name="large_size_price">Giá kích cỡ L</string>
+    <string name="priority_range">Ưu tiên (0-10)</string>
+    <string name="categories_required">Danh mục *</string>
+    <string name="select_categories">Chọn danh mục</string>
+    <string name="toppings_optional">Toppings (Tùy chọn)</string>
+    <string name="select_toppings">Chọn toppings</string>
+    <string name="images">Hình ảnh</string>
+    <string name="thumbnail_image">Hình ảnh đại diện</string>
+    <string name="select_thumbnail">Chọn hình đại diện</string>
+    <string name="product_detail_images">Hình ảnh chi tiết sản phẩm</string>
+    <string name="select_detail_images">Chọn hình ảnh chi tiết</string>
+    <string name="save_product">Lưu sản phẩm</string>
+    <!-- Customer Profile -->
+    <string name="guest">Khách</string>
+    <string name="account">Tài khoản</string>
+    <string name="my_information">Thông tin của tôi</string>
+    <string name="delivery_address">Địa chỉ giao hàng</string>
+    <string name="my_orders">Đơn hàng của tôi</string>
+    <string name="customer_information">Thông tin khách hàng</string>
+    <string name="information">Thông tin</string>
+    <string name="name_label">Tên:</string>
+    <string name="email_label">Email:</string>
+    <string name="phone_label">Điện thoại:</string>
+    <string name="registered_label">Ngày đăng ký:</string>
+    <string name="dob_label">Ngày sinh:</string>
+    <string name="gender_label">Giới tính:</string>
+    <string name="address_label">Địa chỉ:</string>
+    <string name="orders_label">Đơn hàng</string>
+    <string name="no_data">--</string>
+    <!-- Admin Order Detail -->
+    <string name="status_history">Lịch sử trạng thái</string>
 </resources>
