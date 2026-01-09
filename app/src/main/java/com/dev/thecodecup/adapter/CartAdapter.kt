@@ -139,9 +139,10 @@ class CartAdapter(
 
             txtPrice.text = formatPrice(item.total_price) + "₫"
 
-            // Load image
+            // Load image - fix duplicate build/assets in URL
+            val imageUrl = item.image?.replace("/build/assets/build/assets/", "/build/assets/")
             Glide.with(context)
-                .load(item.image)
+                .load(imageUrl)
                 .placeholder(R.drawable.img_placeholder) // Corrected placeholder
                 .error(R.drawable.error_image) // Corrected error drawable
                 .centerCrop()

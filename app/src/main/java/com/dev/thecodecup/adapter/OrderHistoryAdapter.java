@@ -178,9 +178,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 tvProductVariant.setText(variantBuilder.toString());
                 tvProductVariant.setVisibility(View.VISIBLE);
-
+                // Normalize duplicated '/build/assets' if present in API response
+                String imageUrl = normalizeAssetsUrl(firstItem.getImage());
+                android.util.Log.d("OrderHistoryAdapter", "Loading product image: " + imageUrl);
                 Glide.with(context)
-                        .load(firstItem.getImage())
+                    .load(imageUrl)
                         .placeholder(R.drawable.placeholder_image)
                         .error(R.drawable.error_image)
                         .into(ivProductImage);
@@ -217,6 +219,20 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             } else {
                 btnPayNow.setVisibility(View.GONE);
             }
+        }
+
+        /**
+         * Collapse duplicated 'build/assets' segments in URLs.
+         * Example:
+         *   /storage/build/assets/build/assets/Product/... -> /storage/build/assets/Product/...
+         */
+        private String normalizeAssetsUrl(String url) {
+            if (url == null) return null;
+            String normalized = url;
+            while (normalized.contains("/build/assets/build/assets/")) {
+                normalized = normalized.replace("/build/assets/build/assets/", "/build/assets/");
+            }
+            return normalized;
         }
     }
 }
