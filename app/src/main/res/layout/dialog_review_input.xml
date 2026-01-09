@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/space_lg"
-        android:text="Write a Review"
+        android:text="@string/write_a_review"
         android:textColor="@color/black"
         android:textSize="@dimen/text_subsubtitle"
         android:textStyle="bold" />
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_lg"
         app:boxBackgroundMode="outline"
-        android:hint="Share your experience...">
+        android:hint="@string/share_experience">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etReviewText"
@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_lg"
-        android:text="Add Photos/Videos (Optional)"
+        android:text="@string/add_photos_videos_optional"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold" />
@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Maximum 5 files, 10MB each. Supported: JPG, PNG, GIF, MP4, MOV, AVI"
+        android:text="@string/media_upload_info"
         android:textColor="@android:color/darker_gray"
         android:textSize="12sp" />
 
@@ -102,7 +102,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Add"
+                    android:text="@string/add_button"
                     android:textColor="@color/colorPrimary"
                     android:textSize="10sp" />
 
@@ -145,7 +145,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete"
+            android:text="@string/delete_button"
             android:textColor="@color/colorRedButton"
             android:visibility="gone"/>
 
@@ -155,7 +155,7 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit"
+            android:text="@string/edit_button"
             android:visibility="gone"
             android:layout_marginEnd="@dimen/space_md"/>
             
@@ -165,7 +165,7 @@
             app:cornerRadius="50dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Submit"/>
+            android:text="@string/submit_button"/>
             
     </LinearLayout>
 </LinearLayout>

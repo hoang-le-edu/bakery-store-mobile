@@ -161,7 +161,7 @@
                     android:id="@+id/tv_total_price_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total: "
+                    android:text="@string/total_label"
                     android:textColor="@color/colorGrayText"
                     android:textSize="@dimen/text_sm" />
 
@@ -180,7 +180,7 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Review"
+                android:text="@string/review_button"
                 android:textColor="@color/colorRedButton"
                 app:strokeColor="@color/colorRedButton"
                 android:visibility="gone"
@@ -194,7 +194,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="@dimen/space_md"
-            android:text="Pay Now"
+            android:text="@string/pay_now"
             android:textSize="@dimen/text_sm"
             android:textStyle="bold"
             android:textColor="@android:color/white"

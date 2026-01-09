@@ -40,7 +40,7 @@
             android:maxLines="2"
             android:textColor="@color/black"
             android:ellipsize="end"
-            android:text="Rau câu cà phê mini 100gr" />
+            android:text="@string/sample_product_name" />
 
         <TextView
             android:id="@+id/txtProductPrice"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_sm"
             android:textColor="@color/colorGrayText"
-            android:text="Còn hàng" />
+            android:text="@string/in_stock" />
 
         <TextView
             android:id="@+id/txtProductRating"

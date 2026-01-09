@@ -105,7 +105,7 @@ public class ProductDetailActivity extends BaseAuthActivity {
             initViews(); // Call initViews first to find etNote
             if (currentNote != null && etNote != null) etNote.setText(currentNote);
             
-            if (btnAddToCart != null) btnAddToCart.setText("Cập nhật giỏ hàng");
+            if (btnAddToCart != null) btnAddToCart.setText(getString(R.string.update_cart));
             
             Log.d("ProductDetailActivity", "=== Edit Mode ===");
             Log.d("ProductDetailActivity", "Order ID: " + orderId);
@@ -196,7 +196,7 @@ public class ProductDetailActivity extends BaseAuthActivity {
     }
 
     private void loadProductDetail() {
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Đang tải...", true, false);
+        final ProgressDialog dialog = ProgressDialog.show(this, null, getString(R.string.loading), true, false);
 
         BakeryJavaBridge.INSTANCE.loadProductDetail(this, productId, (response, error) -> {
             dialog.dismiss();
@@ -503,7 +503,7 @@ public class ProductDetailActivity extends BaseAuthActivity {
                 totalPrice
         );
 
-        final ProgressDialog updateDialog = ProgressDialog.show(this, null, "Đang cập nhật...", true, false);
+        final ProgressDialog updateDialog = ProgressDialog.show(this, null, getString(R.string.updating), true, false);
         BakeryJavaBridge.INSTANCE.updateProductInCart(this, updateRequest,
                 new com.dev.thecodecup.model.network.api.UpdateCartProductCallback() {
                     @Override
@@ -512,15 +512,15 @@ public class ProductDetailActivity extends BaseAuthActivity {
 
                         if (error != null) {
                             Log.e("ProductDetail", "Update error", error);
-                            Toast.makeText(ProductDetailActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProductDetailActivity.this, getString(R.string.error_prefix) + error.getMessage(), Toast.LENGTH_LONG).show();
                             return;
                         }
 
                         if (response != null && response.isSuccessful() && response.body() != null) {
-                            Toast.makeText(ProductDetailActivity.this, "Đã cập nhật sản phẩm!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProductDetailActivity.this, getString(R.string.product_updated), Toast.LENGTH_SHORT).show();
                             finish();
                         } else {
-                            String errorMsg = "Cập nhật thất bại";
+                            String errorMsg = getString(R.string.update_failed);
                             if (response != null) {
                                 errorMsg += ". Code: " + response.code();
                             }

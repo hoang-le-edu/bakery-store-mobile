@@ -59,9 +59,6 @@
     <string name="update_product">Update Product</string>
     <string name="product_name_required">Product Name *</string>
     <string name="status_required">Status *</string>
-    <string name="status">Status</string>
-    <string name="active">Active</string>
-    <string name="inactive">Inactive</string>
     <string name="product_type">Product Type</string>
     <string name="regular_product">Regular Product</string>
     <string name="topping">Topping</string>
@@ -101,4 +98,111 @@
     <!-- Admin Order Detail -->
     <string name="status_history">Status History</string>
     <string name="customer_avatar">Bepmetay User</string>
+    <!-- Cart Screen -->
+    <string name="cart">Cart</string>
+    <string name="products_in_cart">Products in cart</string>
+    <string name="select_all">Select all</string>
+    <string name="swipe_left_to_delete">Swipe left to delete product</string>
+    <string name="empty_cart">Empty cart</string>
+    <string name="add_products_to_cart">Please add products to cart</string>
+    <string name="order_summary">Order Summary</string>
+    <string name="total_quantity">Total quantity:</string>
+    <string name="total_price">Total price:</string>
+    <string name="total">Total</string>
+    <string name="checkout">Checkout</string>
+    <!-- Product Detail Screen -->
+    <string name="loading">Loading...</string>
+    <string name="update_cart">Update cart</string>
+    <string name="updating">Updating...</string>
+    <string name="error_prefix">Error: </string>
+    <string name="product_updated">Product updated!</string>
+    <string name="update_failed">Update failed</string>
+    <!-- Login Screen -->
+    <string name="signing_in">Signing in...</string>
+    <string name="signing_in_with_google">Signing in with Google...</string>
+    <string name="user_from_firebase_empty">Did not receive user from Firebase</string>
+    <string name="could_not_get_idtoken">Could not get idToken: </string>
+    <string name="google_signin_failed">Google Sign-In failed: </string>
+    <string name="google_user_empty">Google user is empty</string>
+    <string name="google_signin_success">Google sign-in successful</string>
+    <string name="enter_email_password">Enter email and password</string>
+    <string name="enter_email_password_recovery">Please enter email to receive password recovery link</string>
+    <string name="sending_password_recovery_email">Sending password recovery email...</string>
+    <string name="password_recovery_sent">Password recovery email sent to </string>
+    <string name="check_inbox">Please check your inbox!</string>
+    <string name="error_sending_email">Error sending email: </string>
+    <string name="signin_failed">Sign in failed: </string>
+    <string name="signin_failed_period">Sign in failed.</string>
+    <string name="no_user_data">No user data</string>
+    <string name="signin_successfully">Sign in successfully</string>
+    <string name="no_user_from_firebase">No user received from Firebase</string>
+    <string name="login_api_error">Login API error: </string>
+    <string name="login_api_failed">Login API failed: </string>
+    <string name="login_timeout">Login timeout. Check your internet connection.</string>
+    <string name="fallback_sign_in">Sign in</string>
+    <!-- Reset Password Screen -->
+    <string name="error_recovery_code_not_found">Error: Recovery code not found.</string>
+    <string name="please_enter_complete_password">Please enter complete new password.</string>
+    <string name="password_min_6_characters">Password must have at least 6 characters.</string>
+    <string name="password_confirm_not_match">Confirm password does not match.</string>
+    <string name="confirming_password_change">Confirming password change...</string>
+    <string name="password_changed_success">Password changed successfully! You can login again.</string>
+    <string name="password_change_failed">Password change failed: </string>
+    <!-- Cart Activity -->
+    <string name="please_select_product_checkout">Please select product to checkout</string>
+    <!-- Base Auth Activity -->
+    <string name="session_expired">Your session has expired. Please login again.</string>
+    <!-- Admin Update Product Dialog -->
+    <string name="please_enter_name_price">Please enter complete name and price</string>
+    <!-- Register Activity -->
+    <string name="get_id_token_failed">Get ID Token failed: </string>
+    <string name="register_firebase_failed">Register Firebase failed: </string>
+    <string name="register_failed">Register failed: </string>
+    <string name="connection_error_data">Connection error or data processing: </string>
+    <string name="undefined_error">Undefined error</string>
+    <string name="register_failed_cannot_parse">Register failed, cannot parse response.</string>
+    <!-- Layout and Adapter Strings -->
+    <string name="sample_product_name">Sample Product</string>
+    <string name="product_name_hint">Product Name</string>
+    <string name="size_m">Size M</string>
+    <string name="topping_name_label">Topping Name</string>
+    <string name="extra_price_hint">Extra Price</string>
+    <string name="toppings_label">Toppings</string>
+    <string name="note_label">Note</string>
+    <string name="note_hint">Note: Not too sweet</string>
+    <string name="quantity_label">Quantity: </string>
+    <string name="in_stock">In stock</string>
+    <string name="topping_list">Topping list</string>
+    <string name="review_content">Review content goes here...</string>
+    <string name="verified_purchase">Verified Purchase</string>
+    <string name="order_details">Order Details</string>
+    <string name="view_my_review">View My Review</string>
+    <string name="review_button">Review</string>
+    <string name="pay_now">Pay Now</string>
+    <string name="total_label">Total: </string>
+    <string name="select_toppings_and_set_price">Select toppings and set extra price for each:</string>
+    <string name="write_a_review">Write a Review</string>
+    <string name="share_experience">Share your experience...</string>
+    <string name="add_photos_videos_optional">Add Photos/Videos (Optional)</string>
+    <string name="media_upload_info">Maximum 5 files, 10MB each. Supported: JPG, PNG, GIF, MP4, MOV, AVI</string>
+    <string name="add_button">Add</string>
+    <string name="delete_button">Delete</string>
+    <string name="edit_button">Edit</string>
+    <string name="submit_button">Submit</string>
+    <string name="unknown_user">Unknown User</string>
+    <string name="category_name">Category Name</string>
+    <string name="no_orders">No orders found</string>
+    <!-- Filter and Dialog Strings -->
+    <string name="status">Status</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="sort_by">Sort By</string>
+    <string name="sort_order">Sort Order</string>
+    <string name="none">None</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="order_filters">Order Filters</string>
+    <string name="payment_method">Payment method</string>
 </resources>

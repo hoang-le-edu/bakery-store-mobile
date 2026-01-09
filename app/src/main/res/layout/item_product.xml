@@ -29,7 +29,7 @@
             android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rau câu mẫu"
+            android:text="@string/sample_product_name"
             android:textSize="@dimen/text_lg"
             android:textStyle="bold"
             android:textColor="@color/black"
