@@ -203,7 +203,7 @@ public class Login extends AppCompatActivity {
 
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             ProgressDialog dlg = ProgressDialog.show(
-                    this, null, "Đang đăng nhập với Google...", true, false
+                    this, null, getString(R.string.signing_in_with_google), true, false
             );
 
             googleAuthManager.handleSignInResultFromJava(data, LifecycleOwnerKt.getLifecycleScope(this), result -> {
@@ -221,23 +221,23 @@ public class Login extends AppCompatActivity {
                                 );
 
                                 Toast.makeText(Login.this,
-                                        "Đăng nhập Google thành công",
+                                        getString(R.string.google_signin_success),
                                         Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(Login.this, HomeActivity.class));
                                 finish();
                             } else {
                                 Toast.makeText(Login.this,
-                                        "Không lấy được idToken: " + tokenTask.getException().getMessage(),
+                                        getString(R.string.could_not_get_idtoken) + tokenTask.getException().getMessage(),
                                         Toast.LENGTH_LONG).show();
                             }
                         });
                     } else {
-                        Toast.makeText(Login.this, "User Google rỗng", Toast.LENGTH_LONG).show();
+                        Toast.makeText(Login.this, getString(R.string.google_user_empty), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Exception e = ((GoogleAuthManager.AuthResult.Failure) result).getException();
                     Toast.makeText(Login.this,
-                            "Google Sign-In thất bại: " + e.getMessage(),
+                            getString(R.string.google_signin_failed) + e.getMessage(),
                             Toast.LENGTH_LONG).show();
                 }
             });
@@ -249,12 +249,12 @@ public class Login extends AppCompatActivity {
         String pass = passwordEditText.getText().toString().trim();
 
         if (email.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, "Enter password and email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.enter_email_password), Toast.LENGTH_SHORT).show();
             return;
         }
 
         ProgressDialog dlg = ProgressDialog.show(
-                this, null, "Signing in...", true, false);
+                this, null, getString(R.string.signing_in), true, false);
         dlg.setCanceledOnTouchOutside(false);
 
         // Start timeout watchdog for the entire login flow
@@ -267,7 +267,7 @@ public class Login extends AppCompatActivity {
             dlg.dismiss();
             loginInProgress = false;
             Toast.makeText(Login.this,
-                    "Login timeout. Check your internet connection.",
+                    getString(R.string.login_timeout),
                     Toast.LENGTH_LONG).show();
             // If Firebase token already stored, let user into Home as fallback
             if (AuthManager.INSTANCE.isLoggedIn()) {
@@ -286,7 +286,7 @@ public class Login extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
                         if (user == null) {
-                            uiFail(dlg, "Không nhận được user từ Firebase");
+                            uiFail(dlg, getString(R.string.user_from_firebase_empty));
                             return;
                         }
 
@@ -304,11 +304,11 @@ public class Login extends AppCompatActivity {
                                 // Tiếp tục gọi API backend để lấy user type nhưng vẫn giữ watchdog
                                 fetchUserAndNavigate(email, pass, dlg);
                             } else {
-                                uiFail(dlg, "Không lấy được idToken: " + tokenTask.getException().getMessage());
+                                uiFail(dlg, getString(R.string.could_not_get_idtoken) + tokenTask.getException().getMessage());
                             }
                         });
                     } else {
-                        uiFail(dlg, "Đăng nhập thất bại: " + task.getException().getMessage());
+                        uiFail(dlg, getString(R.string.signin_failed) + task.getException().getMessage());
                     }
                 });
     }
@@ -321,12 +321,12 @@ public class Login extends AppCompatActivity {
         String email = emailEditText.getText().toString().trim();
 
         if (email.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập Email để nhận link khôi phục mật khẩu", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.enter_email_password_recovery), Toast.LENGTH_LONG).show();
             return;
         }
 
         ProgressDialog dlg = ProgressDialog.show(
-                this, null, "Đang gửi email khôi phục...", true, false);
+                this, null, getString(R.string.sending_password_recovery_email), true, false);
 
         // Sử dụng FirebaseAuth instance
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -336,12 +336,12 @@ public class Login extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
                         Toast.makeText(this,
-                                "Đã gửi email khôi phục mật khẩu đến " + email + ". Vui lòng kiểm tra hộp thư!",
+                                getString(R.string.password_recovery_sent) + email + ". " + getString(R.string.check_inbox),
                                 Toast.LENGTH_LONG).show();
                     } else {
                         // Xử lý lỗi (ví dụ: email không tồn tại)
                         Toast.makeText(this,
-                                "Lỗi gửi email: " + task.getException().getMessage(),
+                                getString(R.string.error_sending_email) + task.getException().getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -370,7 +370,7 @@ public class Login extends AppCompatActivity {
                 String message = e.optString("message", "");
                 if (!message.isEmpty()) return message;
             }
-        } catch (Exception ignored) {}        return "Đăng nhập thất bại.";
+        } catch (Exception ignored) {}        return getString(R.string.signin_failed_period);
     }
 
     private void fetchUserAndNavigate(String email, String password, ProgressDialog dlg) {
@@ -389,7 +389,7 @@ public class Login extends AppCompatActivity {
 
                 if (!response.isSuccessful() || response.body() == null) {
                     Toast.makeText(Login.this,
-                            "Login API failed: " + response.code(),
+                            getString(R.string.login_api_failed) + response.code(),
                             Toast.LENGTH_SHORT).show();
                     // Fallback: vẫn cho vào Home nếu đã có Firebase token
                     startActivity(new Intent(Login.this, HomeActivity.class));
@@ -402,7 +402,7 @@ public class Login extends AppCompatActivity {
                 if (success == null || !success) {
                     String msg = loginRes.getMessage() != null
                             ? loginRes.getMessage()
-                            : "Đăng nhập thất bại.";
+                            : getString(R.string.signin_failed_period);
                     Toast.makeText(Login.this, msg, Toast.LENGTH_SHORT).show();
                     // Fallback: vẫn cho vào Home nếu đã có Firebase token
                     startActivity(new Intent(Login.this, HomeActivity.class));
@@ -413,7 +413,7 @@ public class Login extends AppCompatActivity {
                 LoginDataDto data = loginRes.getData();
                 if (data == null) {
                     Toast.makeText(Login.this,
-                            "Không có dữ liệu user",
+                            getString(R.string.no_user_data),
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -435,7 +435,7 @@ public class Login extends AppCompatActivity {
                 }
                 editor.apply();
 
-                Toast.makeText(Login.this, "Sign in successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Login.this, getString(R.string.signin_successfully), Toast.LENGTH_SHORT).show();
 
                 if ("user".equalsIgnoreCase(userType)) {
                     // Admin
@@ -458,7 +458,7 @@ public class Login extends AppCompatActivity {
                 loginInProgress = false;
                 dlg.dismiss();
                 Toast.makeText(Login.this,
-                        "Lỗi login API: " + t.getMessage(),
+                        getString(R.string.login_api_error) + t.getMessage(),
                         Toast.LENGTH_SHORT).show();
                 // Fallback: vào Home nếu đã có Firebase token
                 if (AuthManager.INSTANCE.isLoggedIn()) {

@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Status"
+        android:text="@string/status"
         android:textColor="@color/black"
         android:textSize="@dimen/text_lg"
         android:textStyle="bold"
@@ -26,7 +26,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Active"
+            android:text="@string/active"
             android:textColor="@color/black"
             android:padding="@dimen/space_sm" />
 
@@ -35,7 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Inactive"
+            android:text="@string/inactive"
             android:textColor="@color/black"
             android:padding="@dimen/space_sm" />
     </LinearLayout>
@@ -46,7 +46,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sort By"
+        android:text="@string/sort_by"
         android:textColor="@color/black"
         android:textSize="@dimen/text_lg"
         android:textStyle="bold"
@@ -65,7 +65,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sort Order"
+        android:text="@string/sort_order"
         android:textColor="@color/black"
         android:textSize="@dimen/text_lg"
         android:textStyle="bold"
@@ -82,7 +82,7 @@
             android:id="@+id/rbNone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="None"
+            android:text="@string/none"
             android:textColor="@color/black"
             android:padding="@dimen/space_sm" />
 
@@ -90,7 +90,7 @@
             android:id="@+id/rbAscending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ascending"
+            android:text="@string/ascending"
             android:textColor="@color/black"
             android:padding="@dimen/space_sm" />
 
@@ -98,7 +98,7 @@
             android:id="@+id/rbDescending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descending"
+            android:text="@string/descending"
             android:textColor="@color/black"
             android:padding="@dimen/space_sm" />
     </RadioGroup>
@@ -114,7 +114,7 @@
             android:id="@+id/btnReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reset"
+            android:text="@string/reset"
             android:layout_marginEnd="@dimen/space_md"
             android:textColor="@color/pink_primary"
             android:backgroundTint="@null"
@@ -125,7 +125,7 @@
             android:id="@+id/btnApply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply"
+            android:text="@string/apply"
             android:background="@drawable/btn_primary_rounded" />
     </LinearLayout>
 </LinearLayout>

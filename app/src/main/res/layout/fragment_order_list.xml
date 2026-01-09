@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="No orders found"
+        android:text="@string/no_orders"
         android:textColor="@android:color/darker_gray"
         android:visibility="gone" />
 

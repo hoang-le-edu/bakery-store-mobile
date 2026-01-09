@@ -203,7 +203,7 @@ public class CartActivity extends BaseBottomNavActivity {
         List<CartOrderDetail> selectedItems = cartAdapter.getSelectedItems();
         
         if (selectedItems.isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.please_select_product_checkout), Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.auth.AuthManager;
 
 /**
@@ -56,7 +57,7 @@ public abstract class BaseAuthActivity extends AppCompatActivity {
         AuthManager.INSTANCE.clearTokens();
         
         // Thông báo cho user
-        Toast.makeText(this, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.session_expired), Toast.LENGTH_LONG).show();
         
         // Chuyển về màn hình login
         Intent intent = new Intent(this, Login.class);

@@ -94,4 +94,109 @@
     <string name="no_data">--</string>
     <!-- Admin Order Detail -->
     <string name="status_history">Lịch sử trạng thái</string>
+    <string name="customer_avatar">Người dùng Bepmetay</string>
+    <!-- Cart Screen -->
+    <string name="cart">Giỏ hàng</string>
+    <string name="products_in_cart">Sản phẩm trong giỏ</string>
+    <string name="select_all">Chọn tất cả</string>
+    <string name="swipe_left_to_delete">Vuốt sang trái để xóa sản phẩm</string>
+    <string name="empty_cart">Giỏ hàng trống</string>
+    <string name="add_products_to_cart">Vui lòng thêm sản phẩm vào giỏ hàng</string>
+    <string name="order_summary">Tóm tắt đơn hàng</string>
+    <string name="total_quantity">Tổng số lượng:</string>
+    <string name="total_price">Tổng giá:</string>
+    <string name="total">Tổng cộng</string>
+    <string name="checkout">Thanh toán</string>
+    <!-- Product Detail Screen -->
+    <string name="loading">Đang tải...</string>
+    <string name="update_cart">Cập nhật giỏ hàng</string>
+    <string name="updating">Đang cập nhật...</string>
+    <string name="error_prefix">Lỗi: </string>
+    <string name="product_updated">Đã cập nhật sản phẩm!</string>
+    <string name="update_failed">Cập nhật thất bại</string>
+    <!-- Login Screen -->
+    <string name="signing_in">Đang đăng nhập...</string>
+    <string name="signing_in_with_google">Đang đăng nhập với Google...</string>
+    <string name="user_from_firebase_empty">Không nhận được người dùng từ Firebase</string>
+    <string name="could_not_get_idtoken">Không thể lấy idToken: </string>
+    <string name="google_signin_failed">Đăng nhập Google thất bại: </string>
+    <string name="google_user_empty">Người dùng Google trống</string>
+    <string name="google_signin_success">Đăng nhập Google thành công</string>
+    <string name="enter_email_password">Nhập email và mật khẩu</string>
+    <string name="enter_email_password_recovery">Vui lòng nhập email để nhận liên kết khôi phục mật khẩu</string>
+    <string name="sending_password_recovery_email">Đang gửi email khôi phục mật khẩu...</string>
+    <string name="password_recovery_sent">Email khôi phục mật khẩu đã được gửi tới </string>
+    <string name="check_inbox">Vui lòng kiểm tra hộp thư của bạn!</string>
+    <string name="error_sending_email">Lỗi gửi email: </string>
+    <string name="signin_failed">Đăng nhập thất bại: </string>
+    <string name="signin_failed_period">Đăng nhập thất bại.</string>
+    <string name="no_user_data">Không có dữ liệu người dùng</string>
+    <string name="signin_successfully">Đăng nhập thành công</string>
+    <string name="no_user_from_firebase">Không nhận được người dùng từ Firebase</string>
+    <string name="login_api_error">Lỗi API đăng nhập: </string>
+    <string name="login_api_failed">API đăng nhập thất bại: </string>
+    <string name="login_timeout">Đăng nhập hết thời gian. Kiểm tra kết nối internet của bạn.</string>
+    <string name="fallback_sign_in">Đăng nhập</string>
+    <!-- Reset Password Screen -->
+    <string name="error_recovery_code_not_found">Lỗi: Không tìm thấy mã khôi phục.</string>
+    <string name="please_enter_complete_password">Vui lòng nhập đầy đủ mật khẩu mới.</string>
+    <string name="password_min_6_characters">Mật khẩu phải có ít nhất 6 ký tự.</string>
+    <string name="password_confirm_not_match">Xác nhận mật khẩu không khớp.</string>
+    <string name="confirming_password_change">Đang xác nhận thay đổi mật khẩu...</string>
+    <string name="password_changed_success">Đổi mật khẩu thành công! Bạn có thể đăng nhập lại.</string>
+    <string name="password_change_failed">Đổi mật khẩu thất bại: </string>
+    <!-- Cart Activity -->
+    <string name="please_select_product_checkout">Vui lòng chọn sản phẩm để thanh toán</string>
+    <!-- Base Auth Activity -->
+    <string name="session_expired">Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <!-- Admin Update Product Dialog -->
+    <string name="please_enter_name_price">Vui lòng nhập đầy đủ tên và giá</string>
+    <!-- Register Activity -->
+    <string name="get_id_token_failed">Lấy ID Token thất bại: </string>
+    <string name="register_firebase_failed">Đăng ký Firebase thất bại: </string>
+    <string name="register_failed">Đăng ký thất bại: </string>
+    <string name="connection_error_data">Lỗi kết nối hoặc xử lý dữ liệu: </string>
+    <string name="undefined_error">Lỗi không xác định</string>
+    <string name="register_failed_cannot_parse">Đăng ký thất bại, không thể phân tích phản hồi.</string>
+    <!-- Layout and Adapter Strings -->
+    <string name="sample_product_name">Sản phẩm mẫu</string>
+    <string name="product_name_hint">Tên sản phẩm</string>
+    <string name="size_m">Size M</string>
+    <string name="topping_name_label">Tên topping</string>
+    <string name="extra_price_hint">Giá thêm</string>
+    <string name="toppings_label">Toppings</string>
+    <string name="note_label">Ghi chú</string>
+    <string name="note_hint">Ghi chú: Không quá ngọt</string>
+    <string name="quantity_label">Số lượng: </string>
+    <string name="in_stock">Còn hàng</string>
+    <string name="topping_list">Danh sách topping</string>
+    <string name="review_content">Nội dung đánh giá...</string>
+    <string name="verified_purchase">Đã xác minh mua hàng</string>
+    <string name="order_details">Chi tiết đơn hàng</string>
+    <string name="view_my_review">Xem đánh giá của tôi</string>
+    <string name="review_button">Đánh giá</string>
+    <string name="pay_now">Thanh toán ngay</string>
+    <string name="total_label">Tổng: </string>
+    <string name="select_toppings_and_set_price">Chọn toppings và thiết lập giá thêm cho mỗi loại:</string>
+    <string name="write_a_review">Viết đánh giá</string>
+    <string name="share_experience">Chia sẻ trải nghiệm của bạn...</string>
+    <string name="add_photos_videos_optional">Thêm ảnh/video (Tùy chọn)</string>
+    <string name="media_upload_info">Tối đa 5 tệp, mỗi tệp 10MB. Hỗ trợ: JPG, PNG, GIF, MP4, MOV, AVI</string>
+    <string name="add_button">Thêm</string>
+    <string name="delete_button">Xóa</string>
+    <string name="edit_button">Sửa</string>
+    <string name="submit_button">Gửi</string>
+    <string name="unknown_user">Người dùng không xác định</string>
+    <string name="category_name">Tên danh mục</string>
+    <string name="no_orders">Không tìm thấy đơn hàng</string>
+    <!-- Filter and Dialog Strings -->
+    <string name="sort_by">Sắp xếp theo</string>
+    <string name="sort_order">Thứ tự sắp xếp</string>
+    <string name="none">Không</string>
+    <string name="ascending">Tăng dần</string>
+    <string name="descending">Giảm dần</string>
+    <string name="reset">Đặt lại</string>
+    <string name="apply">Áp dụng</string>
+    <string name="order_filters">Bộ lọc đơn hàng</string>
+    <string name="payment_method">Phương thức thanh toán</string>
 </resources>

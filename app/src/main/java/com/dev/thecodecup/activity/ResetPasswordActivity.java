@@ -33,7 +33,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         if (oobCode == null) {
             // Nếu không có oobCode, báo lỗi và đóng Activity
-            Toast.makeText(this, "Lỗi: Không tìm thấy mã khôi phục.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_recovery_code_not_found), Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -57,19 +57,19 @@ public class ResetPasswordActivity extends AppCompatActivity {
         String confirmPass = confirmPasswordEditText.getText().toString().trim();
 
         if (newPass.isEmpty() || confirmPass.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ mật khẩu mới.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.please_enter_complete_password), Toast.LENGTH_SHORT).show();
             return;
         }
         if (newPass.length() < 6) {
-            Toast.makeText(this, "Mật khẩu phải có ít nhất 6 ký tự.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.password_min_6_characters), Toast.LENGTH_SHORT).show();
             return;
         }
         if (!newPass.equals(confirmPass)) {
-            Toast.makeText(this, "Mật khẩu xác nhận không khớp.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.password_confirm_not_match), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        ProgressDialog dlg = ProgressDialog.show(this, null, "Đang xác nhận đổi mật khẩu...", true, false);
+        ProgressDialog dlg = ProgressDialog.show(this, null, getString(R.string.confirming_password_change), true, false);
 
         // BƯỚC 3: Gọi API Firebase confirmPasswordReset
         FirebaseAuth.getInstance().confirmPasswordReset(oobCode, newPass)
@@ -78,7 +78,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Thành công!
                         Toast.makeText(this,
-                                "Đổi mật khẩu thành công! Bạn có thể đăng nhập lại.",
+                                getString(R.string.password_changed_success),
                                 Toast.LENGTH_LONG).show();
 
                         // Chuyển về màn hình đăng nhập và đóng Activity này
@@ -89,7 +89,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     } else {
                         // Lỗi (oobCode hết hạn, sai...)
                         Toast.makeText(this,
-                                "Đổi mật khẩu thất bại: " + task.getException().getMessage(),
+                                getString(R.string.password_change_failed) + task.getException().getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
                 });

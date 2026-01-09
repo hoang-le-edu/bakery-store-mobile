@@ -55,7 +55,7 @@ public class AdminUpdateProductDialog extends Dialog {
             String price = etPrice.getText().toString().trim();
 
             if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price)) {
-                Toast.makeText(getContext(), "Vui lòng nhập đầy đủ tên và giá", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getContext().getString(R.string.please_enter_name_price), Toast.LENGTH_SHORT).show();
                 return;
             }
 

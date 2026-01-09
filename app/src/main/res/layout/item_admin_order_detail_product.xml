@@ -40,7 +40,7 @@
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:text="Product name" />
+                android:text="@string/product_name_hint" />
 
             <TextView
                 android:id="@+id/tvVariant"
@@ -59,7 +59,7 @@
                 android:textColor="@color/colorGrayText"
                 android:textSize="@dimen/text_xs"
                 android:visibility="gone"
-                android:text="Note" />
+                android:text="@string/note_label" />
         </LinearLayout>
 
         <TextView

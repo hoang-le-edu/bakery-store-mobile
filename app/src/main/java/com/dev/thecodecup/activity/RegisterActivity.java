@@ -113,16 +113,16 @@ public class RegisterActivity extends AppCompatActivity {
                                     registerBackendApi(dlg, user, name, phone, pass, idToken);
                                 } else {
                                     // Lỗi lấy token
-                                    uiFail(dlg, "Lấy ID Token thất bại: " + tokenTask.getException().getMessage());
+                                    uiFail(dlg, getString(R.string.get_id_token_failed) + tokenTask.getException().getMessage());
                                     user.delete(); // Nên xóa user Firebase nếu không thể gọi backend
                                 }
                             });
                         } else {
-                            uiFail(dlg, "Đăng ký Firebase thành công nhưng không lấy được User.");
+                            uiFail(dlg, "Registration successful but could not get User.");
                         }
                     } else {
                         // Đăng ký Firebase thất bại
-                        uiFail(dlg, "Đăng ký Firebase thất bại: " + task.getException().getMessage());
+                        uiFail(dlg, getString(R.string.register_firebase_failed) + task.getException().getMessage());
                     }
                 });
     }
@@ -181,11 +181,11 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     // Lỗi từ backend API (Laravel)
                     String msg = parseApiError(text);
-                    uiFail(dlg, "Đăng ký thất bại: " + msg);
+                    uiFail(dlg, getString(R.string.register_failed) + msg);
                     firebaseUser.delete();
                 }
             } catch (Exception e) {
-                uiFail(dlg, "Lỗi kết nối hoặc xử lý dữ liệu: " + e.getMessage());
+                uiFail(dlg, getString(R.string.connection_error_data) + e.getMessage());
             }
         }).start();
     }
@@ -200,10 +200,10 @@ public class RegisterActivity extends AppCompatActivity {
     private String parseApiError(String body) {
         try {
             JSONObject j = new JSONObject(body);
-            String message = j.optString("message", "Lỗi không xác định");
+            String message = j.optString("message", getString(R.string.undefined_error));
             return message;
         } catch (Exception ignored) {
-            return "Đăng ký thất bại, không thể phân tích phản hồi.";
+            return getString(R.string.register_failed_cannot_parse);
         }
     }
 }

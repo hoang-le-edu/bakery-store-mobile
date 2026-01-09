@@ -362,4 +362,22 @@ public class OrderDetailActivity extends BaseAuthActivity {
         DecimalFormat formatter = new DecimalFormat("#,###");
         return formatter.format(price) + "₫";
     }
+
+    /**
+     * Convert review media URL to use build/assets/reviews path
+     * From: https://domain.com/storage/reviews/media/filename.jpg
+     * To:   https://domain.com/storage/build/assets/reviews/filename.jpg
+     */
+    private String convertToAssetsPath(String originalUrl) {
+        if (originalUrl == null || !originalUrl.contains("/storage/reviews/media/")) {
+            return originalUrl;
+        }
+        
+        // Extract filename from the original URL
+        String filename = originalUrl.substring(originalUrl.lastIndexOf("/") + 1);
+        
+        // Build new URL with build/assets/reviews path
+        String baseUrl = originalUrl.substring(0, originalUrl.indexOf("/storage/"));
+        return baseUrl + "/storage/build/assets/reviews/" + filename;
+    }
 }

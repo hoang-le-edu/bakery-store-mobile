@@ -165,7 +165,7 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
 
     private void bindData(AdminOrderDetailDto data) {
         tvOrderNumber.setText(data.getOrderNumber() != null ? data.getOrderNumber() : "#");
-        tvOrderDate.setText(data.getDateCreated() != null ? data.getDateCreated() : "--");
+        tvOrderDate.setText(formatOrderDate(data.getDateCreated()));
         tvStatus.setText(data.getStatus() != null ? data.getStatus() : "--");
         applyStatusColor(data.getStatus());
 
@@ -351,9 +351,28 @@ public class AdminOrderDetailActivity extends AppCompatActivity {
         btnSecondary.setEnabled(!loading);
     }
 
+    /** Format order date to yyyy-MM-dd HH:mm:ss format */
+    private String formatOrderDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) return "--";
+        try {
+            // Parse ISO format (e.g., 2026-01-13T14:44:02.000Z or 2026-01-13T14:44:02Z)
+            java.text.SimpleDateFormat isoFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault());
+            java.util.Date date = isoFormat.parse(dateString);
+            
+            // Format to desired format: yyyy-MM-dd HH:mm:ss
+            java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault());
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            // If parsing fails, try the simple format (replace T with space)
+            return dateString.replace('T', ' ')
+                    .replaceAll("\\.[0-9]+Z?$", "")
+                    .replaceAll("Z$", "");
+        }
+    }
+
     /** Format ISO-like timestamps by replacing T with space and trimming fractional seconds/Z. */
     private String formatTimestamp(String raw) {
-        if (raw == null || raw.isEmpty()) return "--";
+        if (raw == null || raw.isEmpty()) return "N/A";
         String cleaned = raw.replace('T', ' ');
         int dotIndex = cleaned.indexOf('.');
         String trimmed = dotIndex > 0 ? cleaned.substring(0, dotIndex) : cleaned;
