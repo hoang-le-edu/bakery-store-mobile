@@ -68,6 +68,7 @@ public class PaymentActivity extends BaseAuthActivity implements PaymentUpdateLi
 
     private Socket socket;
     private PaymentWebSocketService paymentWebSocketService;
+    private boolean isPaymentCompleted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,8 +233,56 @@ public class PaymentActivity extends BaseAuthActivity implements PaymentUpdateLi
     }
     
     private void checkPaymentStatus() {
-        Toast.makeText(this, "Listening for payment status via WebSocket...", Toast.LENGTH_SHORT).show();
-        txtPaymentStatus.setText("Waiting for payment confirmation...");
+        // Check payment status via API as backup when returning to app
+        Log.d(TAG, "Checking payment status for order: " + orderId);
+        
+        // Show checking status
+        runOnUiThread(() -> {
+            txtPaymentStatus.setText("Checking payment status...");
+            progressBar.setVisibility(View.VISIBLE);
+        });
+        
+        // Call API to check current payment status
+        new Thread(() -> {
+            try {
+                // TODO: Replace with your actual API endpoint
+                // Example: GET /api/orders/{orderId}/payment-status
+                // For now, simulate API call
+                Thread.sleep(2000); 
+                
+                // Simulate API response checking
+                // In real implementation, you would:
+                // 1. Call your backend API: GET /api/orders/{orderId}
+                // 2. Check if order.paymentStatus == "PAID"
+                // 3. If paid, trigger onPaymentSuccess manually
+                
+                // Example API call structure:
+                // String apiUrl = "https://your-api.com/api/orders/" + orderId;
+                // OkHttpClient client = new OkHttpClient();
+                // Request request = new Request.Builder().url(apiUrl).build();
+                // Response response = client.newCall(request).execute();
+                // if (response.isSuccessful()) {
+                //     JSONObject orderData = new JSONObject(response.body().string());
+                //     String paymentStatus = orderData.getString("paymentStatus");
+                //     if ("PAID".equals(paymentStatus)) {
+                //         onPaymentSuccess(orderId, orderData.getString("amount"), orderData.getString("orderNumber"));
+                //     }
+                // }
+                
+                runOnUiThread(() -> {
+                    if (!isPaymentCompleted) {
+                        txtPaymentStatus.setText("Waiting for payment confirmation...");
+                        Toast.makeText(this, "Listening for payment updates...", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Payment status check interrupted", e);
+                runOnUiThread(() -> {
+                    txtPaymentStatus.setText("Waiting for payment confirmation...");
+                });
+            }
+        }).start();
     }
 
     // PaymentUpdateListener implementation
@@ -493,5 +542,39 @@ public class PaymentActivity extends BaseAuthActivity implements PaymentUpdateLi
             paymentWebSocketService.removePaymentUpdateListener(this);
             paymentWebSocketService.disconnect();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // When user returns to app, check payment status and reconnect WebSocket
+        if (!isPaymentCompleted) {
+            Log.d(TAG, "Resuming payment activity - checking status and reconnecting");
+            
+            // Force reconnect WebSocket service to ensure fresh connection
+            if (paymentWebSocketService != null) {
+                paymentWebSocketService.forceReconnect();
+                paymentWebSocketService.subscribeToOrderPayment(orderId);
+            }
+            
+            // Also check payment status via API as backup
+            checkPaymentStatus();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "Payment activity paused");
+        // Don't disconnect WebSocket here - keep it running in background
+        // The service will handle background connections
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "Payment activity stopped");
+        // Keep WebSocket connection alive for background updates
+        // Only disconnect in onDestroy when user completely leaves
     }
 }

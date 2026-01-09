@@ -109,6 +109,15 @@ class PaymentWebSocketService(private val context: Context) {
     }
 
     /**
+     * Force reconnect - useful when app returns from background
+     */
+    fun forceReconnect() {
+        Log.d(TAG, "Force reconnecting WebSocket...")
+        disconnect()
+        connect()
+    }
+
+    /**
      * Unsubscribe from payment updates for a specific order
      */
     fun unsubscribeFromOrderPayment(orderId: String) {
