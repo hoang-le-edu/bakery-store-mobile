@@ -91,10 +91,11 @@ public class OrderDetailProductsAdapter extends RecyclerView.Adapter<OrderDetail
                 txtPrice.setText("0₫");
             }
 
-            // Product image
+            // Product image - normalize duplicated '/build/assets' segments
             if (product.getImage() != null && !product.getImage().isEmpty()) {
+                String normalizedUrl = normalizeAssetsUrl(product.getImage());
                 Glide.with(itemView.getContext())
-                        .load(product.getImage())
+                        .load(normalizedUrl)
                         .placeholder(R.drawable.placeholder_image)
                         .error(R.drawable.placeholder_image)
                         .into(imgProduct);
@@ -123,6 +124,20 @@ public class OrderDetailProductsAdapter extends RecyclerView.Adapter<OrderDetail
             } else {
                 txtNote.setVisibility(View.GONE);
             }
+        }
+
+        /**
+         * Collapse duplicated 'build/assets' segments in URLs.
+         * Example:
+         *   /storage/build/assets/build/assets/Product/... -> /storage/build/assets/Product/...
+         */
+        private String normalizeAssetsUrl(String url) {
+            if (url == null) return null;
+            String normalized = url;
+            while (normalized.contains("/build/assets/build/")) {
+                normalized = normalized.replace("/build/assets/build/", "/build/assets/");
+            }
+            return normalized;
         }
     }
 }
