@@ -17,6 +17,7 @@ import com.dev.thecodecup.R;
 import com.dev.thecodecup.model.network.ApiService;
 import com.dev.thecodecup.model.network.NetworkModule;
 import com.dev.thecodecup.model.network.dto.AdminProductDetailDto;
+import com.dev.thecodecup.model.network.dto.AdminCategoryDto;
 import com.dev.thecodecup.model.network.dto.AdminToppingPriceDto;
 import com.dev.thecodecup.model.network.dto.ApiResponse;
 
@@ -130,27 +131,32 @@ public class AdminProductDetailActivity extends AppCompatActivity {
 
         tvPriority.setText(String.valueOf(p.getPriority() != null ? p.getPriority() : "0"));
 
-        // Display categories - prefer names if available, fall back to IDs
-        List<String> categoryNames = p.getCategoriesName() != null && !p.getCategoriesName().isEmpty()
-                ? p.getCategoriesName()
-                : (p.getCategoriesId() != null ? p.getCategoriesId() : new ArrayList<>());
+        // Display categories from categories array
+        List<String> categoryNames = new ArrayList<>();
+        if (p.getCategories() != null && !p.getCategories().isEmpty()) {
+            for (AdminCategoryDto category : p.getCategories()) {
+                if (category != null && !TextUtils.isEmpty(category.getName())) {
+                    categoryNames.add(category.getName());
+                }
+            }
+        }
         if (categoryNames.isEmpty()) {
             tvCategories.setText("None");
         } else {
             tvCategories.setText(TextUtils.join(", ", categoryNames));
         }
 
-        // Display toppings - prefer topping names if available, fall back to IDs
+        // Display toppings with names and prices
         List<AdminToppingPriceDto> toppingPrices = p.getToppingsId() != null ? p.getToppingsId() : new ArrayList<>();
         if (toppingPrices.isEmpty()) {
             tvToppings.setText("None");
         } else {
             List<String> toppingRows = new ArrayList<>();
             for (AdminToppingPriceDto tp : toppingPrices) {
-                String name = tp != null && !TextUtils.isEmpty(tp.getToppingName()) ? tp.getToppingName() : (tp != null ? tp.getToppingId() : null);
-                String extra = tp != null ? tp.getExtraPrice() : null;
+                String name = tp != null && !TextUtils.isEmpty(tp.getName()) ? tp.getName() : "Unknown";
+                String extra = tp != null ? tp.getExtraPrice() : "0";
                 toppingRows.add(String.format(Locale.getDefault(), "• %s (+%s)",
-                        nonNull(name), formatCurrency(extra)));
+                        name, formatCurrency(extra)));
             }
             tvToppings.setText(TextUtils.join("\n", toppingRows));
         }

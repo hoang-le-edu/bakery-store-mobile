@@ -375,14 +375,14 @@ public class CheckoutActivity extends BaseAuthActivity {
                         } else {
                             Log.e("CheckoutActivity", "Cannot create payment link - order ID is missing");
                             Toast.makeText(CheckoutActivity.this,
-                                    "Đơn hàng đã tạo nhưng không thể tạo link thanh toán. Vui lòng thanh toán từ danh sách đơn hàng.",
+                                    "Order created but cannot create payment link. Please pay from the order list.",
                                     Toast.LENGTH_LONG).show();
                             finish();
                         }
                     } else {
                         // Cash payment - go back
                         Toast.makeText(CheckoutActivity.this,
-                                "Đơn hàng đã được tạo thành công!", Toast.LENGTH_SHORT).show();
+                                "Order created successfully!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 } else {
@@ -399,7 +399,7 @@ public class CheckoutActivity extends BaseAuthActivity {
         Log.d("CheckoutActivity", "Order ID: " + orderId);
         
         final ProgressDialog dialog = ProgressDialog.show(this, null,
-                "Đang tạo mã thanh toán...", true, false);
+                "Creating payment code...", true, false);
 
         BakeryJavaBridge.INSTANCE.createPaymentLink(this, orderId, new PaymentLinkCallback() {
             @Override
@@ -413,7 +413,7 @@ public class CheckoutActivity extends BaseAuthActivity {
                 if (error != null) {
                     Log.e("CheckoutActivity", "Payment link error", error);
                     Toast.makeText(CheckoutActivity.this,
-                            "Lỗi tạo link thanh toán: " + error.getMessage(),
+                            "Error creating payment link: " + error.getMessage(),
                             Toast.LENGTH_LONG).show();
                     finish();
                     return;
@@ -453,7 +453,7 @@ public class CheckoutActivity extends BaseAuthActivity {
                     } else {
                         Log.e("CheckoutActivity", "Payment link error code: " + paymentResponse.getError());
                         Toast.makeText(CheckoutActivity.this,
-                                "Lỗi thanh toán: " + paymentResponse.getMessage(),
+                                "Payment error: " + paymentResponse.getMessage(),
                                 Toast.LENGTH_LONG).show();
                         finish();
                     }
@@ -469,7 +469,7 @@ public class CheckoutActivity extends BaseAuthActivity {
                         }
                     }
                     Toast.makeText(CheckoutActivity.this,
-                            "Không thể tạo link thanh toán", Toast.LENGTH_LONG).show();
+                            "Cannot create payment link", Toast.LENGTH_LONG).show();
                     finish();
                 }
             }
