@@ -244,29 +244,31 @@ public class OrderDetailActivity extends BaseAuthActivity {
     private void setStatusStyle(String status) {
         // Always use background drawable with radius
         txtOrderStatus.setBackgroundResource(R.drawable.bg_order_status);
+
+        // Map statuses to color resources (align with Admin screens)
         int color;
-        switch (status.toLowerCase()) {
-            case "wait for approval":
-                color = 0xFFDB5560; // Pink
-                break;
-            case "in progress":
-                color = 0xFFFFA726; // Yellow/Orange
-                break;
-            case "completed":
-                color = 0xFF66BB6A; // Green
-                break;
-            case "cancelled":
-                color = 0xFF9E9E9E; // Gray 
-                break;
-            default:
-                color = 0xFF9E9E9E; // Grey
-                break;
+        String s = status != null ? status : "";
+        if ("Wait For Approval".equalsIgnoreCase(s)) {
+            color = getResources().getColor(R.color.status_waitForApproval);
+        } else if ("In Progress".equalsIgnoreCase(s) || "Delivering".equalsIgnoreCase(s)) {
+            color = getResources().getColor(R.color.status_inProgress);
+        } else if ("Completed".equalsIgnoreCase(s)) {
+            color = getResources().getColor(R.color.status_completed);
+        } else if ("Cancelled".equalsIgnoreCase(s)) {
+            color = getResources().getColor(R.color.status_cancelled);
+        } else {
+            color = getResources().getColor(android.R.color.darker_gray);
         }
-        // Set color filter for background shape
+
+        // Apply solid color to shape (avoid relying on tint default #DB5560)
         android.graphics.drawable.Drawable bg = txtOrderStatus.getBackground();
-        if (bg != null) {
+        if (bg instanceof android.graphics.drawable.GradientDrawable) {
+            ((android.graphics.drawable.GradientDrawable) bg.mutate()).setColor(color);
+        } else if (bg != null) {
+            // Fallback to tint for non-shape drawables
             bg.setTint(color);
         }
+
         txtOrderStatus.setTextColor(0xFFFFFFFF); // White text
         txtOrderStatus.setPadding(24, 12, 24, 12);
     }

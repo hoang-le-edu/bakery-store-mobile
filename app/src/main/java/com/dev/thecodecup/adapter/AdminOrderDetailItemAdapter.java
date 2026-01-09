@@ -165,12 +165,28 @@ public class AdminOrderDetailItemAdapter extends RecyclerView.Adapter<AdminOrder
         }
 
         private void loadImage(String url) {
-            Log.d(TAG, "Loading image with Glide: " + url);
+            // Normalize duplicated '/build/assets' segments in product image URLs
+            String normalizedUrl = normalizeAssetsUrl(url);
+            Log.d(TAG, "Loading image with Glide: " + normalizedUrl);
             Glide.with(itemView.getContext())
-                    .load(url)
+                    .load(normalizedUrl)
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_image)
                     .into(imgProduct);
+        }
+
+        /**
+         * Collapse duplicated 'build/assets' segments in URLs.
+         * Example:
+         *   /storage/build/assets/build/assets/Product/... -> /storage/build/assets/Product/...
+         */
+        private String normalizeAssetsUrl(String url) {
+            if (url == null) return null;
+            String normalized = url;
+            while (normalized.contains("/build/assets/build/assets/")) {
+                normalized = normalized.replace("/build/assets/build/assets/", "/build/assets/");
+            }
+            return normalized;
         }
 
         private String formatCurrency(String value) {
